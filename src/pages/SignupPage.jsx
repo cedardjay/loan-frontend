@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import ApiService from '../service/ApiService';
 import Layout from '../components/Layout';
+import PhoneInput from "react-phone-number-input";
+import "react-phone-number-input/style.css";
 
 export default function SignupPage() {
   const navigate = useNavigate();
@@ -37,32 +39,32 @@ export default function SignupPage() {
       return;
     }
     try {
-      // Call the register method from ApiService
       const response = await ApiService.registerUser(formData);
 
-      // Check if the response is successful
       if (response.statusCode === 200) {
-        // Clear the form fields after successful registration
-        setFormData({
-          username: '',
-          email: '',
-          password: '',
-          phoneNumber: ''
-        });
-
         setSuccessMessage('User registered successfully');
-        setTimeout(() => {
-          setSuccessMessage('');
-          navigate('/verify');
-        }, 3000);
+        setTimeout(() => setSuccessMessage(''), 3000);
+
+        try {
+          const loginResponse = await ApiService.loginUser({
+            email: formData.email,      // ✅ from formData
+            password: formData.password // ✅ from formData
+          });
+          if (loginResponse.statusCode === 200) {
+            localStorage.setItem('token', loginResponse.token);
+            localStorage.setItem('role', loginResponse.role);
+            navigate('/verify', { replace: true });
+          }
+        } catch (error) {
+          setErrorMessage(error.response?.data?.message || error.message); // ✅ setError → setErrorMessage
+          setTimeout(() => setErrorMessage(''), 5000);
+        }
       }
-    }
-    catch (error) {
+    } catch (error) {
       setErrorMessage(error.response?.data?.message || error.message);
       setTimeout(() => setErrorMessage(''), 5000);
     }
   };
-
 
   return (
     <Layout hideFooter>
@@ -73,7 +75,7 @@ export default function SignupPage() {
             <Link className="text-sm font-bold text-tertiary hover:text-primary" to="/">Home</Link>
           </div>
           <div className="text-sm font-medium text-tertiary">
-            Already have an account?{' '}
+            Already have an account?{'  '}
             <Link className="text-primary hover:underline" to="/login">Login</Link>
           </div>
         </nav>
@@ -137,15 +139,31 @@ export default function SignupPage() {
                   <p className="text-[11px] text-outline font-medium">We'll send verification and account updates here</p>
                 </div>
 
-                <div class="space-y-2">
-                  <label className="block text-sm font-bold text-on-surface uppercase tracking-wider" for="phone">Phone number</label>
-                  <input className="w-full h-12 px-4 rounded-xl border-none bg-surface-container-low focus:ring-2 focus:ring-primary transition-all text-on-surface placeholder:text-outline/50 font-medium"
-                    name="phoneNumber"
-                    type="text"
-                    placeholder="+237 657 890 690"
+
+                <div className="space-y-2">
+                  <label
+                    className="block text-sm font-bold text-on-surface uppercase tracking-wider"
+                    htmlFor="phoneNumber"
+                  >
+                    Phone number
+                  </label>
+
+                  <PhoneInput
+                    international
+                    defaultCountry="CM"
                     value={formData.phoneNumber}
-                    onChange={handleInputChange}
-                    required />
+                    onChange={(value) => {
+                      handleInputChange({
+                        target: {
+                          name: 'phoneNumber',
+                          value: value || ''
+                        }
+                      });
+                    }}
+                    placeholder="+237 657 890 690"
+                    required
+                    className="[&_.PhoneInputInput]:w-full [&_.PhoneInputInput]:h-12 [&_.PhoneInputInput]:px-4 [&_.PhoneInputInput]:rounded-xl [&_.PhoneInputInput]:border-none [&_.PhoneInputInput]:bg-surface-container-low [&_.PhoneInputInput]:focus:ring-2 [&_.PhoneInputInput]:focus:ring-primary [&_.PhoneInputInput]:transition-all [&_.PhoneInputInput]:text-on-surface [&_.PhoneInputInput]:placeholder:text-outline/50 [&_.PhoneInputInput]:font-medium"
+                  />
                 </div>
 
                 <div className="space-y-2">

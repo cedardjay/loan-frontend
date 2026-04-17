@@ -35,7 +35,7 @@ export default function LoginPage() {
         } else if (role === 'SUPERADMIN') {
           navigate('/super-admin-dashboard', { replace: true });
         } else {
-          navigate('/verify', { replace: true });
+          navigate('/verify', { replace: true });  // if ('role===USER')
         }
       }
     } catch (error) {

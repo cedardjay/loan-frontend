@@ -1,17 +1,32 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import ApiService from '../service/ApiService';
 
-const STATS = [
-  { label: 'Users', value: '' },
-  { label: 'Verified', value: '' },
-  { label: 'Volume', value: '' },
-];
+
 
 export default function SuperAdminDashboard() {
   const navigate = useNavigate();
+
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const data = await ApiService.getAllUsers();
+        setUsers(data.userList);   // extract userList from the response
+        setLoading(false);
+      } catch (error) {
+        console.error('Failed to fetch users:', error);
+        setLoading(false);
+      }
+    };
+
+    fetchUsers();
+  }, []);
+
   return (
-<div className="bg-surface min-h-screen flex">
+    <div className="bg-surface min-h-screen flex">
       <aside className="hidden md:flex flex-col h-screen w-64 border-r border-outline-variant/20 bg-surface-container-low sticky top-0 py-8">
         <div className="px-8 mb-10">
           <h1 className="font-black text-xl">Super Admin</h1>
@@ -49,27 +64,61 @@ export default function SuperAdminDashboard() {
             Loan@{' '}
             <span className="text-[10px] bg-primary text-white px-2 py-0.5 rounded ml-2">SUPER ADMIN</span>
           </h2>
-          
-           <button
-                    onClick={() => {
-                      ApiService.logout();
-                      navigate('/login');
-                    }}
-                    className="px-4 py-1.5 bg-primary text-white rounded-lg font-semibold">
-                    Logout
-                  </button>
+
+          <button
+            onClick={() => {
+              ApiService.logout();
+              navigate('/login');
+            }}
+            className="px-4 py-1.5 bg-primary text-white rounded-lg font-semibold">
+            Logout
+          </button>
         </header>
 
-        <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
-          {STATS.map((s) => (
-            <div key={s.label} className="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant/10 shadow-sm">
-              <p className="text-[10px] uppercase text-tertiary mb-2">{s.label}</p>
-              <h3 className="text-2xl font-extrabold">{s.value}</h3>
-            </div>
-          ))}
+        <h1 className="text-3xl font-extrabold mb-8">User Management</h1>
+        <div className="bg-surface-container-low rounded-xl p-8">
+          <div className="overflow-x-auto bg-surface-container-lowest rounded-xl shadow-sm">
+            <table className="w-full text-left">
+              <thead>
+                <tr className="bg-surface-container-high/30">
+                  {['User Details', 'Phone Number', 'Role', 'Actions'].map((h) => (
+                    <th key={h} className="px-6 py-4 text-[11px] font-extrabold uppercase">{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-outline-variant/10">
+                {loading ? (
+                  <tr>
+                    <td colSpan={4} className="text-center py-8 text-outline">Loading users...</td>
+                  </tr>
+                ) : (
+                  users.map((u) => (
+                    <tr key={u.id} className="hover:bg-slate-50/50">
+                      <td className="px-6 py-4">
+                        <div className="font-bold text-on-background">{u.name}</div>
+                        <div className="text-xs text-outline">{u.email}</div>
+                      </td>
+                      <td className="px-6 py-4 text-sm text-tertiary">{u.phoneNumber}</td>
+                      <td className="px-6 py-4">
+                        <span className={`px-3 py-1 text-[10px] font-bold rounded-full uppercase ${u.role === 'ADMIN'
+                          ? 'bg-secondary-container/50 text-on-secondary-container'
+                          : 'bg-surface-container-highest text-outline'
+                          }`}>
+                          {u.role}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className="material-symbols-outlined text-outline">more_horiz</span>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
 
-        
+
       </main>
     </div>
   );
