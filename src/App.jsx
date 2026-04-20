@@ -9,6 +9,11 @@ import InvestorDashboard from './pages/InvestorDashboard';
 import AdminDashboard from './pages/AdminDashboard';
 import SuperAdminDashboard from './pages/SuperAdminDashboard';
 import { ProtectedRoute, AdminRoute, SuperAdminRoute } from './service/guard';
+import LoanApplication from './pages/LoanApplication';
+import HybridDashboard from './pages/HybridDashboard';
+import UserLoans from './pages/UserLoans';
+import LoanListings from './pages/LoanListings';
+
 
 function App() {
   return (
@@ -18,9 +23,22 @@ function App() {
         <Route path="/signup" element={<SignupPage />} />
         <Route path="/login" element={<LoginPage />} />
 
-        <Route path="/verify" element={<ProtectedRoute element={<VerifyPage />} />} />
-        <Route path="/borrower-dashboard" element={<ProtectedRoute element={<BorrowerDashboard />} />} />
-        <Route path="/investor-dashboard" element={<ProtectedRoute element={<InvestorDashboard />} />} />
+
+
+
+        <Route path="/loan-Application" element={<LoanApplication />} />
+        <Route path="/dashboard" element={<HybridDashboard />} />
+        <Route path="/borrower-dashboard" element={<BorrowerDashboard />} />
+        <Route path="/investor-dashboard" element={<InvestorDashboard />} />
+        <Route path="/myloans" element={<UserLoans />} />
+        <Route path="/loan-listings" element={<LoanListings />} />
+
+
+
+
+
+        {/*<Route path="/borrower-dashboard" element={<ProtectedRoute element={<BorrowerDashboard />} />} />*/}
+        {/*<Route path="/investor-dashboard" element={<ProtectedRoute element={<InvestorDashboard />} />} />*/}
 
 
         <Route path="/admin-dashboard" element={<AdminRoute element={<AdminDashboard />} />} />
