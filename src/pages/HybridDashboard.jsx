@@ -92,38 +92,119 @@ function Icon({ name, filled = false, className = "" }) {
   );
 }
 
-function TopNav() {
+// Mobile menu component
+function MobileMenu({ isOpen, onClose }) {
   return (
-    <nav className="bg-white/85 backdrop-blur-xl text-sky-900 font-medium tracking-tight sticky top-0 z-50 border-b border-slate-200/20 flex justify-between items-center w-full px-8 py-3">
-      <div className="flex items-center gap-8">
-        <span className="text-xl font-extrabold tracking-tighter text-slate-900">Loan@</span>
-        <div className="hidden md:flex items-center gap-6">
-          <a className="text-sky-800 font-bold border-b-2 border-sky-800 pb-1" href="#">Hybrid</a>
-          <a className="text-slate-500 hover:text-sky-700 transition-colors" href="#">Investor</a>
-          <a className="text-slate-500 hover:text-sky-700 transition-colors" href="#">Borrower</a>
+    <>
+      {/* Overlay */}
+      {isOpen && (
+        <div 
+          className="fixed inset-0 bg-black/50 z-50 lg:hidden transition-opacity duration-300"
+          onClick={onClose}
+        />
+      )}
+      
+      {/* Slide-out menu */}
+      <div 
+        className={`fixed top-0 left-0 h-full w-72 bg-white z-50 shadow-2xl transform transition-transform duration-300 ease-out lg:hidden ${
+          isOpen ? "translate-x-0" : "-translate-x-full"
+        }`}
+      >
+        <div className="p-6 border-b border-slate-100 flex justify-between items-center">
+          <span className="text-2xl font-extrabold tracking-tighter text-slate-900">Loan@</span>
+          <button 
+            onClick={onClose}
+            className="p-2 hover:bg-slate-100 rounded-full transition-colors"
+          >
+            <Icon name="close" />
+          </button>
         </div>
+        
+        <div className="px-6 py-4 mb-4">
+          <h2 className="text-lg font-bold text-slate-900">Loan@</h2>
+          <p className="text-xs text-tertiary">Premium P2P Lending</p>
+        </div>
+        
+        <nav className="flex flex-col h-full p-4 space-y-2 text-sm">
+          {NAV_LINKS.map(({ icon, label, filled, active }) => (
+            <a
+              key={label}
+              href="#"
+              onClick={onClose}
+              className={`flex items-center gap-3 rounded-lg px-4 py-3 transition-all duration-300 ${
+                active
+                  ? "bg-white text-sky-800 font-semibold shadow-sm ring-1 ring-slate-200"
+                  : "text-slate-500 hover:bg-slate-100"
+              }`}
+            >
+              <Icon name={icon} filled={active && filled} />
+              {label}
+            </a>
+          ))}
+          
+          <div className="mt-auto space-y-2 pb-20">
+           
+            <a className="flex items-center gap-3 text-slate-500 hover:bg-slate-100 transition-all px-4 py-3 rounded-lg" href="#">
+              <Icon name="help_outline" /> Support
+            </a>
+            <a className="flex items-center gap-3 text-slate-500 hover:bg-slate-100 transition-all px-4 py-3 rounded-lg" href="#">
+              <Icon name="logout" /> Sign Out
+            </a>
+          </div>
+        </nav>
       </div>
-      <div className="flex items-center gap-4">
-        <div className="relative hidden sm:block">
-          <Icon name="search" className="absolute left-3 top-1/2 -translate-y-1/2 text-outline" />
-          <input
-            className="pl-10 pr-4 py-2 bg-surface-container-highest border-none rounded-lg text-sm focus:ring-1 focus:ring-primary w-64"
-            placeholder="Search accounts..."
-            type="text"
-          />
+    </>
+  );
+}
+
+function TopNav() {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  return (
+    <>
+      <nav className="bg-white/85 backdrop-blur-xl text-sky-900 font-medium tracking-tight sticky top-0 z-50 border-b border-slate-200/20 flex justify-between items-center w-full px-4 sm:px-8 py-3">
+        <div className="flex items-center gap-4">
+          {/* Hamburger button - visible on mobile/tablet */}
+          <button 
+            onClick={() => setIsMobileMenuOpen(true)}
+            className="lg:hidden p-2 hover:bg-slate-100 rounded-full transition-colors"
+          >
+            <Icon name="menu" />
+          </button>
+          
+          <span className="text-xl font-extrabold tracking-tighter text-slate-900">Loan@</span>
+          
+          <div className="hidden lg:flex items-center gap-6">
+            <a className="text-sky-800 font-bold border-b-2 border-sky-800 pb-1" href="#">Hybrid</a>
+            <a className="text-slate-500 hover:text-sky-700 transition-colors" href="#">Investor</a>
+            <a className="text-slate-500 hover:text-sky-700 transition-colors" href="#">Borrower</a>
+          </div>
         </div>
-        <button className="p-2 hover:bg-slate-50/50 transition-colors rounded-full relative">
-          <Icon name="notifications" />
-          <span className="absolute top-2 right-2 w-2 h-2 bg-error rounded-full" />
-        </button>
-        <button className="p-2 hover:bg-slate-50/50 transition-colors rounded-full">
-          <Icon name="settings" />
-        </button>
-        <div className="w-8 h-8 rounded-full bg-primary-container ring-1 ring-outline-variant/30 flex items-center justify-center text-on-primary-container text-xs font-bold ml-2">
-          TL
+        
+        <div className="flex items-center gap-2 sm:gap-4">
+          <div className="relative hidden sm:block">
+            <Icon name="search" className="absolute left-3 top-1/2 -translate-y-1/2 text-outline" />
+            <input
+              className="pl-10 pr-4 py-2 bg-surface-container-highest border-none rounded-lg text-sm focus:ring-1 focus:ring-primary w-48 md:w-64"
+              placeholder="Search accounts..."
+              type="text"
+            />
+          </div>
+          <button className="p-2 hover:bg-slate-100 transition-colors rounded-full relative">
+            <Icon name="notifications" />
+            <span className="absolute top-2 right-2 w-2 h-2 bg-error rounded-full" />
+          </button>
+          <button className="p-2 hover:bg-slate-100 transition-colors rounded-full hidden sm:block">
+            <Icon name="settings" />
+          </button>
+          <div className="w-8 h-8 rounded-full bg-primary-container ring-1 ring-outline-variant/30 flex items-center justify-center text-on-primary-container text-xs font-bold">
+            TL
+          </div>
         </div>
-      </div>
-    </nav>
+      </nav>
+      
+      <MobileMenu isOpen={isMobileMenuOpen} onClose={() => setIsMobileMenuOpen(false)} />
+    </>
   );
 }
 
@@ -131,7 +212,7 @@ function SideNav() {
   return (
     <aside className="bg-slate-50 h-screen w-64 fixed left-0 top-0 hidden lg:flex flex-col border-r border-slate-200/20 pt-20">
       <div className="px-6 py-4 mb-4">
-        <h2 className="text-lg font-bold text-slate-900">Fiscal Sanctuary</h2>
+        <h2 className="text-lg font-bold text-slate-900">Loan@</h2>
         <p className="text-xs text-tertiary">Premium P2P Lending</p>
       </div>
       <nav className="flex flex-col h-full p-4 space-y-2 text-sm">
@@ -150,13 +231,10 @@ function SideNav() {
           </a>
         ))}
         <div className="mt-auto space-y-2 pb-4">
-          <button className="w-full py-3 bg-primary text-on-primary rounded-lg font-bold shadow-sm hover:opacity-90 transition-all">
-            New Application
-          </button>
-          <a className="flex items-center gap-3 text-slate-500 hover:bg-slate-200/50 transition-all px-4 py-3" href="#">
+          <a className="flex items-center gap-3 text-slate-500 hover:bg-slate-200/50 transition-all px-4 py-3 rounded-lg" href="#">
             <Icon name="help_outline" /> Support
           </a>
-          <a className="flex items-center gap-3 text-slate-500 hover:bg-slate-200/50 transition-all px-4 py-3" href="#">
+          <a className="flex items-center gap-3 text-slate-500 hover:bg-slate-200/50 transition-all px-4 py-3 rounded-lg" href="#">
             <Icon name="logout" /> Sign Out
           </a>
         </div>
@@ -318,10 +396,8 @@ function BorrowerSummary() {
 
 function QuickActions() {
   const actions = [
-    { icon: "add_circle", label: "Add funds", style: "bg-primary text-on-primary shadow-sm hover:opacity-90" },
-    { icon: "send_money", label: "Make a payment", style: "bg-white text-primary border-2 border-primary/10 hover:bg-slate-50" },
-    { icon: "explore", label: "Browse new loans", style: "bg-secondary text-on-secondary shadow-sm hover:opacity-90" },
-    { icon: "settings_suggest", label: "Auto-invest settings", style: "bg-white text-tertiary ring-1 ring-outline-variant/50 hover:bg-slate-50" },
+    {  icon: "account_balance", label: "Investor View ->", style: "bg-primary text-on-primary shadow-sm hover:opacity-90" },
+    { icon: "payments", label: "Borrower view ->", style: "bg-secondary text-on-secondary shadow-sm hover:opacity-90" },
   ];
 
   return (
@@ -469,7 +545,7 @@ function BottomNav() {
   ];
 
   return (
-    <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-slate-100 flex justify-around items-center py-3 z-50">
+    <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-slate-100 flex justify-around items-center py-3 z-40">
       {items.map(({ icon, label, active }) => (
         <a
           key={label}
@@ -488,17 +564,17 @@ function BottomNav() {
 
 export default function HybridDashboard() {
   return (
-    <div className="bg-surface text-on-surface min-h-screen font-body">
+    <div className="bg-surface text-on-surface min-h-screen font-body pb-16 md:pb-0">
       <TopNav />
       <SideNav />
 
-      <main className="lg:ml-64 p-8 min-h-screen pb-24 md:pb-8">
+      <main className="lg:ml-64 p-4 sm:p-8 min-h-screen">
         {/* Welcome */}
-        <header className="mb-10">
-          <h1 className="text-3xl font-extrabold text-on-background tracking-tight">
+        <header className="mb-8 sm:mb-10">
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-on-background tracking-tight">
             Welcome back, Taylor{" "}
             <span className="text-primary-container mx-2">●</span>{" "}
-            <span className="font-medium text-lg text-tertiary">Member since Mar 2022</span>
+            <span className="font-medium text-sm sm:text-lg text-tertiary">Member since Mar 2022</span>
           </h1>
         </header>
 

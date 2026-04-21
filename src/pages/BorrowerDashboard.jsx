@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const styles = `
   @import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
@@ -210,6 +211,34 @@ const styles = `
   }
   .mobile-overlay.open { display: block; }
 
+  /* APPLY BUTTON */
+  .apply-loan-btn {
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent-hover) 100%);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 14px 24px;
+    font-family: 'Sora', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
+    box-shadow: 0 4px 12px rgba(232, 98, 42, 0.2);
+  }
+  .apply-loan-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(232, 98, 42, 0.3);
+    background: linear-gradient(135deg, var(--accent-hover) 0%, #c44a1a 100%);
+  }
+  .apply-loan-btn:active {
+    transform: translateY(1px);
+  }
+
   /* RESPONSIVE */
   @media (max-width: 1024px) {
     .content-grid { grid-template-columns: 1fr; }
@@ -256,13 +285,14 @@ const Icon = ({ name, size = 18 }) => {
     bulb: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="9" y1="18" x2="15" y2="18"/><line x1="10" y1="22" x2="14" y2="22"/><path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 0 1 8.91 14"/></svg>,
     arrow: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12,5 19,12 12,19"/></svg>,
     menu: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>,
+    plus: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>,
   };
   return icons[name] || null;
 };
 
 const navItems = [
   { id: "dashboard", label: "Dashboard", icon: "dashboard" },
-  { id: "loans", label: "Loans", icon: "loans" },
+  { id: "loans", label: "Loan Application", icon: "loans" },
   { id: "payments", label: "Payments", icon: "payments" },
   { id: "documents", label: "Documents", icon: "documents" },
 ];
@@ -270,6 +300,11 @@ const navItems = [
 export default function BorrowerDashboard() {
   const [activeNav, setActiveNav] = useState("dashboard");
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const navigate = useNavigate();
+
+  const handleApplyLoan = () => {
+  navigate("/loan-application");
+};
 
   return (
     <>
@@ -323,6 +358,14 @@ export default function BorrowerDashboard() {
 
           {/* MAIN */}
           <main className="main">
+            {/* APPLY FOR LOAN BUTTON - ADDED HERE */}
+            <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+              <button className="apply-loan-btn" onClick={handleApplyLoan}>
+                <Icon name="plus" size={18} />
+                Apply for a Loan
+              </button>
+            </div>
+
             {/* WELCOME */}
             <div className="welcome-header">
               <h1 className="welcome-title">Welcome back, Taylor</h1>

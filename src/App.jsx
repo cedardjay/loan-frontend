@@ -13,6 +13,7 @@ import LoanApplication from './pages/LoanApplication';
 import HybridDashboard from './pages/HybridDashboard';
 import UserLoans from './pages/UserLoans';
 import LoanListings from './pages/LoanListings';
+import InvestApplication from './pages/InvestApplication';
 
 
 function App() {
@@ -26,26 +27,27 @@ function App() {
 
 
 
-        <Route path="/loan-Application" element={<LoanApplication />} />
         <Route path="/dashboard" element={<HybridDashboard />} />
-        <Route path="/borrower-dashboard" element={<BorrowerDashboard />} />
-        <Route path="/investor-dashboard" element={<InvestorDashboard />} />
         <Route path="/myloans" element={<UserLoans />} />
         <Route path="/loan-listings" element={<LoanListings />} />
+        <Route path="/invest" element={<InvestApplication />} />
+
+        
 
 
 
 
 
-        {/*<Route path="/borrower-dashboard" element={<ProtectedRoute element={<BorrowerDashboard />} />} />*/}
-        {/*<Route path="/investor-dashboard" element={<ProtectedRoute element={<InvestorDashboard />} />} />*/}
+      <Route path="/borrower-dashboard" element={<ProtectedRoute element={<BorrowerDashboard />} />} />
+        <Route path="/investor-dashboard" element={<ProtectedRoute element={<InvestorDashboard />} />} />
+        <Route path="/loan-application" element={<ProtectedRoute element={<LoanApplication />} />} />
 
 
         <Route path="/admin-dashboard" element={<AdminRoute element={<AdminDashboard />} />} />
 
         <Route path="/super-admin-dashboard" element={<SuperAdminRoute element={<SuperAdminDashboard />} />} />
 
-        
+
 
         {/* Fallback Route */}
         <Route path="*" element={<Navigate to="/login" />} />
