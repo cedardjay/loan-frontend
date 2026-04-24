@@ -27,18 +27,11 @@ function App() {
 
 
 
-        <Route path="/dashboard" element={<HybridDashboard />} />
-        <Route path="/myloans" element={<UserLoans />} />
-        <Route path="/loan-listings" element={<LoanListings />} />
-        <Route path="/invest" element={<InvestApplication />} />
 
-        
-
-
-
-
-
-      <Route path="/borrower-dashboard" element={<ProtectedRoute element={<BorrowerDashboard />} />} />
+        <Route path="dashboard" element={<ProtectedRoute element={<HybridDashboard />} />} />
+        <Route path="/active-loans" element={<ProtectedRoute element={<UserLoans />} />} />
+        <Route path="/Listings" element={<ProtectedRoute element={<LoanListings />} />} />
+        <Route path="/borrower-dashboard" element={<ProtectedRoute element={<BorrowerDashboard />} />} />
         <Route path="/investor-dashboard" element={<ProtectedRoute element={<InvestorDashboard />} />} />
         <Route path="/loan-application" element={<ProtectedRoute element={<LoanApplication />} />} />
 

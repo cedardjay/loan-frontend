@@ -666,7 +666,7 @@ export default function LoanListings() {
           <button className="hamburger" onClick={() => setSidebarOpen(true)} aria-label="Menu">
             <span /><span /><span />
           </button>
-          <span className="nav-brand">LendSanctuary</span>
+          <span className="nav-brand">Loan@</span>
         </div>
         <div className="nav-links">
           {["Marketplace", "Portfolio", "Insights", "History"].map((l) => (

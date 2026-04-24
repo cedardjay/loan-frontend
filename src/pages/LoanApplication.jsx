@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import ApiService from "../service/ApiService";
 
 const ANNUAL_RATE = 0.12;
 
@@ -28,10 +29,75 @@ export default function LoanApplication() {
   const [purpose, setPurpose] = useState("Business Expansion");
   const [description, setDescription] = useState("");
 
+  // Submission state
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState(false);
+
   const calc = useMemo(
     () => calculateLoan(parseFloat(amount) || 500000, parseInt(term) || 12),
     [amount, term]
   );
+
+  // --- Validation ---
+  function validate() {
+    if (!amount || parseFloat(amount) <= 0) return "Please enter a valid loan amount.";
+    if (!term || parseInt(term) <= 0) return "Please enter a valid loan term (in months).";
+    if (!description.trim()) return "Please provide a loan description.";
+    return null;
+  }
+
+  // --- Submit handler ---
+  async function handleSubmit() {
+    setError("");
+    setSuccess(false);
+
+    const validationError = validate();
+    if (validationError) {
+      setError(validationError);
+      return;
+    }
+
+    if (!ApiService.isAuthenticated()) {
+      setError("You must be logged in to submit a loan request.");
+      return;
+    }
+
+    const loanData = {
+      requestedAmount: parseFloat(amount),
+      termMonths: parseInt(term),
+      purpose,
+      description,
+    };
+
+    try {
+      setLoading(true);
+      await ApiService.requestLoan(loanData);
+      setSuccess(true);
+      // Clear form on success
+      setAmount("");
+      setTerm("");
+      setPurpose("Business Expansion")
+      setDescription("");
+    } catch (err) {
+      const msg =
+        err?.response?.data?.message ||
+        err?.response?.data?.error ||
+        "Something went wrong. Please try again.";
+      setError(msg);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  function handleCancel() {
+    setAmount("");
+    setTerm("");
+    setPurpose("Business Expansion");
+    setDescription("");
+    setError("");
+    setSuccess(false);
+  }
 
   return (
     <div className="min-h-screen bg-surface text-on-background font-body">
@@ -55,6 +121,27 @@ export default function LoanApplication() {
             </p>
           </div>
 
+          {/* Success Banner */}
+          {success && (
+            <div className="mb-6 flex items-start gap-3 bg-green-50 border border-green-200 text-green-800 px-5 py-4 rounded-xl">
+              <span className="text-xl">✅</span>
+              <div>
+                <p className="font-bold">Application Submitted!</p>
+                <p className="text-sm mt-0.5">
+                  Your loan request has been received. Admins will review it shortly.
+                </p>
+              </div>
+            </div>
+          )}
+
+          {/* Error Banner */}
+          {error && (
+            <div className="mb-6 flex items-start gap-3 bg-red-50 border border-red-200 text-red-700 px-5 py-4 rounded-xl">
+              <span className="text-xl">⚠️</span>
+              <p className="text-sm font-medium">{error}</p>
+            </div>
+          )}
+
           <div className="bg-white rounded-xl border border-outline-variant/30 overflow-hidden shadow-sm">
             <div className="p-10 space-y-8">
               {/* Amount + Purpose */}
@@ -69,7 +156,8 @@ export default function LoanApplication() {
                       value={amount}
                       onChange={(e) => setAmount(e.target.value)}
                       placeholder="e.g. 500,000"
-                      className="w-full h-14 bg-surface-container-highest/30 border-0 rounded-xl px-4 pr-16 text-on-surface focus:ring-2 focus:ring-primary/20 transition-all font-medium text-lg"
+                      disabled={loading}
+                      className="w-full h-14 bg-surface-container-highest/30 border-0 rounded-xl px-4 pr-16 text-on-surface focus:ring-2 focus:ring-primary/20 transition-all font-medium text-lg disabled:opacity-50"
                     />
                     <span className="absolute right-4 top-4 text-outline font-bold text-sm">FCFA</span>
                   </div>
@@ -83,7 +171,8 @@ export default function LoanApplication() {
                     <select
                       value={purpose}
                       onChange={(e) => setPurpose(e.target.value)}
-                      className="w-full h-14 bg-surface-container-highest/30 border-0 rounded-xl px-4 pr-10 text-on-surface focus:ring-2 focus:ring-primary/20 transition-all font-medium appearance-none"
+                      disabled={loading}
+                      className="w-full h-14 bg-surface-container-highest/30 border-0 rounded-xl px-4 pr-10 text-on-surface focus:ring-2 focus:ring-primary/20 transition-all font-medium appearance-none disabled:opacity-50"
                     >
                       <option>Business Expansion</option>
                       <option>Education/Tuition</option>
@@ -108,7 +197,8 @@ export default function LoanApplication() {
                     value={term}
                     onChange={(e) => setTerm(e.target.value)}
                     placeholder="e.g. 12"
-                    className="w-full h-14 bg-surface-container-highest/30 border-0 rounded-xl px-4 pr-24 text-on-surface focus:ring-2 focus:ring-primary/20 transition-all font-medium text-lg"
+                    disabled={loading}
+                    className="w-full h-14 bg-surface-container-highest/30 border-0 rounded-xl px-4 pr-24 text-on-surface focus:ring-2 focus:ring-primary/20 transition-all font-medium text-lg disabled:opacity-50"
                   />
                   <span className="absolute right-4 top-4 text-outline font-bold text-sm">Months</span>
                 </div>
@@ -123,17 +213,33 @@ export default function LoanApplication() {
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder="Tell us more about how you plan to use this loan..."
-                  className="w-full bg-surface-container-highest/30 border-0 rounded-xl px-4 py-3 text-on-surface focus:ring-2 focus:ring-primary/20 transition-all font-medium text-lg min-h-[120px] resize-none"
+                  disabled={loading}
+                  className="w-full bg-surface-container-highest/30 border-0 rounded-xl px-4 py-3 text-on-surface focus:ring-2 focus:ring-primary/20 transition-all font-medium text-lg min-h-[120px] resize-none disabled:opacity-50"
                 />
               </div>
 
               {/* Footer actions */}
               <div className="pt-8 flex items-center justify-between">
-                <button className="text-tertiary hover:text-error transition-colors font-semibold text-sm">
+                <button
+                  onClick={handleCancel}
+                  disabled={loading}
+                  className="text-tertiary hover:text-error transition-colors font-semibold text-sm disabled:opacity-40"
+                >
                   Cancel Request
                 </button>
-                <button className="bg-primary-container text-on-primary-container h-14 px-10 rounded-xl font-bold shadow-md hover:brightness-110 active:scale-95 transition-all">
-                  Submit Application
+                <button
+                  onClick={handleSubmit}
+                  disabled={loading}
+                  className="bg-primary-container text-on-primary-container h-14 px-10 rounded-xl font-bold shadow-md hover:brightness-110 active:scale-95 transition-all disabled:opacity-60 disabled:cursor-not-allowed flex items-center gap-2"
+                >
+                  {loading ? (
+                    <>
+                      <span className="inline-block w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                      Submitting...
+                    </>
+                  ) : (
+                    "Submit Application"
+                  )}
                 </button>
               </div>
             </div>
@@ -218,7 +324,7 @@ export default function LoanApplication() {
           <div>
             <span className="text-lg font-bold text-slate-800 tracking-tighter">Loan@</span>
             <p className="text-sm text-slate-500 mt-1">
-              © 2024 Fiscal Sanctuary. Licensed P2P Lending Platform.
+              © 2024 Loan@. Licensed P2P Lending Platform.
             </p>
           </div>
           <div className="flex gap-8">

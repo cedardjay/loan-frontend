@@ -63,6 +63,16 @@ export default class ApiService {
     }
 
 
+    /** LOANS */
+/* Submit a new loan request */
+static async requestLoan(loanData) {
+    const response = await axios.post(`${this.BASE_URL}/loan-requests/create`, loanData, {
+        headers: this.getHeader()
+    });
+    return response.data;
+}
+
+
     /**AUTHENTICATION CHECKER */
     static logout() {
         localStorage.removeItem('token')
