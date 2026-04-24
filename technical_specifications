@@ -1,0 +1,191 @@
+LOAN APP PROJECT: TECHNICAL SPECIFICATION
+Project: Loan/Lease app 
+General description: A web Application were borrowers can obtain loans, investors can give out loan. (P2P lending platform)
+App Name: Loan@
+Type: monolithic app
+Tools/Tech Stack: ReactJs , Axios, JavaSpringboot, MySQL, Payment gateway
+Actors: Guest, Users, Admin, SuperAdmin
+Use cases: {
+Client_User: 
+•	login/logout
+•	manage profile
+•	Request a loan
+•	See his loan requests
+•	see my active loans
+•	see past loans
+•	make loan payment
+•	view my transaction history
+•	raise a dispute
+Investor_User: 
+•	login/logout
+•	manage profile
+•	view loan request list
+•	Match a loan request
+•	see active loans
+•	Make Investment deposits
+•	view  my transaction history
+•	raise a dispute
+
+
+
+Guest_User:
+•	view landing page
+•	register account
+•	view about page
+
+Admin: 
+•	Login
+•	Manage user account
+•	See all loan request
+•	See transactions
+•	Make Funds Disbursement
+•	Resolve disputes
+•	Manage Platform settings
+SuperAdmin: 
+•	All Admin roles +
+•	Assign roles and permissions 
+•	See all the activity log on the platform
+•	Change platform settings
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Use case Diagram: 
+
+
+
+Schema:
+Entity-relationship Diagram
+Entities {User, Loan_Request, Active_Loan, Matched_Request Dispute, Activity_Log, Transaction}
+
+
+Relationships (with Cardinalities)
+1.	User(client) (1) approved (0..1) User(Admin)
+2.	User(client) (1) submits (0..*) Loan_Request
+3.	User(Admin) (1) Approves (0..*) Loan_Request
+4.	User(Investor)(0..*) matches (0..*) Loan_Request
+5.	User(Client, Investor)(1) raises (0..*)Dispute
+6.	User(1) makes (0..*) transaction
+7.	User(1)generates (1..*)Activity_log  
+8.	User(1) related (1..*) Matched_Request 
+
+9.	Loan_Request(1) relates (0..*) matched_request
+o	Loan request can be matched zero or more times
+10.	Loan_Request(1) becomes (1) Active_Loan
+
+11.	Active_Loan(1) related (1..*)matched_Request
+12.	Active_Loan(1) relates (1)Dispute
+13.	Active_Loan(1) relates (0..*)Transaction
+
+Entity-Relationship Diagram
+
+Entities (with key attributes)
+1. User
+•	user_id (PK)
+•	email
+•	password_hash
+•	full_name
+•	phone_number
+•	address
+•	credit_score
+•	role (User, Admin, SuperAdmin)
+•	permissions(can_borrow,can_invest)
+•	account_status (pending, Active, Suspended)
+•	registration_date
+•	approved_by (FK to Admin who approved)
+2. Loan_Request
+•	request_id (PK)
+•	borrower_id (FK to User)
+•	requested_amount
+•	description
+•	term_months
+•	interest_rate
+•	amount_Funded
+•	state(pending_approval, approved, rejected)
+•	status (not_Funded, partialy_funded, fully_funded, disbursed, expired)
+•	request_date
+•	dead_line
+•	approval_id (FK to Admin who approved/rejected)
+
+
+3. Matched¬_Request
+•	match_id (PK)
+•	request_id (FK to Loan_Request)
+•	investor_id(FK to User)
+•	invested_amount
+•	match_date
+4. Active_Loan////////////
+•	active_loan_id (PK)
+•	loan_request_id (FK to Loan_Request)
+•	lender_id (FK to User)
+•	borrower_id (FK to User)
+•	principal_remaining
+•	next_payment_due_date
+•	start_date
+•	status (Active, Completed, Defaulted)
+5. Transaction
+•	transaction_id (PK)
+•	user_id (FK to User)
+•	active_loan_id (FK)
+•	amount
+•	type (Loan Payment, Disbursement, Investment_Deposit)
+•	payment_method
+•	status (Pending, Completed, Failed)
+•	transaction_date
+6. Dispute
+•	dispute_id (PK)
+•	raised_by (FK to User)
+•	active_loan_id (FK)
+•	reason
+•	description
+•	status (Open, Under Review, Resolved, Closed)
+•	resolution_notes
+•	created_date
+•	resolved_by (FK to Admin)
+7. Activity_Log
+•	log_id (PK)
+•	user_id (FK to User)
+•	action
+•	ip_address
+•	timestamp
+•	details (JSON or Text)
+
+Class Diagram:
+
+
+
+App Features: 
+Authentication & User Management
+•	Email/phone registration
+•	Login
+•	Password reset flow
+•	Profile management (view/edit personal details)
+
+multistep application
+•	Personal details
+•	Personal documents upload
+Admin Dashboard
+•	Pending request
+•	Active loans
+•	Payment history
+•	Late payment notifications
+Super admin Dashboard
+•	Manage all users
+•	Pending request
+•	Active loans
+•	Payment history
+•	Late payment notifications
+
+
+
