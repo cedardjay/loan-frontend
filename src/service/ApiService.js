@@ -2,7 +2,7 @@ import axios from "axios"
 
 export default class ApiService {
 
-    static BASE_URL = "http://localhost:8080"
+    static BASE_URL = "http://localhost:8081"
 
     static getHeader() {
         const token = localStorage.getItem("token");
@@ -99,5 +99,59 @@ static isSuperAdmin() {
         const role = localStorage.getItem('role')
         return role === 'USER'
     }
+
+/** LOAN REQUESTS */
+
+/* Get all loan requests for the logged-in user */
+static async getUserLoanRequests() {
+    const response = await axios.get(`${this.BASE_URL}/loan-requests/my-requests/all`, {
+        headers: this.getHeader()
+    });
+    return response.data;
 }
+
+/* Get a specific loan request by ID */
+static async getLoanRequestById(requestId) {
+    const response = await axios.get(`${this.BASE_URL}/loan-requests/${requestId}`, {
+        headers: this.getHeader()
+    });
+    return response.data;
+}
+
+/* Cancel a loan request */
+static async cancelLoanRequest(requestId) {
+    const response = await axios.delete(`${this.BASE_URL}/loan-requests/cancel/${requestId}`, {
+        headers: this.getHeader()
+    });
+    return response.data;
+}
+
+/* Get all loan requests (admin) */
+static async getAllLoanRequests() {
+    const response = await axios.get(`${this.BASE_URL}/loan-requests/all`, {
+        headers: this.getHeader()
+    });
+    return response.data;
+}
+
+/* Approve a loan request */
+static async approveLoanRequest(requestId) {
+    const response = await axios.put(`${this.BASE_URL}/loan-requests/approve/${requestId}`, {}, {
+        headers: this.getHeader()
+    });
+    return response.data;
+}
+
+/* Reject a loan request */
+static async rejectLoanRequest(requestId) {
+    const response = await axios.put(`${this.BASE_URL}/loan-requests/reject/${requestId}`, {}, {
+        headers: this.getHeader()
+    });
+    return response.data;
+}
+
+}
+
+
+
 // export default new ApiService();

@@ -1,4 +1,5 @@
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const styles = `
   @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
@@ -49,9 +50,9 @@ const styles = `
   /* LAYOUT */
   .layout { display: flex; flex: 1; }
 
-  /* SIDEBAR */
+  /* SIDEBAR - Updated to match Hybrid */
   .sidebar {
-    width: var(--sidebar-w); background: #fff; border-right: 1px solid var(--border);
+    width: var(--sidebar-w); background: #f8fafc; border-right: 1px solid var(--border);
     padding: 24px 0; display: flex; flex-direction: column;
     position: sticky; top: 56px; height: calc(100vh - 56px); overflow-y: auto;
   }
@@ -64,7 +65,7 @@ const styles = `
     font-size: 0.845rem; font-weight: 500; color: var(--muted); cursor: pointer;
     transition: all 0.16s; margin-bottom: 2px;
   }
-  .sb-item:hover { background: var(--bg); color: var(--navy); }
+  .sb-item:hover { background: #e2e8f0; color: var(--navy); }
   .sb-item.active { background: var(--navy); color: #fff; font-weight: 600; }
   .sb-footer { padding: 16px; }
   .add-funds-btn {
@@ -96,6 +97,14 @@ const styles = `
   .stat-sub { font-size: 0.775rem; color: var(--muted); margin-top: 5px; }
   .stat-icon { position: absolute; top: 20px; right: 20px; color: var(--muted); opacity: 0.35; }
   .deploy-link { font-size: 0.8rem; font-weight: 600; color: var(--navy-2); text-decoration: none; display: inline-flex; align-items: center; gap: 4px; margin-top: 6px; cursor: pointer; }
+  
+  .browse-loans-btn {
+    width: 100%; margin-top: 12px; padding: 10px; background: var(--green); color: #fff;
+    border: none; border-radius: 9px; font-family: 'DM Sans', sans-serif;
+    font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: all 0.2s;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+  }
+  .browse-loans-btn:hover { background: var(--green-text); transform: translateY(-1px); }
 
   /* CONTENT GRID */
   .content-grid { display: grid; grid-template-columns: 1fr 272px; gap: 18px; align-items: start; }
@@ -198,6 +207,43 @@ const styles = `
   .promo-text { font-size: 0.875rem; font-weight: 600; color: #fff; line-height: 1.4; position: relative; z-index: 1; }
   .promo-sub { font-size: 0.75rem; color: rgba(255,255,255,0.6); margin-top: 4px; position: relative; z-index: 1; }
 
+  /* BOTTOM NAV - Matches Hybrid Dashboard */
+  .bottom-nav {
+    display: none;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(8px);
+    border-top: 1px solid var(--border);
+    justify-content: space-around;
+    align-items: center;
+    padding: 8px 0;
+    z-index: 40;
+  }
+  .bottom-nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 500;
+    color: var(--muted);
+    transition: color 0.2s;
+  }
+  .bottom-nav-item.active {
+    color: var(--green);
+  }
+  .bottom-nav-item svg {
+    width: 20px;
+    height: 20px;
+  }
+
   /* MOBILE */
   .mobile-menu-btn { display: none; background: none; border: 1px solid var(--border); border-radius: 7px; padding: 5px 9px; cursor: pointer; color: var(--navy); }
   .mobile-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 200; }
@@ -215,12 +261,13 @@ const styles = `
     .mobile-menu-btn { display: block; }
     .topnav { padding: 0 16px; }
     .nav-tabs { display: none; }
-    .main { padding: 20px 14px; }
+    .main { padding: 20px 14px; padding-bottom: 70px; }
     .stats-row { grid-template-columns: 1fr 1fr; }
     .stat-card:last-child { grid-column: span 2; }
     .right-panel { grid-template-columns: 1fr; }
     .promo-card { grid-column: span 1; }
     .welcome h1 { font-size: 1.45rem; }
+    .bottom-nav { display: flex; }
   }
   @media (max-width: 480px) {
     .stats-row { grid-template-columns: 1fr; }
@@ -230,18 +277,31 @@ const styles = `
 `;
 
 /* ── Inline SVG icons ── */
-const Ic = ({ n, s = 17 }) => ({
-  dashboard: <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>,
-  portfolio: <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="9"/><path d="M12 3v9l5 3"/></svg>,
-  market: <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>,
-  tx: <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>,
-  settings: <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>,
-  bell: <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>,
-  trend: <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="23,6 13.5,15.5 8.5,10.5 1,18"/><polyline points="17,6 23,6 23,12"/></svg>,
-  wallet: <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>,
-  arrow: <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12,5 19,12 12,19"/></svg>,
-  menu: <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>,
-}[n] || null);
+const Ic = ({ n, s = 17 }) => {
+  const icons = {
+    dashboard: <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="7" height="7" rx="1" /><rect x="14" y="3" width="7" height="7" rx="1" /><rect x="3" y="14" width="7" height="7" rx="1" /><rect x="14" y="14" width="7" height="7" rx="1" /></svg>,
+    portfolio: <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="9" /><path d="M12 3v9l5 3" /></svg>,
+    market: <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" /><line x1="3" y1="6" x2="21" y2="6" /><path d="M16 10a4 4 0 0 1-8 0" /></svg>,
+    tx: <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="5" width="20" height="14" rx="2" /><line x1="2" y1="10" x2="22" y2="10" /></svg>,
+    settings: <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="3" /><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" /></svg>,
+    bell: <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" /><path d="M13.73 21a2 2 0 0 1-3.46 0" /></svg>,
+    trend: <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="23,6 13.5,15.5 8.5,10.5 1,18" /><polyline points="17,6 23,6 23,12" /></svg>,
+    wallet: <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="1" y="4" width="22" height="16" rx="2" /><line x1="1" y1="10" x2="23" y2="10" /></svg>,
+    arrow: <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="5" y1="12" x2="19" y2="12" /><polyline points="12,5 19,12 12,19" /></svg>,
+    menu: <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="3" y1="12" x2="21" y2="12" /><line x1="3" y1="6" x2="21" y2="6" /><line x1="3" y1="18" x2="21" y2="18" /></svg>,
+    list: <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="8" y1="6" x2="21" y2="6" /><line x1="8" y1="12" x2="21" y2="12" /><line x1="8" y1="18" x2="21" y2="18" /><line x1="3" y1="6" x2="3.01" y2="6" /><line x1="3" y1="12" x2="3.01" y2="12" /><line x1="3" y1="18" x2="3.01" y2="18" /></svg>,
+    grid_view: <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="7" height="7" rx="1" /><rect x="14" y="3" width="7" height="7" rx="1" /><rect x="3" y="14" width="7" height="7" rx="1" /><rect x="14" y="14" width="7" height="7" rx="1" /></svg>,
+    account_balance: <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="7" width="20" height="14" rx="2" /><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" /></svg>,
+    payments: <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="5" width="20" height="14" rx="2" /><line x1="2" y1="10" x2="22" y2="10" /></svg>,
+    receipt_long: <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1-2-1z" /><path d="M16 8h-6M16 12h-6M10 16h6" /></svg>,
+    description: <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><polyline points="14 2 14 8 20 8" /><line x1="16" y1="13" x2="8" y2="13" /><line x1="16" y1="17" x2="8" y2="17" /><polyline points="10 9 9 9 8 9" /></svg>,
+    help_outline: <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10" /><path d="M12 16v-4M12 8h.01" /></svg>,
+    logout: <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" /><polyline points="16 17 21 12 16 7" /><line x1="21" y1="12" x2="9" y2="12" /></svg>,
+    person: <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /></svg>,
+    home: <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2h-5v-8H9v8H5a2 2 0 0 1-2-2z" /></svg>,
+  };
+  return icons[n] || null;
+};
 
 /* ── Sparkline Chart ── */
 function PortfolioChart() {
@@ -255,7 +315,7 @@ function PortfolioChart() {
     return [x, y];
   });
   const linePath = pts.map((p, i) => `${i === 0 ? "M" : "L"}${p[0]},${p[1]}`).join(" ");
-  const areaPath = `${linePath} L${pts[pts.length-1][0]},${H} L${pts[0][0]},${H} Z`;
+  const areaPath = `${linePath} L${pts[pts.length - 1][0]},${H} L${pts[0][0]},${H} Z`;
   const labels = ["APR", "JUL", "OCT", "JAN", "APR"];
 
   return (
@@ -264,18 +324,18 @@ function PortfolioChart() {
         <svg className="chart" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none">
           <defs>
             <linearGradient id="chartGrad" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#00a878" stopOpacity="0.18"/>
-              <stop offset="100%" stopColor="#00a878" stopOpacity="0.01"/>
+              <stop offset="0%" stopColor="#00a878" stopOpacity="0.18" />
+              <stop offset="100%" stopColor="#00a878" stopOpacity="0.01" />
             </linearGradient>
           </defs>
           {[0.25, 0.5, 0.75, 1].map(t => (
             <line key={t} x1={pad} y1={H - pad - t * (H - pad * 2)} x2={W - pad} y2={H - pad - t * (H - pad * 2)}
-              stroke="#dde3ef" strokeWidth="1" strokeDasharray="4,4"/>
+              stroke="#dde3ef" strokeWidth="1" strokeDasharray="4,4" />
           ))}
-          <path d={areaPath} fill="url(#chartGrad)"/>
-          <path d={linePath} fill="none" stroke="#00a878" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-          <circle cx={pts[pts.length-1][0]} cy={pts[pts.length-1][1]} r="5" fill="#00a878"/>
-          <circle cx={pts[pts.length-1][0]} cy={pts[pts.length-1][1]} r="9" fill="#00a878" opacity="0.2"/>
+          <path d={areaPath} fill="url(#chartGrad)" />
+          <path d={linePath} fill="none" stroke="#00a878" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+          <circle cx={pts[pts.length - 1][0]} cy={pts[pts.length - 1][1]} r="5" fill="#00a878" />
+          <circle cx={pts[pts.length - 1][0]} cy={pts[pts.length - 1][1]} r="9" fill="#00a878" opacity="0.2" />
         </svg>
       </div>
       <div className="x-labels">
@@ -286,11 +346,18 @@ function PortfolioChart() {
 }
 
 const navItems = [
-  { id: "dashboard", label: "Dashboard", icon: "dashboard" },
-  { id: "portfolio", label: "Portfolio", icon: "portfolio" },
-  { id: "marketplace", label: "Marketplace", icon: "market" },
-  { id: "transactions", label: "Transactions", icon: "tx" },
-  { id: "settings", label: "Settings", icon: "settings" },
+  { id: "dashboard", label: "INVESTOR VIEW", icon: "dashboard", path: "/investor-portal" },
+  { id: "portfolio", label: "Portfolio", icon: "portfolio", path: "/investments" },
+  { id: "marketplace", label: "Loan listings", icon: "market", path: "/loan-market" },
+  { id: "transactions", label: "Transactions", icon: "tx", path: "/investor-portal/transactions" },
+  { id: "settings", label: "Settings", icon: "settings", path: "/investor-portal/settings" },
+];
+
+const bottomNavItems = [
+  { icon: "grid_view", label: "Hybrid", path: "/dashboard" },
+  { icon: "account_balance", label: "Invest", path: "/investor-portal", active: true },
+  { icon: "payments", label: "Borrow", path: "/borrower-portal" },
+  { icon: "person", label: "Profile", path: "/profile" },
 ];
 
 const investments = [
@@ -308,6 +375,13 @@ const recommended = [
 export default function InvestorDashboard() {
   const [activeNav, setActiveNav] = useState("dashboard");
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const navigate = useNavigate();
+
+  const handleNavigation = (path, navId) => {
+    setActiveNav(navId);
+    navigate(path);
+    setSidebarOpen(false);
+  };
 
   return (
     <>
@@ -322,9 +396,9 @@ export default function InvestorDashboard() {
             <div className="logo">Loan<span>@</span></div>
           </div>
           <div className="nav-tabs">
-            <a className="nav-tab">Hybrid</a>
-            <a className="nav-tab active">Investor</a>
-            <a className="nav-tab">Borrower</a>
+            <button className="nav-tab" onClick={() => navigate("/dashboard")}>Hybrid</button>
+            <button className="nav-tab active" onClick={() => navigate("/investor-portal")}>Investor</button>
+            <button className="nav-tab" onClick={() => navigate("/borrower-portal")}>Borrower</button>
           </div>
           <div className="nav-right">
             <button className="icon-btn"><Ic n="bell" s={16} /></button>
@@ -347,7 +421,7 @@ export default function InvestorDashboard() {
                 <div
                   key={item.id}
                   className={`sb-item ${activeNav === item.id ? "active" : ""}`}
-                  onClick={() => { setActiveNav(item.id); setSidebarOpen(false); }}
+                  onClick={() => handleNavigation(item.path, item.id)}
                 >
                   <Ic n={item.icon} s={16} />
                   {item.label}
@@ -387,6 +461,12 @@ export default function InvestorDashboard() {
                 <div className="stat-icon"><Ic n="wallet" s={18} /></div>
                 <div className="stat-val">$450</div>
                 <div className="deploy-link">Deploy via Auto-invest <Ic n="arrow" s={13} /></div>
+                <button
+                  className="browse-loans-btn"
+                  onClick={() => navigate('/loan-market')}
+                >
+                  <Ic n="list" s={16} /> Browse Loan Listings
+                </button>
               </div>
             </div>
 
@@ -436,8 +516,8 @@ export default function InvestorDashboard() {
                             <td><span className="interest-val">{inv.interest}</span></td>
                             <td>
                               {inv.status === "on"
-                                ? <span className="status-on"><span className="dot-green"/> On Time</span>
-                                : <span className="status-grace"><span className="dot-red"/> Grace Period</span>
+                                ? <span className="status-on"><span className="dot-green" /> On Time</span>
+                                : <span className="status-grace"><span className="dot-red" /> Grace Period</span>
                               }
                             </td>
                             <td><span className="date-val">{inv.nextPayment}</span></td>
@@ -451,7 +531,6 @@ export default function InvestorDashboard() {
 
               {/* RIGHT PANEL */}
               <div className="right-panel">
-                {/* Sanctuary Insights */}
                 <div className="insights-card">
                   <div className="insights-bg" />
                   <div className="insights-bg2" />
@@ -464,7 +543,6 @@ export default function InvestorDashboard() {
                   <button className="configure-btn">Configure Auto-Invest</button>
                 </div>
 
-                {/* Recommended */}
                 <div className="recommended-card">
                   <div className="rec-header">
                     <div className="rec-label">Recommended for you</div>
@@ -484,7 +562,6 @@ export default function InvestorDashboard() {
                   <button className="view-mkt">View Marketplace</button>
                 </div>
 
-                {/* Promo */}
                 <div className="promo-card">
                   <div className="promo-img-overlay" />
                   <div className="promo-grid" />
@@ -495,6 +572,20 @@ export default function InvestorDashboard() {
             </div>
           </main>
         </div>
+
+        {/* BOTTOM NAV - Matches Hybrid Dashboard */}
+        <nav className="bottom-nav">
+          {bottomNavItems.map((item) => (
+            <button
+              key={item.label}
+              className={`bottom-nav-item ${item.active ? "active" : ""}`}
+              onClick={() => navigate(item.path)}
+            >
+              <Ic n={item.icon} s={20} />
+              <span>{item.label}</span>
+            </button>
+          ))}
+        </nav>
       </div>
     </>
   );

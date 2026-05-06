@@ -1,13 +1,14 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 // ─── Data ───────────────────────────────────────────────────────────────────
 
 const NAV_LINKS = [
-  { icon: "grid_view", label: "Dashboard", filled: true, active: true },
-  { icon: "account_balance", label: "Investments", filled: false, active: false },
-  { icon: "payments", label: "Loans", filled: false, active: false },
-  { icon: "receipt_long", label: "Transactions", filled: false, active: false },
-  { icon: "description", label: "Documents", filled: false, active: false },
+  { icon: "grid_view", label: "General view", filled: true, active: true, path: "/dashboard" },
+  { icon: "account_balance", label: "Investor view", filled: false, active: false, path: "/investor-portal" },
+  { icon: "payments", label: "Borrower view", filled: false, active: false, path: "/borrower-portal" },
+  { icon: "receipt_long", label: "Transactions", filled: false, active: false, path: "/transactions" },
+  { icon: "description", label: "Documents", filled: false, active: false, path: "/documents" },
 ];
 
 const ACTIVITY = [
@@ -93,7 +94,7 @@ function Icon({ name, filled = false, className = "" }) {
 }
 
 // Mobile menu component
-function MobileMenu({ isOpen, onClose }) {
+function MobileMenu({ isOpen, onClose, onNavigate }) {
   return (
     <>
       {/* Overlay */}
@@ -126,12 +127,14 @@ function MobileMenu({ isOpen, onClose }) {
         </div>
         
         <nav className="flex flex-col h-full p-4 space-y-2 text-sm">
-          {NAV_LINKS.map(({ icon, label, filled, active }) => (
-            <a
+          {NAV_LINKS.map(({ icon, label, filled, active, path }) => (
+            <button
               key={label}
-              href="#"
-              onClick={onClose}
-              className={`flex items-center gap-3 rounded-lg px-4 py-3 transition-all duration-300 ${
+              onClick={() => {
+                onNavigate(path);
+                onClose();
+              }}
+              className={`flex items-center gap-3 rounded-lg px-4 py-3 transition-all duration-300 w-full text-left ${
                 active
                   ? "bg-white text-sky-800 font-semibold shadow-sm ring-1 ring-slate-200"
                   : "text-slate-500 hover:bg-slate-100"
@@ -139,11 +142,10 @@ function MobileMenu({ isOpen, onClose }) {
             >
               <Icon name={icon} filled={active && filled} />
               {label}
-            </a>
+            </button>
           ))}
           
           <div className="mt-auto space-y-2 pb-20">
-           
             <a className="flex items-center gap-3 text-slate-500 hover:bg-slate-100 transition-all px-4 py-3 rounded-lg" href="#">
               <Icon name="help_outline" /> Support
             </a>
@@ -159,6 +161,11 @@ function MobileMenu({ isOpen, onClose }) {
 
 function TopNav() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const navigate = useNavigate();
+
+  const handleNavigate = (path) => {
+    navigate(path);
+  };
 
   return (
     <>
@@ -175,9 +182,24 @@ function TopNav() {
           <span className="text-xl font-extrabold tracking-tighter text-slate-900">Loan@</span>
           
           <div className="hidden lg:flex items-center gap-6">
-            <a className="text-sky-800 font-bold border-b-2 border-sky-800 pb-1" href="#">Hybrid</a>
-            <a className="text-slate-500 hover:text-sky-700 transition-colors" href="#">Investor</a>
-            <a className="text-slate-500 hover:text-sky-700 transition-colors" href="#">Borrower</a>
+            <button 
+              onClick={() => navigate("/dashboard")}
+              className="text-sky-800 font-bold border-b-2 border-sky-800 pb-1"
+            >
+              Hybrid
+            </button>
+            <button 
+              onClick={() => navigate("/investor-portal")}
+              className="text-slate-500 hover:text-sky-700 transition-colors"
+            >
+              Investor
+            </button>
+            <button 
+              onClick={() => navigate("/borrower-portal")}
+              className="text-slate-500 hover:text-sky-700 transition-colors"
+            >
+              Borrower
+            </button>
           </div>
         </div>
         
@@ -203,12 +225,18 @@ function TopNav() {
         </div>
       </nav>
       
-      <MobileMenu isOpen={isMobileMenuOpen} onClose={() => setIsMobileMenuOpen(false)} />
+      <MobileMenu 
+        isOpen={isMobileMenuOpen} 
+        onClose={() => setIsMobileMenuOpen(false)}
+        onNavigate={handleNavigate}
+      />
     </>
   );
 }
 
 function SideNav() {
+  const navigate = useNavigate();
+
   return (
     <aside className="bg-slate-50 h-screen w-64 fixed left-0 top-0 hidden lg:flex flex-col border-r border-slate-200/20 pt-20">
       <div className="px-6 py-4 mb-4">
@@ -216,11 +244,11 @@ function SideNav() {
         <p className="text-xs text-tertiary">Premium P2P Lending</p>
       </div>
       <nav className="flex flex-col h-full p-4 space-y-2 text-sm">
-        {NAV_LINKS.map(({ icon, label, filled, active }) => (
-          <a
+        {NAV_LINKS.map(({ icon, label, filled, active, path }) => (
+          <button
             key={label}
-            href="#"
-            className={`flex items-center gap-3 rounded-lg px-4 py-3 transition-all duration-300 ${
+            onClick={() => navigate(path)}
+            className={`flex items-center gap-3 rounded-lg px-4 py-3 transition-all duration-300 w-full text-left ${
               active
                 ? "bg-white text-sky-800 font-semibold shadow-sm"
                 : "text-slate-500 hover:bg-slate-200/50"
@@ -228,7 +256,7 @@ function SideNav() {
           >
             <Icon name={icon} filled={active && filled} />
             {label}
-          </a>
+          </button>
         ))}
         <div className="mt-auto space-y-2 pb-4">
           <a className="flex items-center gap-3 text-slate-500 hover:bg-slate-200/50 transition-all px-4 py-3 rounded-lg" href="#">
@@ -244,10 +272,15 @@ function SideNav() {
 }
 
 function SummaryCards() {
+  const navigate = useNavigate();
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
       {/* Investor */}
-      <div className="bg-surface-container-lowest p-8 rounded-xl shadow-sm ring-1 ring-outline-variant/10">
+      <div 
+        onClick={() => navigate("/investor-portal")}
+        className="bg-surface-container-lowest p-8 rounded-xl shadow-sm ring-1 ring-outline-variant/10 cursor-pointer hover:shadow-md transition-shadow"
+      >
         <div className="flex justify-between items-start mb-4">
           <span className="text-xs text-tertiary uppercase tracking-wider font-bold">As Investor</span>
           <Icon name="trending_up" className="text-secondary" />
@@ -260,7 +293,10 @@ function SummaryCards() {
       </div>
 
       {/* Borrower */}
-      <div className="bg-surface-container-lowest p-8 rounded-xl shadow-sm ring-1 ring-outline-variant/10">
+      <div 
+        onClick={() => navigate("/borrower-portal")}
+        className="bg-surface-container-lowest p-8 rounded-xl shadow-sm ring-1 ring-outline-variant/10 cursor-pointer hover:shadow-md transition-shadow"
+      >
         <div className="flex justify-between items-start mb-4">
           <span className="text-xs text-tertiary uppercase tracking-wider font-bold">As Borrower</span>
           <Icon name="account_balance_wallet" className="text-primary" />
@@ -297,15 +333,20 @@ function SummaryCards() {
 }
 
 function InvestorSummary() {
+  const navigate = useNavigate();
+
   return (
     <div className="bg-surface-container-low rounded-xl p-8 overflow-hidden relative">
       <div className="absolute top-0 right-0 w-32 h-32 bg-secondary/5 rounded-full -mr-16 -mt-16 pointer-events-none" />
       <div className="relative">
         <div className="flex justify-between items-center mb-6">
           <h3 className="text-xl font-bold text-on-surface">Investor Summary</h3>
-          <a className="text-sm font-bold text-secondary flex items-center gap-1 hover:underline" href="#">
+          <button 
+            onClick={() => navigate("/investor-portal")}
+            className="text-sm font-bold text-secondary flex items-center gap-1 hover:underline"
+          >
             Go to full Investor view <Icon name="arrow_forward" className="text-sm" />
-          </a>
+          </button>
         </div>
         <div className="grid grid-cols-2 gap-6">
           {[
@@ -329,6 +370,8 @@ function InvestorSummary() {
 }
 
 function BorrowerSummary() {
+  const navigate = useNavigate();
+  
   const loans = [
     {
       id: "B001",
@@ -360,9 +403,12 @@ function BorrowerSummary() {
       <div className="relative">
         <div className="flex justify-between items-center mb-6">
           <h3 className="text-xl font-bold text-on-surface">Borrower Summary</h3>
-          <a className="text-sm font-bold text-primary flex items-center gap-1 hover:underline" href="#">
+          <button 
+            onClick={() => navigate("/borrower-portal")}
+            className="text-sm font-bold text-primary flex items-center gap-1 hover:underline"
+          >
             Go to full Borrower view <Icon name="arrow_forward" className="text-sm" />
-          </a>
+          </button>
         </div>
         <div className="space-y-4">
           {loans.map((loan) => (
@@ -395,15 +441,31 @@ function BorrowerSummary() {
 }
 
 function QuickActions() {
+  const navigate = useNavigate();
+  
   const actions = [
-    {  icon: "account_balance", label: "Investor View ->", style: "bg-primary text-on-primary shadow-sm hover:opacity-90" },
-    { icon: "payments", label: "Borrower view ->", style: "bg-secondary text-on-secondary shadow-sm hover:opacity-90" },
+    { 
+      icon: "format_list_bulleted", 
+      label: "View Loan Listings", 
+      style: "bg-primary text-on-primary shadow-sm hover:opacity-90",
+      path: "/dashboard/loans"
+    },
+    { 
+      icon: "note_add", 
+      label: "Apply for a Loan", 
+      style: "bg-secondary text-on-secondary shadow-sm hover:opacity-90",
+      path: "/dashboard/loans/apply"
+    },
   ];
 
   return (
     <div className="flex flex-wrap items-center gap-4 mb-12">
-      {actions.map(({ icon, label, style }) => (
-        <button key={label} className={`px-6 py-3 rounded-xl font-bold flex items-center gap-2 transition-all ${style}`}>
+      {actions.map(({ icon, label, style, path }) => (
+        <button 
+          key={label} 
+          onClick={() => navigate(path)}
+          className={`px-6 py-3 rounded-xl font-bold flex items-center gap-2 transition-all ${style}`}
+        >
           <Icon name={icon} /> {label}
         </button>
       ))}
@@ -537,24 +599,26 @@ function Testimonials() {
 }
 
 function BottomNav() {
+  const navigate = useNavigate();
+  
   const items = [
-    { icon: "grid_view", label: "Home", active: true },
-    { icon: "account_balance", label: "Invest", active: false },
-    { icon: "payments", label: "Loans", active: false },
-    { icon: "person", label: "Profile", active: false },
+    { icon: "grid_view", label: "Home", active: true, path: "/dashboard" },
+    { icon: "account_balance", label: "Invest", active: false, path: "/investor-portal" },
+    { icon: "payments", label: "Loans", active: false, path: "/borrower-portal" },
+    { icon: "person", label: "Profile", active: false, path: "/profile" },
   ];
 
   return (
     <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-slate-100 flex justify-around items-center py-3 z-40">
-      {items.map(({ icon, label, active }) => (
-        <a
+      {items.map(({ icon, label, active, path }) => (
+        <button
           key={label}
-          href="#"
+          onClick={() => navigate(path)}
           className={`flex flex-col items-center gap-1 ${active ? "text-primary" : "text-slate-400"}`}
         >
           <Icon name={icon} filled={active} />
           <span className="text-[10px] font-bold">{label}</span>
-        </a>
+        </button>
       ))}
     </nav>
   );

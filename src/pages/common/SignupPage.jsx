@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import ApiService from '../service/ApiService';
-import Layout from '../components/Layout';
+import ApiService from '../../service/ApiService';
+import Layout from '../../components/Layout';
 import PhoneInput from "react-phone-number-input";
 import "react-phone-number-input/style.css";
 

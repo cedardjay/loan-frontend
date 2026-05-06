@@ -1,8 +1,8 @@
 import React from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import Layout from '../components/Layout';
+import Layout from '../../components/Layout';
 import { useState } from 'react';
-import ApiService from '../service/ApiService';
+import ApiService from '../../service/ApiService';
 
 
 
@@ -31,9 +31,9 @@ export default function LoginPage() {
         localStorage.setItem('role', response.role);
         const role = response.role;
         if (role === 'ADMIN') {
-          navigate('/admin-dashboard', { replace: true });
+          navigate('/admin', { replace: true });
         } else if (role === 'SUPERADMIN') {
-          navigate('/super-admin-dashboard', { replace: true });
+          navigate('/super-admin', { replace: true });
         } else {
           navigate('/dashboard', { replace: true });  // if ('role===USER')
         }

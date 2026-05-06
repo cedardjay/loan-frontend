@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 /* ─────────────────────────────────────────────
    STYLES
@@ -266,6 +267,7 @@ body {
   flex: 1;
   padding: 28px 32px;
   overflow-x: hidden;
+  padding-bottom: 80px;
 }
 
 /* ── PAGE HEADER ── */
@@ -542,6 +544,43 @@ body {
 .pulse-title { font-size: .83rem; font-weight: 600; color: var(--navy); }
 .pulse-sub { font-size: .75rem; color: var(--muted); }
 
+/* BOTTOM NAVIGATION */
+.bottom-nav {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(8px);
+  border-top: 1px solid var(--border);
+  justify-content: space-around;
+  align-items: center;
+  padding: 10px 0 12px;
+  z-index: 40;
+}
+.bottom-nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: var(--muted);
+  transition: color 0.2s;
+}
+.bottom-nav-item.active {
+  color: var(--navy);
+  font-weight: 600;
+}
+.bottom-nav-item span:first-child {
+  font-size: 1.2rem;
+}
+
 /* ── RESPONSIVE ── */
 @media (max-width: 1050px) {
   .content-grid { grid-template-columns: 1fr 1fr; }
@@ -561,11 +600,12 @@ body {
   .sidebar-overlay { display: block; }
   .hamburger { display: flex; }
   .nav-links { display: none; }
-  .main { padding: 18px 16px; }
+  .main { padding: 18px 16px; padding-bottom: 80px; }
   .filter-bar { gap: 14px; }
   .content-grid { grid-template-columns: 1fr; }
   .sidebar-col { grid-template-columns: 1fr; }
   .invest-btn-nav { display: none; }
+  .bottom-nav { display: flex; }
 }
 @media (max-width: 540px) {
   .nav { padding: 0 14px; }
@@ -580,11 +620,18 @@ body {
    DATA
 ───────────────────────────────────────────── */
 const sidebarItems = [
-  { ico: "⊙", label: "Overview" },
-  { ico: "◈", label: "Active Bids", active: true },
-  { ico: "⬡", label: "Risk Analysis" },
-  { ico: "⤢", label: "Lender Stats" },
-  { ico: "❑", label: "Documents" },
+  { ico: "⊙", label: "Overview", path: "/investor-portal" },
+  { ico: "◈", label: "Active Bids", path: "/investor-portal/bids", active: true },
+  { ico: "⬡", label: "Risk Analysis", path: "/investor-portal/risk" },
+  { ico: "⤢", label: "Lender Stats", path: "/investor-portal/stats" },
+  { ico: "❑", label: "Documents", path: "/investor-portal/documents" },
+];
+
+const bottomNavItems = [
+  { icon: "🏠", label: "Hybrid", path: "/dashboard" },
+  { icon: "📊", label: "Invest", path: "/investor-portal", active: true },
+  { icon: "💰", label: "Borrow", path: "/borrower-portal" },
+  { icon: "👤", label: "Profile", path: "/profile" },
 ];
 
 const loans = [
@@ -643,6 +690,7 @@ export default function LoanListings() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activeGrade, setActiveGrade] = useState("All");
   const [term, setTerm] = useState("12 Months");
+  const navigate = useNavigate();
 
   const gradeColor = (g) =>
     g === "A" ? "grade-A" : g === "B" ? "grade-B" : "grade-C";
@@ -655,6 +703,11 @@ export default function LoanListings() {
   // Split into two columns
   const col1 = filtered.filter((_, i) => i % 2 === 0);
   const col2 = filtered.filter((_, i) => i % 2 === 1);
+
+  const handleSidebarNav = (path) => {
+    navigate(path);
+    setSidebarOpen(false);
+  };
 
   return (
     <>
@@ -669,15 +722,16 @@ export default function LoanListings() {
           <span className="nav-brand">Loan@</span>
         </div>
         <div className="nav-links">
-          {["Marketplace", "Portfolio", "Insights", "History"].map((l) => (
-            <button key={l} className={`nav-link${l === "Marketplace" ? " active" : ""}`}>{l}</button>
-          ))}
+          <button className="nav-link" onClick={() => navigate("/investor-portal")}>Dashboard</button>
+          <button className="nav-link active" onClick={() => navigate("/investor-portal/loans")}>Marketplace</button>
+          <button className="nav-link" onClick={() => navigate("/investor-portal/portfolio")}>Portfolio</button>
+          <button className="nav-link" onClick={() => navigate("/investor-portal/insights")}>Insights</button>
         </div>
         <div className="nav-right">
           <button className="icon-btn" title="Notifications">🔔</button>
           <button className="icon-btn" title="Settings">⚙️</button>
-          <button className="invest-btn-nav">Invest Now</button>
-          <div className="avatar">JS</div>
+          <button className="invest-btn-nav" onClick={() => navigate("/investor-portal/loans")}>Invest Now</button>
+          <div className="avatar" onClick={() => navigate("/profile")}>TL</div>
         </div>
       </nav>
 
@@ -701,7 +755,7 @@ export default function LoanListings() {
               <button
                 key={item.label}
                 className={`s-item${item.active ? " active" : ""}`}
-                onClick={() => setSidebarOpen(false)}
+                onClick={() => handleSidebarNav(item.path)}
               >
                 <span className="ico">{item.ico}</span>
                 {item.label}
@@ -710,8 +764,8 @@ export default function LoanListings() {
           </nav>
           <div className="sidebar-bottom">
             <button className="filter-btn">⚖ Filter Opportunities</button>
-            <button className="s-item">❓ Support</button>
-            <button className="s-item">→ Sign Out</button>
+            <button className="s-item" onClick={() => navigate("/support")}>❓ Support</button>
+            <button className="s-item" onClick={() => navigate("/logout")}>→ Sign Out</button>
           </div>
         </aside>
 
@@ -767,13 +821,13 @@ export default function LoanListings() {
             {/* Col 1 */}
             <div className="loans-col">
               {col1.map((loan) => (
-                <LoanCard key={loan.id} loan={loan} gradeColor={gradeColor} />
+                <LoanCard key={loan.id} loan={loan} gradeColor={gradeColor} navigate={navigate} />
               ))}
             </div>
             {/* Col 2 */}
             <div className="loans-col">
               {col2.map((loan) => (
-                <LoanCard key={loan.id} loan={loan} gradeColor={gradeColor} />
+                <LoanCard key={loan.id} loan={loan} gradeColor={gradeColor} navigate={navigate} />
               ))}
             </div>
             {/* Right Sidebar */}
@@ -841,11 +895,25 @@ export default function LoanListings() {
 
         </main>
       </div>
+
+      {/* BOTTOM NAVIGATION */}
+      <nav className="bottom-nav">
+        {bottomNavItems.map((item) => (
+          <button
+            key={item.label}
+            className={`bottom-nav-item ${item.active ? "active" : ""}`}
+            onClick={() => navigate(item.path)}
+          >
+            <span>{item.icon}</span>
+            <span>{item.label}</span>
+          </button>
+        ))}
+      </nav>
     </>
   );
 }
 
-function LoanCard({ loan, gradeColor }) {
+function LoanCard({ loan, gradeColor, navigate }) {
   return (
     <div className="loan-card">
       <div className="loan-card-top">
@@ -878,7 +946,9 @@ function LoanCard({ loan, gradeColor }) {
       <div className="prog-track">
         <div className={`prog-fill ${loan.fillClass}`} style={{ width: `${loan.funded}%` }} />
       </div>
-      <button className="invest-now-btn">Invest Now</button>
+      <button className="invest-now-btn" onClick={() => navigate(`/investor-portal/loans/${loan.id}`)}>
+        Invest Now
+      </button>
     </div>
   );
 }
