@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import ApiService from '../../service/ApiService';
 
 /* ─────────────────────────────────────────────
    STYLES
@@ -683,26 +684,61 @@ const loans = [
 
 const barHeights = [30, 42, 28, 50, 38, 55, 60, 70, 80];
 
-/* ─────────────────────────────────────────────
-   COMPONENT
-───────────────────────────────────────────── */
+// ────────────────────────────────────────────COMPONENT
+
 export default function LoanListings() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activeGrade, setActiveGrade] = useState("All");
-  const [term, setTerm] = useState("12 Months");
+  const [loans, setLoans] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
 
-  const gradeColor = (g) =>
-    g === "A" ? "grade-A" : g === "B" ? "grade-B" : "grade-C";
+  // ── Fetch on mount ──────────────────────────────────
+  useEffect(() => {
+    fetchMarketplaceLoans();
+  }, []);
 
-  const filtered =
-    activeGrade === "All"
-      ? loans
-      : loans.filter((l) => l.grade === activeGrade);
+  async function fetchMarketplaceLoans() {
+    try {
+      setLoading(true);
+      setError(null);
+      const data = await ApiService.getMarketplaceLoans();
+      setLoans(data.loanrequestlist || []);
+    } catch (err) {
+      setError("Failed to load marketplace loans.");
+    } finally {
+      setLoading(false);
+    }
+  }
 
-  // Split into two columns
-  const col1 = filtered.filter((_, i) => i % 2 === 0);
-  const col2 = filtered.filter((_, i) => i % 2 === 1);
+  // ── Map backend loan to card props ──────────────────
+  function mapLoan(loan) {
+    return {
+      id: `#L-${loan.requestId}`,
+      name: loan.borrowerName,
+      desc: loan.purpose || loan.description,
+      requested: `$${loan.requestedAmount.toLocaleString()}`,
+      yield: `${loan.interestRate}%`,
+      funded: Math.round(loan.fundingPercentage),
+      remaining: `$${loan.remainingAmount.toLocaleString()}`,
+      term: `${loan.termMonths} mo`,
+      status: loan.status,
+      fillClass: getFillClass(loan.fundingPercentage),
+      rawId: loan.requestId,
+    };
+  }
+
+  function getFillClass(pct) {
+    if (pct >= 75) return "fill-navy";
+    if (pct >= 40) return "fill-teal";
+    return "fill-gold";
+  }
+
+
+  const mapped = loans.map(mapLoan);
+  const col1 = mapped.filter((_, i) => i % 2 === 0);
+  const col2 = mapped.filter((_, i) => i % 2 === 1);
 
   const handleSidebarNav = (path) => {
     navigate(path);
@@ -713,7 +749,7 @@ export default function LoanListings() {
     <>
       <style>{css}</style>
 
-      {/* TOP NAV */}
+      {/* TOP NAV — unchanged */}
       <nav className="nav">
         <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
           <button className="hamburger" onClick={() => setSidebarOpen(true)} aria-label="Menu">
@@ -736,12 +772,11 @@ export default function LoanListings() {
       </nav>
 
       <div className="layout">
-        {/* OVERLAY */}
         {sidebarOpen && (
           <div className="sidebar-overlay" onClick={() => setSidebarOpen(false)} />
         )}
 
-        {/* SIDEBAR */}
+        {/* SIDEBAR — unchanged */}
         <aside className={`sidebar${sidebarOpen ? " open" : ""}`}>
           <div className="sidebar-stat">
             <div className="stat-icon-box">📊</div>
@@ -769,10 +804,7 @@ export default function LoanListings() {
           </div>
         </aside>
 
-        {/* MAIN */}
         <main className="main">
-
-          {/* Header */}
           <div className="page-header">
             <h1 className="page-title">Loan Marketplace</h1>
             <p className="page-subtitle">
@@ -780,123 +812,104 @@ export default function LoanListings() {
             </p>
           </div>
 
-          {/* Filter Bar */}
-          <div className="filter-bar">
-            <div className="filter-group">
-              <span className="filter-label">Risk Grade</span>
-              <div className="grade-tabs">
-                {["All", "A", "B", "C"].map((g) => (
-                  <button
-                    key={g}
-                    className={`grade-tab${activeGrade === g ? " active" : ""}`}
-                    onClick={() => setActiveGrade(g)}
-                  >{g}</button>
-                ))}
-              </div>
-            </div>
-            <div className="filter-group">
-              <span className="filter-label">Term Length</span>
-              <select
-                className="term-select"
-                value={term}
-                onChange={(e) => setTerm(e.target.value)}
-              >
-                {["6 Months", "12 Months", "24 Months", "36 Months"].map((t) => (
-                  <option key={t}>{t}</option>
-                ))}
-              </select>
-            </div>
-            <div className="range-group">
-              <div className="range-header">
-                <span className="filter-label">Loan Amount Range</span>
-                <span className="range-value">$1k – $50k</span>
-              </div>
-              <input type="range" className="range-slider" min={0} max={100} defaultValue={50} />
-            </div>
-            <button className="apply-btn">🔍 Apply</button>
+          {/*refresh button*/}
+          <div style={{ marginBottom: 24 }}>
+            <button className="apply-btn" onClick={fetchMarketplaceLoans}>
+              🔄 Refresh
+            </button>
           </div>
+
+          {/* States */}
+          {loading && (
+            <p style={{ color: "var(--muted)", fontSize: ".88rem", marginBottom: 24 }}>
+              Loading marketplace loans...
+            </p>
+          )}
+          {error && (
+            <p style={{ color: "var(--red)", fontSize: ".88rem", marginBottom: 24 }}>
+              {error}
+            </p>
+          )}
+          {!loading && !error && mapped.length === 0 && (
+            <p style={{ color: "var(--muted)", fontSize: ".88rem", marginBottom: 24 }}>
+              No loans available in the marketplace right now.
+            </p>
+          )}
 
           {/* Content Grid */}
-          <div className="content-grid">
-            {/* Col 1 */}
-            <div className="loans-col">
-              {col1.map((loan) => (
-                <LoanCard key={loan.id} loan={loan} gradeColor={gradeColor} navigate={navigate} />
-              ))}
-            </div>
-            {/* Col 2 */}
-            <div className="loans-col">
-              {col2.map((loan) => (
-                <LoanCard key={loan.id} loan={loan} gradeColor={gradeColor} navigate={navigate} />
-              ))}
-            </div>
-            {/* Right Sidebar */}
-            <div className="sidebar-col">
-              {/* Marketplace Stats */}
-              <div className="panel">
-                <div className="panel-label">Marketplace Stats</div>
-                {[
-                  { k: "Average Yield", v: "9.1%" },
-                  { k: "Loans Available", v: "42" },
-                  { k: "Total Value", v: "$1.2M" },
-                ].map((s) => (
-                  <div className="stat-row" key={s.k}>
-                    <span className="stat-row-key">{s.k}</span>
-                    <span className="stat-row-val">{s.v}</span>
-                  </div>
+          {!loading && !error && mapped.length > 0 && (
+            <div className="content-grid">
+              <div className="loans-col">
+                {col1.map((loan) => (
+                  <LoanCard key={loan.id} loan={loan} navigate={navigate} />
                 ))}
-                <div className="vol-label">Volume Trend</div>
-                <div className="bar-chart">
-                  {barHeights.map((h, i) => (
-                    <div
-                      key={i}
-                      className={`bar${i >= barHeights.length - 2 ? " hi" : ""}`}
-                      style={{ height: `${h}%` }}
-                    />
+              </div>
+              <div className="loans-col">
+                {col2.map((loan) => (
+                  <LoanCard key={loan.id} loan={loan} navigate={navigate} />
+                ))}
+              </div>
+
+              {/* Right Sidebar panels — unchanged */}
+              <div className="sidebar-col">
+                <div className="panel">
+                  <div className="panel-label">Marketplace Stats</div>
+                  {[
+                    { k: "Loans Available", v: mapped.length },
+                    { k: "Total Value", v: `$${loans.reduce((s, l) => s + Number(l.requestedAmount), 0).toLocaleString()}` },
+                    { k: "Avg Interest Rate", v: loans.length ? `${(loans.reduce((s, l) => s + Number(l.interestRate), 0) / loans.length).toFixed(1)}%` : "—" },
+                  ].map((s) => (
+                    <div className="stat-row" key={s.k}>
+                      <span className="stat-row-key">{s.k}</span>
+                      <span className="stat-row-val">{s.v}</span>
+                    </div>
                   ))}
+                  <div className="vol-label">Volume Trend</div>
+                  <div className="bar-chart">
+                    {barHeights.map((h, i) => (
+                      <div key={i} className={`bar${i >= barHeights.length - 2 ? " hi" : ""}`} style={{ height: `${h}%` }} />
+                    ))}
+                  </div>
                 </div>
-              </div>
 
-              {/* Auto-Invest */}
-              <div className="panel panel-dark">
-                <div className="auto-invest-header">
-                  <span className="ai-icon">⚡</span>
-                  <span className="ai-tag">Auto-Invest Active</span>
+                <div className="panel panel-dark">
+                  <div className="auto-invest-header">
+                    <span className="ai-icon">⚡</span>
+                    <span className="ai-tag">Auto-Invest Active</span>
+                  </div>
+                  <div className="ai-title">Aggressive Yield Strategy</div>
+                  <div className="ai-cap-row">
+                    <span className="ai-cap-label">Capacity Used</span>
+                    <span className="ai-cap-val">84%</span>
+                  </div>
+                  <div className="ai-prog-track">
+                    <div className="ai-prog-fill" style={{ width: "84%" }} />
+                  </div>
+                  <div className="ai-note">
+                    System automatically bidding on Grade A/B loans with &gt;8% Yield.
+                  </div>
                 </div>
-                <div className="ai-title">Aggressive Yield Strategy</div>
-                <div className="ai-cap-row">
-                  <span className="ai-cap-label">Capacity Used</span>
-                  <span className="ai-cap-val">84%</span>
-                </div>
-                <div className="ai-prog-track">
-                  <div className="ai-prog-fill" style={{ width: "84%" }} />
-                </div>
-                <div className="ai-note">
-                  System automatically bidding on Grade A/B loans with &gt;8% Yield.
-                </div>
-              </div>
 
-              {/* Market Pulse */}
-              <div className="panel">
-                <div className="pulse-header">
-                  <span className="panel-label" style={{ margin: 0 }}>Market Pulse</span>
-                  <span className="pulse-delta">↗ +0.4%</span>
-                </div>
-                <div className="pulse-item">
-                  <div className="pulse-icon-box">📈</div>
-                  <div>
-                    <div className="pulse-title">Lender Confidence</div>
-                    <div className="pulse-sub">Strong Market Demand</div>
+                <div className="panel">
+                  <div className="pulse-header">
+                    <span className="panel-label" style={{ margin: 0 }}>Market Pulse</span>
+                    <span className="pulse-delta">↗ +0.4%</span>
+                  </div>
+                  <div className="pulse-item">
+                    <div className="pulse-icon-box">📈</div>
+                    <div>
+                      <div className="pulse-title">Lender Confidence</div>
+                      <div className="pulse-sub">Strong Market Demand</div>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
-
+          )}
         </main>
       </div>
 
-      {/* BOTTOM NAVIGATION */}
+      {/* BOTTOM NAV — unchanged */}
       <nav className="bottom-nav">
         {bottomNavItems.map((item) => (
           <button
@@ -913,7 +926,8 @@ export default function LoanListings() {
   );
 }
 
-function LoanCard({ loan, gradeColor, navigate }) {
+// ── Updated LoanCard — uses real data, no grade badge ──
+function LoanCard({ loan, navigate }) {
   return (
     <div className="loan-card">
       <div className="loan-card-top">
@@ -921,9 +935,17 @@ function LoanCard({ loan, gradeColor, navigate }) {
           <div className="loan-id">{loan.id}</div>
           <div className="loan-name">{loan.name}</div>
         </div>
-        <div className={`grade-badge ${gradeColor(loan.grade)}`}>
-          <span className="gb-label">Grade</span>
-          <span className="gb-val">{loan.grade}</span>
+        <div style={{
+          padding: "4px 10px",
+          borderRadius: 20,
+          fontSize: ".68rem",
+          fontWeight: 700,
+          background: loan.status === "APPROVED" ? "var(--green-lt)" : loan.status === "PARTIALLY_FUNDED" ? "var(--accent-lt)" : "var(--teal-lt)",
+          color: loan.status === "APPROVED" ? "var(--green)" : loan.status === "PARTIALLY_FUNDED" ? "var(--accent)" : "var(--teal)",
+          whiteSpace: "nowrap",
+          alignSelf: "flex-start"
+        }}>
+          {loan.status.replace("_", " ")}
         </div>
       </div>
       <div className="loan-desc">{loan.desc}</div>
@@ -933,20 +955,27 @@ function LoanCard({ loan, gradeColor, navigate }) {
           <div className="metric-value">{loan.requested}</div>
         </div>
         <div className="metric">
-          <div className="metric-label">Yield</div>
+          <div className="metric-label">Interest</div>
           <div className="metric-value yield-value">
             {loan.yield} <span>APR</span>
           </div>
         </div>
+        <div className="metric">
+          <div className="metric-label">Term</div>
+          <div className="metric-value">{loan.term}</div>
+        </div>
       </div>
       <div className="fund-row">
         <span className="fund-pct">{loan.funded}% Funded</span>
-        <span className="fund-time">🕐 {loan.timeLeft}</span>
+        <span className="fund-time">💰 {loan.remaining} left</span>
       </div>
       <div className="prog-track">
         <div className={`prog-fill ${loan.fillClass}`} style={{ width: `${loan.funded}%` }} />
       </div>
-      <button className="invest-now-btn" onClick={() => navigate(`/investor-portal/loans/${loan.id}`)}>
+      <button
+        className="invest-now-btn"
+        onClick={() => navigate(`/investor-portal/loans/${loan.rawId}`)}
+      >
         Invest Now
       </button>
     </div>

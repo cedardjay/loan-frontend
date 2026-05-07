@@ -112,8 +112,7 @@ Entities (with key attributes)
 •	term_months
 •	interest_rate
 •	amount_Funded
-•	state(pending_approval, approved, rejected)
-•	status (not_Funded, partialy_funded, fully_funded, disbursed, expired)
+•	status
 •	request_date
 •	dead_line
 •	approval_id (FK to Admin who approved/rejected)
@@ -125,6 +124,7 @@ Entities (with key attributes)
 •	investor_id(FK to User)
 •	invested_amount
 •	match_date
+
 4. Active_Loan////////////
 •	active_loan_id (PK)
 •	loan_request_id (FK to Loan_Request)
@@ -134,6 +134,7 @@ Entities (with key attributes)
 •	next_payment_due_date
 •	start_date
 •	status (Active, Completed, Defaulted)
+
 5. Transaction
 •	transaction_id (PK)
 •	user_id (FK to User)
@@ -143,6 +144,7 @@ Entities (with key attributes)
 •	payment_method
 •	status (Pending, Completed, Failed)
 •	transaction_date
+
 6. Dispute
 •	dispute_id (PK)
 •	raised_by (FK to User)
@@ -153,6 +155,7 @@ Entities (with key attributes)
 •	resolution_notes
 •	created_date
 •	resolved_by (FK to Admin)
+
 7. Activity_Log
 •	log_id (PK)
 •	user_id (FK to User)
@@ -160,6 +163,19 @@ Entities (with key attributes)
 •	ip_address
 •	timestamp
 •	details (JSON or Text)
+
+LoanStatus {
+    PENDING_APPROVAL,
+    APPROVED,
+    REJECTED,
+    EXPIRED,
+    PARTIALLY_FUNDED,
+    FULLY_FUNDED,
+    DISBURSED,
+    DEFAULTED,
+    PAID
+}
+
 
 Class Diagram:
 

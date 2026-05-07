@@ -150,6 +150,14 @@ static async rejectLoanRequest(requestId) {
     return response.data;
 }
 
+/* Get marketplace loans (APPROVED, PARTIALLY_FUNDED, FULLY_FUNDED) */
+static async getMarketplaceLoans() {
+    const response = await axios.get(`${this.BASE_URL}/loan-requests/marketplace`, {
+        headers: this.getHeader()
+    });
+    return response.data;
+}
+
 }
 
 
