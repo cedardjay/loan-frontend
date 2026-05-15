@@ -375,21 +375,21 @@ const Icon = ({ name, size = 18 }) => {
 };
 
 const navItems = [
-  { id: "dashboard", label: "BORROWER VIEW", icon: "dashboard", path: "/borrower-portal" },
+  { id: "dashboard", label: "BORROWER VIEW", icon: "dashboard", path: "/borrower-view" },
   { id: "myLoans", label: "MY LOANS", icon: "my-loans", path: "/my-loans" },
   { id: "apply", label: "Apply for a loan", icon: "loans", path: "/loan-apply" },
-  { id: "payments", label: "Payments", icon: "payments", path: "/borrower-portal/payments" },
-  { id: "documents", label: "Documents", icon: "documents", path: "/borrower-portal/documents" },
+  { id: "payments", label: "Payments", icon: "payments", path: "/borrower-view/payments" },
+  { id: "documents", label: "Documents", icon: "documents", path: "/borrower-view/documents" },
 ];
 
 const bottomNavItems = [
   { icon: "grid_view", label: "Hybrid", path: "/dashboard" },
-  { icon: "account_balance", label: "Invest", path: "/investor-portal" },
-  { icon: "payments", label: "Borrow", path: "/borrower-portal", active: true },
+  { icon: "account_balance", label: "Invest", path: "/investor-view" },
+  { icon: "payments", label: "Borrow", path: "/borrower-view", active: true },
   { icon: "person", label: "Profile", path: "/profile" },
 ];
 
-export default function BorrowerDashboard() {
+export default function BorrowerView() {
   const [activeNav, setActiveNav] = useState("dashboard");
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const navigate = useNavigate();
@@ -422,8 +422,8 @@ export default function BorrowerDashboard() {
           </div>
           <div className="topnav-links">
             <button onClick={() => navigate("/dashboard")}>Hybrid</button>
-            <button onClick={() => navigate("/investor-portal")}>Investor</button>
-            <button className="active" onClick={() => navigate("/borrower-portal")}>Borrower</button>
+            <button onClick={() => navigate("/investor-view")}>Investor</button>
+            <button className="active" onClick={() => navigate("/borrower-view")}>Borrower</button>
           </div>
           <div className="topnav-right">
             <button className="icon-btn"><Icon name="bell" size={16} /></button>
@@ -439,7 +439,7 @@ export default function BorrowerDashboard() {
           <aside className={`sidebar ${sidebarOpen ? "open" : ""}`}>
             <div className="sidebar-brand">
               <div className="sidebar-brand-name">LOAN<span>@</span></div>
-              <div className="sidebar-brand-sub">Borrower Portal</div>
+              <div className="sidebar-brand-sub">Borrower view</div>
             </div>
             <nav className="sidebar-nav">
               {navItems.map(item => (

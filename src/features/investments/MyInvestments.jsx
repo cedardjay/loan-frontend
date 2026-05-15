@@ -50,7 +50,7 @@ const styles = `
   /* LAYOUT */
   .layout { display: flex; flex: 1; }
 
-  /* SIDEBAR */
+  /* SIDEBAR - From InvestorDashboard */
   .sidebar {
     width: var(--sidebar-w); background: #f8fafc; border-right: 1px solid var(--border);
     padding: 24px 0; display: flex; flex-direction: column;
@@ -251,9 +251,8 @@ const Ic = ({ n, s = 17 }) => {
     grid_view: <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="7" height="7" rx="1" /><rect x="14" y="3" width="7" height="7" rx="1" /><rect x="3" y="14" width="7" height="7" rx="1" /><rect x="14" y="14" width="7" height="7" rx="1" /></svg>,
     account_balance: <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="7" width="20" height="14" rx="2" /><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" /></svg>,
     payments: <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="5" width="20" height="14" rx="2" /><line x1="2" y1="10" x2="22" y2="10" /></svg>,
-    receipt_long: <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1-2-1z" /><path d="M16 8h-6M16 12h-6M10 16h6" /></svg>,
-    description: <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><polyline points="14 2 14 8 20 8" /><line x1="16" y1="13" x2="8" y2="13" /><line x1="16" y1="17" x2="8" y2="17" /><polyline points="10 9 9 9 8 9" /></svg>,
     person: <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /></svg>,
+    list: <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="8" y1="6" x2="21" y2="6" /><line x1="8" y1="12" x2="21" y2="12" /><line x1="8" y1="18" x2="21" y2="18" /><line x1="3" y1="6" x2="3.01" y2="6" /><line x1="3" y1="12" x2="3.01" y2="12" /><line x1="3" y1="18" x2="3.01" y2="18" /></svg>,
   };
   return icons[n] || null;
 };
@@ -279,27 +278,29 @@ const allInvestments = [
   { id: 10, name: "E-commerce Growth", grade: "B", amount: 6000, interest: 10.8, status: "active", nextPayment: "May 05, 2025", investedDate: "Mar 01, 2025", expectedReturn: 324.00 },
 ];
 
+// ── Sidebar nav from InvestorDashboard ──
 const navItems = [
-  { id: "portfolio", label: "Portfolio", icon: "portfolio", path: "/investments", active: true },
-  { id: "performance", label: "Performance", icon: "trend", path: "/investor-portal/portfolio/performance" },
-  { id: "transactions", label: "Transactions", icon: "tx", path: "/investor-portal/portfolio/transactions" },
+  { id: "dashboard", label: "INVESTOR VIEW", icon: "dashboard", path: "/investor-portal" },
+  { id: "portfolio", label: "Portfolio", icon: "portfolio", path: "/investments" },
+  { id: "marketplace", label: "Loan listings", icon: "market", path: "/loan-market" },
+  { id: "transactions", label: "Transactions", icon: "tx", path: "/investor-portal/transactions" },
   { id: "settings", label: "Settings", icon: "settings", path: "/investor-portal/settings" },
 ];
 
 const bottomNavItems = [
   { icon: "grid_view", label: "Hybrid", path: "/dashboard" },
-  { icon: "account_balance", label: "Invest", path: "/investor-portal" },
+  { icon: "account_balance", label: "Invest", path: "/investor-portal", active: true },
   { icon: "payments", label: "Borrow", path: "/borrower-portal" },
   { icon: "person", label: "Profile", path: "/profile" },
 ];
 
 export default function MyInvestments() {
+  const [activeNav, setActiveNav] = useState("portfolio");
   const [filterStatus, setFilterStatus] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const navigate = useNavigate();
 
-  // Filter investments based on status and search
   const filteredInvestments = allInvestments.filter(inv => {
     const matchesStatus = filterStatus === "all" || inv.status === filterStatus;
     const matchesSearch = inv.name.toLowerCase().includes(searchTerm.toLowerCase());
@@ -309,7 +310,6 @@ export default function MyInvestments() {
   const activeCount = allInvestments.filter(i => i.status === "active").length;
   const completedCount = allInvestments.filter(i => i.status === "completed").length;
   const graceCount = allInvestments.filter(i => i.status === "grace").length;
-  const defaultCount = allInvestments.filter(i => i.status === "default").length;
 
   const getStatusDisplay = (status) => {
     switch(status) {
@@ -321,7 +321,8 @@ export default function MyInvestments() {
     }
   };
 
-  const handleNavigation = (path) => {
+  const handleNavigation = (path, navId) => {
+    setActiveNav(navId);
     navigate(path);
     setSidebarOpen(false);
   };
@@ -353,18 +354,17 @@ export default function MyInvestments() {
           {/* MOBILE OVERLAY */}
           <div className={`mobile-overlay ${sidebarOpen ? "open" : ""}`} onClick={() => setSidebarOpen(false)} />
 
-          {/* SIDEBAR */}
+          {/* SIDEBAR — from InvestorDashboard, portfolio highlighted */}
           <aside className={`sidebar ${sidebarOpen ? "open" : ""}`}>
             <div className="sidebar-brand">
-              <div className="sb-name">The Sanctuary</div>
               <div className="sb-sub">Premium P2P Lending</div>
             </div>
             <nav className="sb-nav">
               {navItems.map(item => (
                 <div
                   key={item.id}
-                  className={`sb-item ${item.active ? "active" : ""}`}
-                  onClick={() => handleNavigation(item.path)}
+                  className={`sb-item ${activeNav === item.id ? "active" : ""}`}
+                  onClick={() => handleNavigation(item.path, item.id)}
                 >
                   <Ic n={item.icon} s={16} />
                   {item.label}
@@ -378,7 +378,6 @@ export default function MyInvestments() {
 
           {/* MAIN */}
           <main className="main">
-            {/* Page Header */}
             <div className="page-header">
               <h1 className="page-title">My Portfolio</h1>
               <p className="page-subtitle">Track and manage all your investments in one place.</p>
@@ -423,25 +422,25 @@ export default function MyInvestments() {
             {/* Filter Section */}
             <div className="filter-section">
               <div className="filter-tabs">
-                <button 
+                <button
                   className={`filter-tab ${filterStatus === "all" ? "active" : ""}`}
                   onClick={() => setFilterStatus("all")}
                 >
                   All ({allInvestments.length})
                 </button>
-                <button 
+                <button
                   className={`filter-tab ${filterStatus === "active" ? "active" : ""}`}
                   onClick={() => setFilterStatus("active")}
                 >
                   Active ({activeCount})
                 </button>
-                <button 
+                <button
                   className={`filter-tab ${filterStatus === "completed" ? "active" : ""}`}
                   onClick={() => setFilterStatus("completed")}
                 >
                   Completed ({completedCount})
                 </button>
-                <button 
+                <button
                   className={`filter-tab ${filterStatus === "grace" ? "active" : ""}`}
                   onClick={() => setFilterStatus("grace")}
                 >
@@ -450,9 +449,9 @@ export default function MyInvestments() {
               </div>
               <div className="search-box">
                 <Ic n="search" s={16} />
-                <input 
-                  type="text" 
-                  placeholder="Search investments..." 
+                <input
+                  type="text"
+                  placeholder="Search investments..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
@@ -490,12 +489,12 @@ export default function MyInvestments() {
                               Grade {inv.grade}
                             </span>
                           </td>
-                          <td className="td-amount">${inv.amount.toLocaleString()}</td>
+                          <td>${inv.amount.toLocaleString()}</td>
                           <td><span className="interest-val">{inv.interest}%</span></td>
                           <td>{getStatusDisplay(inv.status)}</td>
                           <td><span className="date-val">{inv.nextPayment}</span></td>
                           <td><span className="date-val">{inv.investedDate}</span></td>
-                          <td className="td-amount green">+${inv.expectedReturn.toLocaleString()}</td>
+                          <td style={{ color: "var(--green-text)", fontWeight: 600 }}>+${inv.expectedReturn.toLocaleString()}</td>
                           <td>
                             <button className="action-btn">Details</button>
                           </td>
@@ -520,7 +519,7 @@ export default function MyInvestments() {
           {bottomNavItems.map((item) => (
             <button
               key={item.label}
-              className="bottom-nav-item"
+              className={`bottom-nav-item ${item.active ? "active" : ""}`}
               onClick={() => navigate(item.path)}
             >
               <Ic n={item.icon} s={20} />

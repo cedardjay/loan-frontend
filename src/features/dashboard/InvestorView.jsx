@@ -346,17 +346,17 @@ function PortfolioChart() {
 }
 
 const navItems = [
-  { id: "dashboard", label: "INVESTOR VIEW", icon: "dashboard", path: "/investor-portal" },
+  { id: "dashboard", label: "INVESTOR VIEW", icon: "dashboard", path: "/investor-view" },
   { id: "portfolio", label: "Portfolio", icon: "portfolio", path: "/investments" },
   { id: "marketplace", label: "Loan listings", icon: "market", path: "/loan-market" },
-  { id: "transactions", label: "Transactions", icon: "tx", path: "/investor-portal/transactions" },
-  { id: "settings", label: "Settings", icon: "settings", path: "/investor-portal/settings" },
+  { id: "transactions", label: "Transactions", icon: "tx", path: "/transactions" },
+  { id: "settings", label: "Settings", icon: "settings", path: "/settings" },
 ];
 
 const bottomNavItems = [
   { icon: "grid_view", label: "Hybrid", path: "/dashboard" },
-  { icon: "account_balance", label: "Invest", path: "/investor-portal", active: true },
-  { icon: "payments", label: "Borrow", path: "/borrower-portal" },
+  { icon: "account_balance", label: "Invest", path: "/investor-view", active: true },
+  { icon: "payments", label: "Borrow", path: "/borrower-view" },
   { icon: "person", label: "Profile", path: "/profile" },
 ];
 
@@ -372,7 +372,7 @@ const recommended = [
   { name: "Medical Office Eq.", grade: "A", yield: "8.8% Yield", left: "$12,000 left" },
 ];
 
-export default function InvestorDashboard() {
+export default function InvestorView() {
   const [activeNav, setActiveNav] = useState("dashboard");
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const navigate = useNavigate();
@@ -397,8 +397,8 @@ export default function InvestorDashboard() {
           </div>
           <div className="nav-tabs">
             <button className="nav-tab" onClick={() => navigate("/dashboard")}>Hybrid</button>
-            <button className="nav-tab active" onClick={() => navigate("/investor-portal")}>Investor</button>
-            <button className="nav-tab" onClick={() => navigate("/borrower-portal")}>Borrower</button>
+            <button className="nav-tab active" onClick={() => navigate("/investor-view")}>Investor</button>
+            <button className="nav-tab" onClick={() => navigate("/borrower-view")}>Borrower</button>
           </div>
           <div className="nav-right">
             <button className="icon-btn"><Ic n="bell" s={16} /></button>
@@ -413,7 +413,6 @@ export default function InvestorDashboard() {
           {/* SIDEBAR */}
           <aside className={`sidebar ${sidebarOpen ? "open" : ""}`}>
             <div className="sidebar-brand">
-              <div className="sb-name">The Sanctuary</div>
               <div className="sb-sub">Premium P2P Lending</div>
             </div>
             <nav className="sb-nav">
@@ -463,7 +462,7 @@ export default function InvestorDashboard() {
                 <div className="deploy-link">Deploy via Auto-invest <Ic n="arrow" s={13} /></div>
                 <button
                   className="browse-loans-btn"
-                  onClick={() => navigate('/loan-market')}
+                  onClick={() => navigate('/loan-listings')}
                 >
                   <Ic n="list" s={16} /> Browse Loan Listings
                 </button>

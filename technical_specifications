@@ -67,7 +67,7 @@ Use case Diagram:
 
 Schema:
 Entity-relationship Diagram
-Entities {User, Loan_Request, Active_Loan, Matched_Request Dispute, Activity_Log, Transaction}
+Entities {User, Loan_Request, Matched_Request, Dispute, Activity_Log, Transaction}
 
 
 Relationships (with Cardinalities)

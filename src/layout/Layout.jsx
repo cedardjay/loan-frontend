@@ -24,40 +24,6 @@ const PublicNav = () => (
   </header>
 );
 
-const UserNav = () => {
-    const navigate = useNavigate();
-    return (
-      <nav className="fixed top-0 w-full border-b border-slate-200/20 bg-white/85 backdrop-blur-md z-50">
-        <div className="max-w-7xl mx-auto px-6 h-20 flex justify-between items-center">
-          <div className="flex items-center gap-8">
-            <Link to="/" className="text-2xl font-bold text-[#0F1C2F] tracking-tight">loan@</Link>
-            <div className="hidden md:flex items-center gap-6">
-              <Link className="text-[#344556] font-medium hover:text-[#2B5F8A] transition-colors text-sm" to="/borrower-dashboard">My Loans</Link>
-              <Link className="text-[#344556] font-medium hover:text-[#2B5F8A] transition-colors text-sm" to="/investor-dashboard">My Investments</Link>
-              <a className="text-[#344556] font-medium hover:text-[#2B5F8A] transition-colors text-sm" href="#">Profile</a>
-            </div>
-          </div>
-          <div className="flex items-center gap-4">
-            <button
-              onClick={() => {
-                ApiService.logout();
-                navigate('/login');
-              }}
-              className="px-4 py-1.5 bg-primary text-white rounded-lg font-semibold">
-              Logout
-            </button>
-            <div className="w-10 h-10 rounded-full bg-surface-container-highest overflow-hidden border border-outline-variant/20">
-              <img
-                className="w-full h-full object-cover"
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuB3-rMVGRh7zc3UJAHf7wUC-BTF9MqFNzRwbonunVdU7tiDVWwVVlQRlmmXGCh0z_X1ki3DkOtUxGG6_NaXyn56nlEuiLdmbZbZNGNOhTIzEHS-5D_odzoQYE017MZMUyzLhG8coRqwR4n7PKmFhM5QtOzano6bfPq-biucqeaJM5-ABR0nbarHjK4iAbdTxpYr3DQkHn8GbwW3vSiclmDOWotLBGu3JFhciycjo6iduqdPXJxPiEv4GmL522LPIDQfZ_P-PtfICTA"
-                alt="user avatar"
-              />
-            </div>
-          </div>
-        </div>
-      </nav>
-    );
-};
 
 const Footer = () => (
   <footer className="bg-surface-container-low pt-24 pb-12 border-t border-outline-variant/20">
