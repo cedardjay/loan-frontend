@@ -347,8 +347,8 @@ function PortfolioChart() {
 
 const navItems = [
   { id: "dashboard", label: "INVESTOR VIEW", icon: "dashboard", path: "/investor-view" },
-  { id: "portfolio", label: "Portfolio", icon: "portfolio", path: "/investments" },
-  { id: "marketplace", label: "Loan listings", icon: "market", path: "/loan-market" },
+  { id: "portfolio", label: "Portfolio", icon: "portfolio", path: "/my-investments" },
+  { id: "marketplace", label: "Loan listings", icon: "market", path: "/loan-listings" },
   { id: "transactions", label: "Transactions", icon: "tx", path: "/transactions" },
   { id: "settings", label: "Settings", icon: "settings", path: "/settings" },
 ];

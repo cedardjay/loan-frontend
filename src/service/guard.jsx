@@ -1,37 +1,36 @@
 
-// src/ProtectedRoute.js
 import React from 'react';
-import { Navigate, useLocation } from 'react-router-dom';
+import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import ApiService from './ApiService';
 
 
-export const ProtectedRoute = ({ element: Component }) => {
+export const ProtectedRoute = () => {
   const location = useLocation();
 
   return ApiService.isAuthenticated() ? (
-    Component
+   <Outlet/>
   ) : (
     <Navigate to="/login" replace state={{ from: location }} />
   );
 };
 
 
-export const AdminRoute = ({ element: Component }) => {
+export const AdminRoute = () => {
   const location = useLocation();
 
   return ApiService.isAdmin() ? (
-    Component
+    <Outlet/>
   ) : (
     <Navigate to="/login" replace state={{ from: location }} />
   );
 };
 
 
-export const SuperAdminRoute = ({ element: Component }) => {
+export const SuperAdminRoute = () => {
   const location = useLocation();
 
   return ApiService.isSuperAdmin() ? (
-    Component
+    <Outlet/>
   ) : (
     <Navigate to="/login" replace state={{ from: location }} />
   );

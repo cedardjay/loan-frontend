@@ -375,7 +375,7 @@ const history = [
   { date: "Jan 15, 2021", purpose: "Small Business Expansion", amount: "12,000,000 FCFA", status: "paid" },
 ];
 
-export default function UserLoans() {
+export default function MyLoans() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [pendingLoans, setPendingLoans] = useState([]);
   const [loading, setLoading] = useState(true);

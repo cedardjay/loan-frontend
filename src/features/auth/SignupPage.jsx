@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import ApiService from '../../service/ApiService';
-import Layout from '../../layout/Layout';
 import PhoneInput from "react-phone-number-input";
 import "react-phone-number-input/style.css";
 
@@ -67,7 +66,7 @@ export default function SignupPage() {
   };
 
   return (
-    <Layout hideFooter hideNav>
+    <div>
       <header className="fixed top-0 w-full z-50 bg-white/85 backdrop-blur-md h-20 border-b border-outline-variant/10">
         <nav className="max-w-7xl mx-auto px-8 h-full relative flex justify-between items-center">
           <Link to="/" className="text-2xl font-bold tracking-tighter text-[#0F1C2F]">loan@</Link>
@@ -218,6 +217,6 @@ export default function SignupPage() {
 
         </div>
       </div>
-    </Layout>
+    </div>
   );
 }

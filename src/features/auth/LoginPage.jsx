@@ -1,6 +1,5 @@
 import React from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import Layout from '../../layout/Layout';
 import { useState } from 'react';
 import ApiService from '../../service/ApiService';
 
@@ -45,7 +44,7 @@ export default function LoginPage() {
   };
 
   return (
-    <Layout hideFooter hideNav>
+    <div>
       <header className="fixed top-0 w-full z-50 border-b border-slate-200/20 bg-white/85 backdrop-blur-md h-20">
         <div className="max-w-7xl mx-auto px-8 h-full flex justify-between items-center">
           <Link to="/" className="text-2xl font-bold tracking-tighter text-blue-950">loan@</Link>
@@ -95,6 +94,6 @@ export default function LoginPage() {
           </div>
         </div>
       </main>
-    </Layout>
+    </div>
   );
 }
