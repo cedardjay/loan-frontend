@@ -3,20 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import Layout from './Layout';
 
 const styles = `
-  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap');
-
-  :root {
-    --navy: #0f2240;
-    --navy-light: #1a3560;
-    --accent: #e8622a;
-    --accent-hover: #d4551f;
-    --bg: #f0f3f8;
-    --card: #ffffff;
-    --text: #0f2240;
-    --muted: #7a8aaa;
-    --border: #dde3ef;
-    --green: #2eb87e;
-  }
 
   .hp-wrap {
     font-family: 'DM Sans', sans-serif;

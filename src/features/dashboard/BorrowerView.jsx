@@ -1,88 +1,6 @@
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const styles = `
-  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
-
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-  :root {
-    --navy: #0f2240;
-    --navy-light: #1a3560;
-    --navy-mid: #163059;
-    --accent: #e8622a;
-    --accent-hover: #d4551f;
-    --bg: #f0f3f8;
-    --card: #ffffff;
-    --text: #0f2240;
-    --muted: #7a8aaa;
-    --border: #dde3ef;
-    --green: #2eb87e;
-    --sidebar-w: 220px;
-  }
-
-  body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); }
-
-  .app-wrap { display: flex; flex-direction: column; min-height: 100vh; }
-
-  /* TOP NAV */
-  .topnav {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 0 32px; height: 60px; background: #fff;
-    border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100;
-  }
-  .topnav-logo { font-size: 1.25rem; font-weight: 700; color: var(--navy); letter-spacing: -0.5px; }
-  .topnav-logo span { color: var(--accent); }
-  .topnav-links { display: flex; gap: 32px; }
-  .topnav-links button {
-    font-size: 0.875rem; font-weight: 500; color: var(--muted);
-    background: none; border: none; cursor: pointer; transition: color 0.2s;
-    padding-bottom: 2px;
-  }
-  .topnav-links button.active { color: var(--navy); border-bottom: 2px solid var(--navy); font-weight: 600; }
-  .topnav-links button:hover { color: var(--navy); }
-  .topnav-right { display: flex; align-items: center; gap: 16px; }
-  .icon-btn {
-    width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--border);
-    background: #fff; display: flex; align-items: center; justify-content: center;
-    cursor: pointer; color: var(--navy); transition: background 0.2s;
-  }
-  .icon-btn:hover { background: var(--bg); }
-  .avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--navy); display: flex; align-items: center; justify-content: center; color: #fff; font-size: 0.8rem; font-weight: 600; cursor: pointer; }
-
-  /* LAYOUT */
-  .layout { display: flex; flex: 1; }
-
-  /* SIDEBAR */
-  .sidebar {
-    width: var(--sidebar-w); background: #f8fafc; border-right: 1px solid var(--border);
-    display: flex; flex-direction: column; padding: 28px 0; position: sticky;
-    top: 60px; height: calc(100vh - 60px); overflow-y: auto;
-  }
-  .sidebar-brand { padding: 0 24px 28px; border-bottom: 1px solid var(--border); }
-  .sidebar-brand-name { font-weight: 700; font-size: 0.95rem; color: var(--navy); letter-spacing: -0.3px; }
-  .sidebar-brand-name span { color: var(--accent); }
-  .sidebar-brand-sub { font-size: 0.7rem; font-weight: 500; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; margin-top: 2px; }
-  .sidebar-nav { padding: 20px 12px; flex: 1; }
-  .nav-item {
-    display: flex; align-items: center; gap: 12px; padding: 11px 14px;
-    border-radius: 10px; cursor: pointer; font-size: 0.82rem; font-weight: 600;
-    letter-spacing: 0.5px; text-transform: uppercase; color: var(--muted);
-    transition: all 0.18s; margin-bottom: 4px;
-  }
-  .nav-item:hover { background: #e2e8f0; color: var(--navy); }
-  .nav-item.active { background: var(--navy); color: #fff; }
-  .nav-item svg { flex-shrink: 0; }
-  .sidebar-footer { padding: 20px 16px; }
-  .support-btn {
-    width: 100%; padding: 12px; background: var(--navy); color: #fff;
-    border: none; border-radius: 10px; font-family: 'DM Sans', sans-serif;
-    font-size: 0.82rem; font-weight: 600; cursor: pointer; transition: background 0.2s;
-  }
-  .support-btn:hover { background: var(--navy-light); }
-
-  /* MAIN CONTENT */
-  .main { flex: 1; padding: 36px 32px; overflow-x: hidden; min-width: 0; }
 
   /* HEADER */
   .welcome-header { margin-bottom: 28px; }
@@ -240,51 +158,9 @@ const styles = `
   }
   .learn-btn:hover { opacity: 0.88; }
 
-  /* BOTTOM NAV - Matches Hybrid Dashboard */
-  .bottom-nav {
-    display: none;
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(8px);
-    border-top: 1px solid var(--border);
-    justify-content: space-around;
-    align-items: center;
-    padding: 8px 0;
-    z-index: 40;
-  }
-  .bottom-nav-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 0.7rem;
-    font-weight: 500;
-    color: var(--muted);
-    transition: color 0.2s;
-  }
-  .bottom-nav-item.active {
-    color: var(--green);
-  }
-  .bottom-nav-item svg {
-    width: 20px;
-    height: 20px;
-  }
 
   /* MOBILE SIDEBAR TOGGLE */
-  .mobile-menu-btn {
-    display: none; background: none; border: 1px solid var(--border); border-radius: 8px;
-    padding: 6px 10px; cursor: pointer; color: var(--navy);
-  }
-  .mobile-overlay {
-    display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 200;
-  }
+ 
   .mobile-overlay.open { display: block; }
 
   /* APPLY BUTTON */
@@ -322,15 +198,7 @@ const styles = `
   }
 
   @media (max-width: 768px) {
-    .sidebar {
-      position: fixed; left: -240px; top: 0; height: 100vh; z-index: 300;
-      transition: left 0.3s ease; padding-top: 70px;
-    }
-    .sidebar.open { left: 0; }
-    .mobile-menu-btn { display: block; }
-    .topnav { padding: 0 16px; }
-    .topnav-links { display: none; }
-    .main { padding: 20px 16px; padding-bottom: 70px; }
+   
     .stats-row { grid-template-columns: 1fr; gap: 12px; }
     .side-panel { grid-template-columns: 1fr; }
     .promo-card { grid-column: span 1; }
@@ -374,31 +242,10 @@ const Icon = ({ name, size = 18 }) => {
   return icons[name] || null;
 };
 
-const navItems = [
-  { id: "dashboard", label: "BORROWER VIEW", icon: "dashboard", path: "/borrower-view" },
-  { id: "myLoans", label: "MY LOANS", icon: "my-loans", path: "/my-loans" },
-  { id: "apply", label: "Apply for a loan", icon: "loans", path: "/loan-apply" },
-  { id: "payments", label: "Payments", icon: "payments", path: "/borrower-view/payments" },
-  { id: "documents", label: "Documents", icon: "documents", path: "/borrower-view/documents" },
-];
-
-const bottomNavItems = [
-  { icon: "grid_view", label: "Hybrid", path: "/dashboard" },
-  { icon: "account_balance", label: "Invest", path: "/investor-view" },
-  { icon: "payments", label: "Borrow", path: "/borrower-view", active: true },
-  { icon: "person", label: "Profile", path: "/profile" },
-];
 
 export default function BorrowerView() {
-  const [activeNav, setActiveNav] = useState("dashboard");
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  
   const navigate = useNavigate();
-
-  const handleNavigation = (path, navId) => {
-    setActiveNav(navId);
-    navigate(path);
-    setSidebarOpen(false);
-  };
 
   const handleApplyLoan = () => {
     navigate("/loan-apply");
@@ -411,55 +258,7 @@ export default function BorrowerView() {
   return (
     <>
       <style>{styles}</style>
-      <div className="app-wrap">
-        {/* TOP NAV */}
-        <nav className="topnav">
-          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-            <button className="mobile-menu-btn" onClick={() => setSidebarOpen(true)}>
-              <Icon name="menu" size={16} />
-            </button>
-            <div className="topnav-logo">Loan<span>@</span></div>
-          </div>
-          <div className="topnav-links">
-            <button onClick={() => navigate("/dashboard")}>Hybrid</button>
-            <button onClick={() => navigate("/investor-view")}>Investor</button>
-            <button className="active" onClick={() => navigate("/borrower-view")}>Borrower</button>
-          </div>
-          <div className="topnav-right">
-            <button className="icon-btn"><Icon name="bell" size={16} /></button>
-            <div className="avatar">TL</div>
-          </div>
-        </nav>
-
-        <div className="layout">
-          {/* MOBILE OVERLAY */}
-          <div className={`mobile-overlay ${sidebarOpen ? "open" : ""}`} onClick={() => setSidebarOpen(false)} />
-
-          {/* SIDEBAR */}
-          <aside className={`sidebar ${sidebarOpen ? "open" : ""}`}>
-            <div className="sidebar-brand">
-              <div className="sidebar-brand-name">LOAN<span>@</span></div>
-              <div className="sidebar-brand-sub">Borrower view</div>
-            </div>
-            <nav className="sidebar-nav">
-              {navItems.map(item => (
-                <div
-                  key={item.id}
-                  className={`nav-item ${activeNav === item.id ? "active" : ""}`}
-                  onClick={() => handleNavigation(item.path, item.id)}
-                >
-                  <Icon name={item.icon} size={16} />
-                  {item.label}
-                </div>
-              ))}
-            </nav>
-            <div className="sidebar-footer">
-              <button className="support-btn">Get Support</button>
-            </div>
-          </aside>
-
-          {/* MAIN */}
-          <main className="main">
+  
             {/* ACTION BUTTONS ROW */}
             <div className="action-buttons-row">
               <button className="my-loans-btn" onClick={handleMyLoans}>
@@ -607,23 +406,6 @@ export default function BorrowerView() {
                 </div>
               </div>
             </div>
-          </main>
-        </div>
-
-        {/* BOTTOM NAV - Matches Hybrid Dashboard */}
-        <nav className="bottom-nav">
-          {bottomNavItems.map((item) => (
-            <button
-              key={item.label}
-              className={`bottom-nav-item ${item.active ? "active" : ""}`}
-              onClick={() => navigate(item.path)}
-            >
-              <Icon name={item.icon} size={20} />
-              <span>{item.label}</span>
-            </button>
-          ))}
-        </nav>
-      </div>
     </>
   );
 }

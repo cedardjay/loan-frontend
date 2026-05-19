@@ -10,15 +10,18 @@ import AdminDashboard from './features/dashboard/AdminDashboard';
 import SuperAdminDashboard from './features/dashboard/SuperAdminDashboard';
 import { ProtectedRoute, AdminRoute, SuperAdminRoute } from './service/guard';
 import LoanApplication from './features/loans/LoanApplication';
-import UserDashboard from './features/dashboard/UserDashboard';
+import HybridView from './features/dashboard/HybridView';
 import MyLoans from './features/loans/MyLoans';
 import LoanListings from './features/investments/LoanListings';
 import InvestPage from './features/investments/InvestPage';
 import MyInvestments from './features/investments/MyInvestments';
-import  LoansManagement  from './features/loans/LoansManagement';
-import UsersManagement  from './features/users/UsersManagement';
+import LoansManagement from './features/loans/LoansManagement';
+import UsersManagement from './features/users/UsersManagement';
 import LoanDetails from './features/investments/LoanDetails';
 import DashboardLayout from './layouts/DashboardLayout';
+import InvestorLayout from './layouts/InvestorLayout';
+import BorrowerLayout from './layouts/BorrowerLayout';
+import UserLayout from './layouts/UserLayout';
 
 function App() {
   return (
@@ -29,19 +32,39 @@ function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/signup" element={<SignupPage />} />
         <Route path="/login" element={<LoginPage />} />
-        <Route path="/test" element={<DashboardLayout />} />
+
+
 
         {/* Protected routes — must be logged in */}
         <Route element={<ProtectedRoute />}>
-          <Route path="/dashboard" element={<UserDashboard />} />
+
+          <Route element={<DashboardLayout />}>
+
+            <Route element={<UserLayout />} >
+              <Route path="/dashboard" element={<HybridView />} />
+            </Route>
+
+
+            <Route element={<InvestorLayout />}>
+              <Route path="/investor-view" element={<InvestorView />} />
+            </Route>
+
+            <Route element={<BorrowerLayout />}>
+              <Route path="/borrower-view" element={<BorrowerView />} />
+            </Route>
+
+
+
+
+
+          </Route>
+
 
           {/* Borrower */}
-          <Route path="/borrower-view" element={<BorrowerView />} />
           <Route path="/my-loans" element={<MyLoans />} />
           <Route path="/loan-apply" element={<LoanApplication />} />
 
           {/* Investor */}
-          <Route path="/investor-view" element={<InvestorView />} />
           <Route path="/loan-listings" element={<LoanListings />} />
           <Route path="/invest/:id" element={<InvestPage />} />
           <Route path="/my-investments" element={<MyInvestments />} />

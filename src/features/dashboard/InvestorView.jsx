@@ -1,83 +1,7 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+
 
 const styles = `
-  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
-
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-  :root {
-    --navy: #0e2140;
-    --navy-2: #163059;
-    --navy-3: #1e3f70;
-    --green: #00a878;
-    --green-light: #e6f7f3;
-    --green-text: #007a57;
-    --accent: #e8622a;
-    --bg: #f2f5fa;
-    --card: #ffffff;
-    --border: #dde3ef;
-    --text: #0e2140;
-    --muted: #7a8aaa;
-    --red: #e8314a;
-    --red-light: #fdeaed;
-    --sidebar-w: 210px;
-  }
-
-  body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); }
-  .app { display: flex; flex-direction: column; min-height: 100vh; }
-
-  /* NAV */
-  .topnav {
-    height: 56px; background: #fff; border-bottom: 1px solid var(--border);
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 0 28px; position: sticky; top: 0; z-index: 100;
-  }
-  .logo { font-size: 1.2rem; font-weight: 700; color: var(--navy); }
-  .logo span { color: var(--accent); }
-  .nav-tabs { display: flex; gap: 28px; }
-  .nav-tab {
-    font-size: 0.875rem; font-weight: 500; color: var(--muted);
-    cursor: pointer; padding-bottom: 2px; border-bottom: 2px solid transparent;
-    transition: all 0.18s; text-decoration: none;
-  }
-  .nav-tab.active { color: var(--navy); border-bottom-color: var(--navy); font-weight: 600; }
-  .nav-tab:hover { color: var(--navy); }
-  .nav-right { display: flex; align-items: center; gap: 14px; }
-  .icon-btn { width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--border); background: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--navy); }
-  .avatar { width: 34px; height: 34px; border-radius: 50%; background: var(--navy-2); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 700; cursor: pointer; }
-
-  /* LAYOUT */
-  .layout { display: flex; flex: 1; }
-
-  /* SIDEBAR - Updated to match Hybrid */
-  .sidebar {
-    width: var(--sidebar-w); background: #f8fafc; border-right: 1px solid var(--border);
-    padding: 24px 0; display: flex; flex-direction: column;
-    position: sticky; top: 56px; height: calc(100vh - 56px); overflow-y: auto;
-  }
-  .sidebar-brand { padding: 0 20px 20px; border-bottom: 1px solid var(--border); }
-  .sb-name { font-weight: 700; font-size: 0.95rem; color: var(--navy); }
-  .sb-sub { font-size: 0.7rem; color: var(--muted); margin-top: 2px; }
-  .sb-nav { padding: 16px 10px; flex: 1; }
-  .sb-item {
-    display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 9px;
-    font-size: 0.845rem; font-weight: 500; color: var(--muted); cursor: pointer;
-    transition: all 0.16s; margin-bottom: 2px;
-  }
-  .sb-item:hover { background: #e2e8f0; color: var(--navy); }
-  .sb-item.active { background: var(--navy); color: #fff; font-weight: 600; }
-  .sb-footer { padding: 16px; }
-  .add-funds-btn {
-    width: 100%; padding: 11px; background: var(--navy); color: #fff; border: none;
-    border-radius: 9px; font-family: 'DM Sans', sans-serif; font-size: 0.845rem;
-    font-weight: 600; cursor: pointer; transition: background 0.2s;
-  }
-  .add-funds-btn:hover { background: var(--navy-2); }
-
-  /* MAIN */
-  .main { flex: 1; padding: 32px 28px; min-width: 0; overflow-x: hidden; }
-
+  
   /* WELCOME */
   .welcome { margin-bottom: 24px; }
   .welcome h1 { font-size: 1.85rem; font-weight: 700; color: var(--navy); letter-spacing: -0.4px; }
@@ -207,47 +131,7 @@ const styles = `
   .promo-text { font-size: 0.875rem; font-weight: 600; color: #fff; line-height: 1.4; position: relative; z-index: 1; }
   .promo-sub { font-size: 0.75rem; color: rgba(255,255,255,0.6); margin-top: 4px; position: relative; z-index: 1; }
 
-  /* BOTTOM NAV - Matches Hybrid Dashboard */
-  .bottom-nav {
-    display: none;
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(8px);
-    border-top: 1px solid var(--border);
-    justify-content: space-around;
-    align-items: center;
-    padding: 8px 0;
-    z-index: 40;
-  }
-  .bottom-nav-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 0.7rem;
-    font-weight: 500;
-    color: var(--muted);
-    transition: color 0.2s;
-  }
-  .bottom-nav-item.active {
-    color: var(--green);
-  }
-  .bottom-nav-item svg {
-    width: 20px;
-    height: 20px;
-  }
-
-  /* MOBILE */
-  .mobile-menu-btn { display: none; background: none; border: 1px solid var(--border); border-radius: 7px; padding: 5px 9px; cursor: pointer; color: var(--navy); }
-  .mobile-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 200; }
-  .mobile-overlay.open { display: block; }
+  
 
   @media (max-width: 1024px) {
     .content-grid { grid-template-columns: 1fr; }
@@ -256,18 +140,11 @@ const styles = `
   }
   @media (max-width: 768px) {
     :root { --sidebar-w: 210px; }
-    .sidebar { position: fixed; left: -230px; top: 0; height: 100vh; z-index: 300; transition: left 0.28s ease; padding-top: 64px; }
-    .sidebar.open { left: 0; }
-    .mobile-menu-btn { display: block; }
-    .topnav { padding: 0 16px; }
-    .nav-tabs { display: none; }
-    .main { padding: 20px 14px; padding-bottom: 70px; }
     .stats-row { grid-template-columns: 1fr 1fr; }
     .stat-card:last-child { grid-column: span 2; }
     .right-panel { grid-template-columns: 1fr; }
     .promo-card { grid-column: span 1; }
     .welcome h1 { font-size: 1.45rem; }
-    .bottom-nav { display: flex; }
   }
   @media (max-width: 480px) {
     .stats-row { grid-template-columns: 1fr; }
@@ -345,20 +222,9 @@ function PortfolioChart() {
   );
 }
 
-const navItems = [
-  { id: "dashboard", label: "INVESTOR VIEW", icon: "dashboard", path: "/investor-view" },
-  { id: "portfolio", label: "Portfolio", icon: "portfolio", path: "/my-investments" },
-  { id: "marketplace", label: "Loan listings", icon: "market", path: "/loan-listings" },
-  { id: "transactions", label: "Transactions", icon: "tx", path: "/transactions" },
-  { id: "settings", label: "Settings", icon: "settings", path: "/settings" },
-];
 
-const bottomNavItems = [
-  { icon: "grid_view", label: "Hybrid", path: "/dashboard" },
-  { icon: "account_balance", label: "Invest", path: "/investor-view", active: true },
-  { icon: "payments", label: "Borrow", path: "/borrower-view" },
-  { icon: "person", label: "Profile", path: "/profile" },
-];
+
+
 
 const investments = [
   { name: "Small Biz Expansion", grade: "A", amount: "$5,000", interest: "8.5%", status: "on", nextPayment: "Apr 25" },
@@ -373,67 +239,11 @@ const recommended = [
 ];
 
 export default function InvestorView() {
-  const [activeNav, setActiveNav] = useState("dashboard");
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const navigate = useNavigate();
-
-  const handleNavigation = (path, navId) => {
-    setActiveNav(navId);
-    navigate(path);
-    setSidebarOpen(false);
-  };
 
   return (
     <>
       <style>{styles}</style>
-      <div className="app">
-        {/* TOP NAV */}
-        <nav className="topnav">
-          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-            <button className="mobile-menu-btn" onClick={() => setSidebarOpen(true)}>
-              <Ic n="menu" s={16} />
-            </button>
-            <div className="logo">Loan<span>@</span></div>
-          </div>
-          <div className="nav-tabs">
-            <button className="nav-tab" onClick={() => navigate("/dashboard")}>Hybrid</button>
-            <button className="nav-tab active" onClick={() => navigate("/investor-view")}>Investor</button>
-            <button className="nav-tab" onClick={() => navigate("/borrower-view")}>Borrower</button>
-          </div>
-          <div className="nav-right">
-            <button className="icon-btn"><Ic n="bell" s={16} /></button>
-            <div className="avatar">TL</div>
-          </div>
-        </nav>
-
-        <div className="layout">
-          {/* MOBILE OVERLAY */}
-          <div className={`mobile-overlay ${sidebarOpen ? "open" : ""}`} onClick={() => setSidebarOpen(false)} />
-
-          {/* SIDEBAR */}
-          <aside className={`sidebar ${sidebarOpen ? "open" : ""}`}>
-            <div className="sidebar-brand">
-              <div className="sb-sub">Premium P2P Lending</div>
-            </div>
-            <nav className="sb-nav">
-              {navItems.map(item => (
-                <div
-                  key={item.id}
-                  className={`sb-item ${activeNav === item.id ? "active" : ""}`}
-                  onClick={() => handleNavigation(item.path, item.id)}
-                >
-                  <Ic n={item.icon} s={16} />
-                  {item.label}
-                </div>
-              ))}
-            </nav>
-            <div className="sb-footer">
-              <button className="add-funds-btn">Add Funds</button>
-            </div>
-          </aside>
-
-          {/* MAIN */}
-          <main className="main">
+         
             {/* WELCOME */}
             <div className="welcome">
               <h1>Welcome back, Taylor</h1>
@@ -569,23 +379,7 @@ export default function InvestorView() {
                 </div>
               </div>
             </div>
-          </main>
-        </div>
-
-        {/* BOTTOM NAV - Matches Hybrid Dashboard */}
-        <nav className="bottom-nav">
-          {bottomNavItems.map((item) => (
-            <button
-              key={item.label}
-              className={`bottom-nav-item ${item.active ? "active" : ""}`}
-              onClick={() => navigate(item.path)}
-            >
-              <Ic n={item.icon} s={20} />
-              <span>{item.label}</span>
-            </button>
-          ))}
-        </nav>
-      </div>
+           
     </>
   );
 }

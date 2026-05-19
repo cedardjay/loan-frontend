@@ -2,73 +2,6 @@ import { useNavigate } from "react-router-dom";
 
 // ─── Styles ──────────────────────────────────────────────────────────────────
 
-const navStyles = `
-  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
-
-  :root {
-    --navy: #0f2240;
-    --navy-light: #1a3560;
-    --accent: #e8622a;
-    --bg: #f0f3f8;
-    --muted: #7a8aaa;
-    --border: #dde3ef;
-    --green: #2eb87e;
-  }
-
-  .bd-topnav {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 0 32px; height: 60px; background: #fff;
-    border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100;
-    font-family: 'DM Sans', sans-serif;
-  }
-  .bd-logo { font-size: 1.25rem; font-weight: 700; color: var(--navy); letter-spacing: -0.5px; }
-  .bd-logo span { color: var(--accent); }
-  .bd-links { display: flex; gap: 32px; }
-  .bd-links button {
-    font-size: 0.875rem; font-weight: 500; color: var(--muted);
-    background: none; border: none; cursor: pointer; transition: color 0.2s;
-    padding-bottom: 2px; font-family: 'DM Sans', sans-serif;
-  }
-  .bd-links button.active { color: var(--navy); border-bottom: 2px solid var(--navy); font-weight: 600; }
-  .bd-links button:hover { color: var(--navy); }
-  .bd-right { display: flex; align-items: center; gap: 16px; }
-  .bd-icon-btn {
-    width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--border);
-    background: #fff; display: flex; align-items: center; justify-content: center;
-    cursor: pointer; color: var(--navy); transition: background 0.2s;
-  }
-  .bd-icon-btn:hover { background: var(--bg); }
-  .bd-avatar {
-    width: 36px; height: 36px; border-radius: 50%; background: var(--navy);
-    display: flex; align-items: center; justify-content: center;
-    color: #fff; font-size: 0.8rem; font-weight: 600; cursor: pointer;
-    font-family: 'DM Sans', sans-serif;
-  }
-
-  .bd-bottom-nav {
-    display: none;
-    position: fixed; bottom: 0; left: 0; right: 0;
-    background: rgba(255,255,255,0.95); backdrop-filter: blur(8px);
-    border-top: 1px solid var(--border);
-    justify-content: space-around; align-items: center;
-    padding: 8px 0; z-index: 40;
-    font-family: 'DM Sans', sans-serif;
-  }
-  .bd-bottom-item {
-    display: flex; flex-direction: column; align-items: center; gap: 4px;
-    background: none; border: none; cursor: pointer;
-    font-size: 0.7rem; font-weight: 500; color: var(--muted);
-    transition: color 0.2s; font-family: 'DM Sans', sans-serif;
-  }
-  .bd-bottom-item.active { color: var(--green); }
-  .bd-bottom-item svg { width: 20px; height: 20px; }
-
-  @media (max-width: 768px) {
-    .bd-topnav { padding: 0 16px; }
-    .bd-links { display: none; }
-    .bd-bottom-nav { display: flex; }
-  }
-`;
 
 // ─── Icon (SVG, no Material Symbols dependency) ──────────────────────────────
 
@@ -83,12 +16,7 @@ const SvgIcon = ({ name, size = 18 }) => {
   return icons[name] || null;
 };
 
-const bottomNavItems = [
-  { icon: "grid_view",       label: "Hybrid",  path: "/dashboard",       active: true },
-  { icon: "account_balance", label: "Invest",  path: "/investor-view", active: false },
-  { icon: "payments",        label: "Borrow",  path: "/borrower-view", active: false },
-  { icon: "person",          label: "Profile", path: "/profile",         active: false },
-];
+
 
 // ─── Data ───────────────────────────────────────────────────────────────────
 
@@ -148,44 +76,9 @@ function Icon({ name, filled = false, className = "" }) {
   );
 }
 
-function TopNav() {
-  const navigate = useNavigate();
-  return (
-    <>
-      <style>{navStyles}</style>
-      <nav className="bd-topnav">
-        <div className="bd-logo">Loan<span>@</span></div>
-        <div className="bd-links">
-          <button className="active" onClick={() => navigate("/dashboard")}>Hybrid</button>
-          <button onClick={() => navigate("/investor-view")}>Investor</button>
-          <button onClick={() => navigate("/borrower-view")}>Borrower</button>
-        </div>
-        <div className="bd-right">
-          <button className="bd-icon-btn"><SvgIcon name="bell" size={16} /></button>
-          <div className="bd-avatar">TL</div>
-        </div>
-      </nav>
-    </>
-  );
-}
 
-function BottomNav() {
-  const navigate = useNavigate();
-  return (
-    <nav className="bd-bottom-nav">
-      {bottomNavItems.map(item => (
-        <button
-          key={item.label}
-          className={`bd-bottom-item ${item.active ? "active" : ""}`}
-          onClick={() => navigate(item.path)}
-        >
-          <SvgIcon name={item.icon} size={20} />
-          <span>{item.label}</span>
-        </button>
-      ))}
-    </nav>
-  );
-}
+
+
 
 function SummaryCards() {
   const navigate = useNavigate();
@@ -369,10 +262,10 @@ function RecentActivity() {
 
 // ─── Page ────────────────────────────────────────────────────────────────────
 
-export default function UserDashboard() {
+export default function HybridView() {
   return (
     <div className="bg-surface text-on-surface min-h-screen font-body pb-16 md:pb-0">
-      <TopNav />
+    
 
       <main className="p-4 sm:p-8 min-h-screen">
         <header className="mb-8 sm:mb-10">
@@ -397,7 +290,7 @@ export default function UserDashboard() {
         </div>
       </main>
 
-      <BottomNav />
+      
     </div>
   );
 }

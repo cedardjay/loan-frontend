@@ -1,31 +1,9 @@
-// src/features/dashboard/layouts/DashboardLayout.jsx
 
-import { useState } from "react";
+import { useState, createContext, useContext } from "react";
 import { useNavigate, Outlet } from "react-router-dom";
 
 const styles = `
-  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
-
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-  :root {
-    --navy: #0e2140;
-    --navy-2: #163059;
-    --navy-3: #1e3f70;
-    --green: #00a878;
-    --green-light: #e6f7f3;
-    --green-text: #007a57;
-    --accent: #e8622a;
-    --bg: #f2f5fa;
-    --card: #ffffff;
-    --border: #dde3ef;
-    --text: #0e2140;
-    --muted: #7a8aaa;
-    --red: #e8314a;
-    --red-light: #fdeaed;
-    --sidebar-w: 210px;
-  }
-
+ 
   body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); }
   .app { display: flex; flex-direction: column; min-height: 100vh; }
 
@@ -116,15 +94,21 @@ const bottomNavItems = [
   { icon: "person",           label: "Profile",  path: "/profile" },
 ];
 
+const SidebarContext = createContext();
+
+export function useSidebar() {
+  return useContext(SidebarContext);
+}
+
 export default function DashboardLayout() {
   const navigate = useNavigate();
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   // Derive active bottom nav item from current path
   const currentPath = window.location.pathname;
 
   return (
-    <>
+    <SidebarContext.Provider value={{ sidebarOpen, setSidebarOpen }}>
       <style>{styles}</style>
       <div className="app">
 
@@ -133,7 +117,7 @@ export default function DashboardLayout() {
           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
             <button
               className="mobile-menu-btn"
-              onClick={() => setMobileMenuOpen(prev => !prev)}
+              onClick={() => setSidebarOpen(prev => !prev)}
             >
               <Ic n="menu" s={16} />
             </button>
@@ -187,6 +171,6 @@ export default function DashboardLayout() {
         </nav>
 
       </div>
-    </>
+    </SidebarContext.Provider>
   );
 }
