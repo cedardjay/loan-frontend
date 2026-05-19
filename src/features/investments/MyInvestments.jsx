@@ -2,28 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const styles = `
-  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
-
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-  :root {
-    --navy: #0e2140;
-    --navy-2: #163059;
-    --navy-3: #1e3f70;
-    --green: #00a878;
-    --green-light: #e6f7f3;
-    --green-text: #007a57;
-    --accent: #e8622a;
-    --bg: #f2f5fa;
-    --card: #ffffff;
-    --border: #dde3ef;
-    --text: #0e2140;
-    --muted: #7a8aaa;
-    --red: #e8314a;
-    --red-light: #fdeaed;
-    --sidebar-w: 210px;
-  }
-
+ 
   body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); }
   .app { display: flex; flex-direction: column; min-height: 100vh; }
 
@@ -47,9 +26,7 @@ const styles = `
   .icon-btn { width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--border); background: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--navy); }
   .avatar { width: 34px; height: 34px; border-radius: 50%; background: var(--navy-2); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 700; cursor: pointer; }
 
-  /* LAYOUT */
-  .layout { display: flex; flex: 1; }
-
+  
   /* SIDEBAR - From InvestorDashboard */
   .sidebar {
     width: var(--sidebar-w); background: #f8fafc; border-right: 1px solid var(--border);
@@ -76,7 +53,7 @@ const styles = `
   .add-funds-btn:hover { background: var(--navy-2); }
 
   /* MAIN */
-  .main { flex: 1; padding: 32px 28px; min-width: 0; overflow-x: hidden; padding-bottom: 80px; }
+   .main { flex: 1; padding: 32px 28px; min-width: 0; overflow-x: hidden; padding-bottom: 80px; }
 
   /* PAGE HEADER */
   .page-header { margin-bottom: 28px; }
@@ -278,27 +255,10 @@ const allInvestments = [
   { id: 10, name: "E-commerce Growth", grade: "B", amount: 6000, interest: 10.8, status: "active", nextPayment: "May 05, 2025", investedDate: "Mar 01, 2025", expectedReturn: 324.00 },
 ];
 
-// ── Sidebar nav from InvestorDashboard ──
-const navItems = [
-  { id: "dashboard", label: "INVESTOR VIEW", icon: "dashboard", path: "/investor-portal" },
-  { id: "portfolio", label: "Portfolio", icon: "portfolio", path: "/investments" },
-  { id: "marketplace", label: "Loan listings", icon: "market", path: "/loan-market" },
-  { id: "transactions", label: "Transactions", icon: "tx", path: "/investor-portal/transactions" },
-  { id: "settings", label: "Settings", icon: "settings", path: "/investor-portal/settings" },
-];
-
-const bottomNavItems = [
-  { icon: "grid_view", label: "Hybrid", path: "/dashboard" },
-  { icon: "account_balance", label: "Invest", path: "/investor-portal", active: true },
-  { icon: "payments", label: "Borrow", path: "/borrower-portal" },
-  { icon: "person", label: "Profile", path: "/profile" },
-];
-
 export default function MyInvestments() {
   const [activeNav, setActiveNav] = useState("portfolio");
   const [filterStatus, setFilterStatus] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
-  const [sidebarOpen, setSidebarOpen] = useState(false);
   const navigate = useNavigate();
 
   const filteredInvestments = allInvestments.filter(inv => {
@@ -321,65 +281,16 @@ export default function MyInvestments() {
     }
   };
 
-  const handleNavigation = (path, navId) => {
-    setActiveNav(navId);
-    navigate(path);
-    setSidebarOpen(false);
-  };
 
   return (
     <>
-      <style>{styles}</style>
+    <style>{styles}</style>
       <div className="app">
-        {/* TOP NAV */}
-        <nav className="topnav">
-          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-            <button className="mobile-menu-btn" onClick={() => setSidebarOpen(true)}>
-              <Ic n="menu" s={16} />
-            </button>
-            <div className="logo">Loan<span>@</span></div>
-          </div>
-          <div className="nav-tabs">
-            <button className="nav-tab" onClick={() => navigate("/dashboard")}>Hybrid</button>
-            <button className="nav-tab active" onClick={() => navigate("/investor-portal")}>Investor</button>
-            <button className="nav-tab" onClick={() => navigate("/borrower-portal")}>Borrower</button>
-          </div>
-          <div className="nav-right">
-            <button className="icon-btn"><Ic n="bell" s={16} /></button>
-            <div className="avatar">TL</div>
-          </div>
-        </nav>
-
-        <div className="layout">
-          {/* MOBILE OVERLAY */}
-          <div className={`mobile-overlay ${sidebarOpen ? "open" : ""}`} onClick={() => setSidebarOpen(false)} />
-
-          {/* SIDEBAR — from InvestorDashboard, portfolio highlighted */}
-          <aside className={`sidebar ${sidebarOpen ? "open" : ""}`}>
-            <div className="sidebar-brand">
-              <div className="sb-sub">Premium P2P Lending</div>
-            </div>
-            <nav className="sb-nav">
-              {navItems.map(item => (
-                <div
-                  key={item.id}
-                  className={`sb-item ${activeNav === item.id ? "active" : ""}`}
-                  onClick={() => handleNavigation(item.path, item.id)}
-                >
-                  <Ic n={item.icon} s={16} />
-                  {item.label}
-                </div>
-              ))}
-            </nav>
-            <div className="sb-footer">
-              <button className="add-funds-btn">Add Funds</button>
-            </div>
-          </aside>
 
           {/* MAIN */}
           <main className="main">
             <div className="page-header">
-              <h1 className="page-title">My Portfolio</h1>
+              <h1 className="page-title">My Investments</h1>
               <p className="page-subtitle">Track and manage all your investments in one place.</p>
             </div>
 
@@ -513,21 +424,6 @@ export default function MyInvestments() {
             </div>
           </main>
         </div>
-
-        {/* BOTTOM NAV */}
-        <nav className="bottom-nav">
-          {bottomNavItems.map((item) => (
-            <button
-              key={item.label}
-              className={`bottom-nav-item ${item.active ? "active" : ""}`}
-              onClick={() => navigate(item.path)}
-            >
-              <Ic n={item.icon} s={20} />
-              <span>{item.label}</span>
-            </button>
-          ))}
-        </nav>
-      </div>
     </>
   );
 }

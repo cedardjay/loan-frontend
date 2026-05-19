@@ -47,6 +47,7 @@ function App() {
 
             <Route element={<InvestorLayout />}>
               <Route path="/investor-view" element={<InvestorView />} />
+              <Route path="/my-investments" element={<MyInvestments />} />
             </Route>
 
             <Route element={<BorrowerLayout />}>
@@ -67,7 +68,6 @@ function App() {
           {/* Investor */}
           <Route path="/loan-listings" element={<LoanListings />} />
           <Route path="/invest/:id" element={<InvestPage />} />
-          <Route path="/my-investments" element={<MyInvestments />} />
           <Route path="/loan-details/:id" element={<LoanDetails />} />
         </Route>
 

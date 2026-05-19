@@ -1,4 +1,3 @@
-// src/features/dashboard/layouts/InvestorLayout.jsx
 
 import { useEffect } from "react";
 import { useNavigate, useLocation, Outlet, NavLink } from "react-router-dom";
@@ -59,7 +58,7 @@ const Ic = ({ n, s = 17 }) => {
 
 const navItems = [
   { label: "Investor View", icon: "dashboard", path: "/investor-view" },
-  { label: "Portfolio",     icon: "portfolio", path: "/my-investments" },
+  { label: "My Investments",     icon: "portfolio", path: "/my-investments" },
   { label: "Loan Listings", icon: "market",    path: "/loan-listings" },
   { label: "Transactions",  icon: "tx",        path: "/transactions" },
   { label: "Settings",      icon: "settings",  path: "/settings" },
