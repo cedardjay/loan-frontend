@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import ApiService from "../../service/ApiService";
+import InvestService from "./InvestService";
 
 const css = `
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&display=swap');
@@ -282,7 +282,7 @@ body{
 }
 `;
 
-export default function InvestNowPage() {
+export default function InvestPage() {
   const navigate = useNavigate();
   const { id } = useParams();
 
@@ -331,13 +331,7 @@ export default function InvestNowPage() {
       setSubmitting(true);
 
       // API CALL
-      // Replace with your real backend method
-      // Example:
-      // await ApiService.investInLoan(id, { amount });
-
-      await new Promise((resolve) =>
-        setTimeout(resolve, 1500)
-      );
+      await InvestService.investInLoan(id, { amount });
 
       setMessage(
         `Successfully invested $${Number(amount).toLocaleString()} in this loan.`

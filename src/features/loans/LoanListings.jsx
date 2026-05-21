@@ -425,7 +425,7 @@ function LoanCard({ loan, navigate }) {
             transition: "all .2s",
           }}
           onClick={() =>
-            navigate(`/loan-details/${loan.rawId}`)
+            navigate(`/investor/loan-details/${loan.rawId}`)
           }
           onMouseOver={(e) => {
             e.target.style.background = "var(--navy)";
@@ -443,7 +443,7 @@ function LoanCard({ loan, navigate }) {
           className="invest-now-btn"
           style={{ flex: 1 }}
           onClick={() =>
-            navigate(`/invest/${loan.rawId}`)
+            navigate(`/investor/invest/${loan.rawId}`)
           }
         >
           Invest Now

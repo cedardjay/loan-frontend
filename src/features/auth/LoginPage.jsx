@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useState } from 'react';
-import ApiService from '../../service/ApiService';
+import AuthService from './AuthService';
 
 
 
@@ -24,7 +24,7 @@ export default function LoginPage() {
     }
 
     try {
-      const response = await ApiService.loginUser({ email, password });
+      const response = await AuthService.loginUser({ email, password });
       if (response.statusCode === 200) {
         localStorage.setItem('token', response.token);
         localStorage.setItem('role', response.role);

@@ -472,7 +472,7 @@ export default function LoanDetails() {
               className="invest-btn"
               onClick={() =>
                 navigate(
-                  `/invest/${loan.requestId}/`
+                  `/investor/invest/${loan.requestId}/`
                 )
               }
             >

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import ApiService from '../../service/ApiService';
+import AuthService from './AuthService';
 import PhoneInput from "react-phone-number-input";
 import "react-phone-number-input/style.css";
 
@@ -38,7 +38,7 @@ export default function SignupPage() {
       return;
     }
     try {
-      const response = await ApiService.registerUser(formData);
+      const response = await AuthService.registerUser(formData);
 
       if (response.statusCode === 200) {
         setSuccessMessage('User registered successfully');
