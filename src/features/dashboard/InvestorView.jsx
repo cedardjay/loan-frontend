@@ -1,4 +1,4 @@
-
+import { useNavigate } from "react-router-dom";
 
 const styles = `
   
@@ -239,6 +239,7 @@ const recommended = [
 ];
 
 export default function InvestorView() {
+  const navigate = useNavigate();
 
   return (
     <>
@@ -272,7 +273,7 @@ export default function InvestorView() {
                 <div className="deploy-link">Deploy via Auto-invest <Ic n="arrow" s={13} /></div>
                 <button
                   className="browse-loans-btn"
-                  onClick={() => navigate('/loan-listings')}
+                  onClick={() => navigate('/investor/loan-listings')}
                 >
                   <Ic n="list" s={16} /> Browse Loan Listings
                 </button>

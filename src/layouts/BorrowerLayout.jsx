@@ -60,11 +60,11 @@ const Icon = ({ name, size = 18 }) => {
 };
 
 const navItems = [
-  { label: "BORROWER VIEW", icon: "dashboard",  path: "/borrower-view" },
-  { label: "MY LOANS",      icon: "my-loans",   path: "/my-loans" },
-  { label: "Apply for Loan",icon: "loans",      path: "/loan-apply" },
-  { label: "Payments",      icon: "payments",   path: "/borrower-view/payments" },
-  { label: "Documents",     icon: "documents",  path: "/borrower-view/documents" },
+  { label: "BORROWER VIEW", icon: "dashboard",  path: "/borrower/view" },
+  { label: "My loans",      icon: "my-loans",   path: "/borrower/my-loans" },
+  { label: "Apply for Loan",icon: "loans",      path: "/borrower/loan-apply" },
+  { label: "Payments",      icon: "payments",   path: "/borrower/payments" },
+  { label: "Documents",     icon: "documents",  path: "/borrower/documents" },
 ];
 
 export default function BorrowerLayout() {

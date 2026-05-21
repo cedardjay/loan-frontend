@@ -88,10 +88,10 @@ const Ic = ({ n, s = 17 }) => {
 // and let each child page signal its section via a prop or context later.
 
 const bottomNavItems = [
-  { icon: "grid_view",        label: "Hybrid",   path: "/dashboard" },
-  { icon: "account_balance",  label: "Invest",   path: "/investor-view" },
-  { icon: "payments",         label: "Borrow",   path: "/borrower-view" },
-  { icon: "person",           label: "Profile",  path: "/profile" },
+  { icon: "grid_view", label: "Hybrid", path: "/dashboard", matchPrefix: "/dashboard" },
+  { icon: "account_balance", label: "Invest", path: "/investor/view", matchPrefix: "/investor" },
+  { icon: "payments", label: "Borrow", path: "/borrower/view", matchPrefix: "/borrower" },
+  { icon: "person", label: "Profile", path: "/profile", matchPrefix: "/profile" },
 ];
 
 const SidebarContext = createContext();
@@ -126,14 +126,14 @@ export default function DashboardLayout() {
 
           <div className="nav-tabs">
             <button
-              className={`nav-tab ${currentPath === "/dashboard" ? "active" : ""}`}
+              className={`nav-tab ${currentPath.startsWith("/dashboard") ? "active" : ""}`}
               onClick={() => navigate("/dashboard")}
             >
               Hybrid
             </button>
             <button
               className={`nav-tab ${currentPath.startsWith("/investor") ? "active" : ""}`}
-              onClick={() => navigate("/investor-view")}
+              onClick={() => navigate("/investor/view")}
             >
               Investor
             </button>
@@ -161,7 +161,7 @@ export default function DashboardLayout() {
           {bottomNavItems.map((item) => (
             <button
               key={item.label}
-              className={`bottom-nav-item ${currentPath === item.path ? "active" : ""}`}
+              className={`bottom-nav-item ${currentPath.startsWith(item.matchPrefix) ? "active" : ""}`}
               onClick={() => navigate(item.path)}
             >
               <Ic n={item.icon} s={20} />

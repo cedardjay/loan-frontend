@@ -6,7 +6,6 @@ import ApiService from '../../service/ApiService';
    STYLES
 ───────────────────────────────────────────── */
 const css = `
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -38,62 +37,9 @@ const css = `
 
 body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
 
-/* TOP NAV */
-.topnav {
-  height: 56px; background: #fff; border-bottom: 1px solid var(--border);
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 0 28px; position: sticky; top: 0; z-index: 100;
-}
-.logo { font-size: 1.2rem; font-weight: 700; color: var(--navy); }
-.logo span { color: var(--accent); }
-.nav-tabs { display: flex; gap: 28px; }
-.nav-tab {
-  font-size: 0.875rem; font-weight: 500; color: var(--muted); cursor: pointer;
-  padding-bottom: 2px; border-bottom: 2px solid transparent; transition: all 0.18s;
-  background: none; border-top: none; border-left: none; border-right: none;
-  font-family: 'DM Sans', sans-serif;
-}
-.nav-tab.active { color: var(--navy); border-bottom-color: var(--navy); font-weight: 600; }
-.nav-tab:hover { color: var(--navy); }
-.nav-right { display: flex; align-items: center; gap: 14px; }
-.icon-btn {
-  width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--border);
-  background: #fff; display: flex; align-items: center; justify-content: center;
-  cursor: pointer; color: var(--navy);
-}
-.avatar {
-  width: 34px; height: 34px; border-radius: 50%; background: var(--navy-2); color: #fff;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 0.75rem; font-weight: 700; cursor: pointer;
-}
-
 /* LAYOUT */
 .layout { display: flex; min-height: calc(100vh - 56px); }
 
-/* SIDEBAR */
-.sidebar {
-  width: var(--sidebar-w); background: #f8fafc; border-right: 1px solid var(--border);
-  padding: 24px 0; display: flex; flex-direction: column;
-  position: sticky; top: 56px; height: calc(100vh - 56px); overflow-y: auto;
-}
-.sidebar-brand { padding: 0 20px 20px; border-bottom: 1px solid var(--border); }
-.sb-sub { font-size: 0.7rem; color: var(--muted); margin-top: 2px; }
-.sb-nav { padding: 16px 10px; flex: 1; }
-.sb-item {
-  display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 9px;
-  font-size: 0.845rem; font-weight: 500; color: var(--muted); cursor: pointer;
-  transition: all 0.16s; margin-bottom: 2px; border: none; background: none;
-  text-align: left; font-family: 'DM Sans', sans-serif; width: 100%;
-}
-.sb-item:hover { background: #e2e8f0; color: var(--navy); }
-.sb-item.active { background: var(--navy); color: #fff; font-weight: 600; }
-.sb-footer { padding: 16px; }
-.add-funds-btn {
-  width: 100%; padding: 11px; background: var(--navy); color: #fff; border: none;
-  border-radius: 9px; font-family: 'DM Sans', sans-serif; font-size: 0.845rem;
-  font-weight: 600; cursor: pointer; transition: background 0.2s;
-}
-.add-funds-btn:hover { background: var(--navy-2); }
 
 /* MAIN */
 .main { flex: 1; padding: 28px 32px; overflow-x: hidden; padding-bottom: 80px; }
@@ -177,40 +123,13 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
 }
 .apply-btn:hover { background: var(--navy-2); }
 
-/* BOTTOM NAV */
-.bottom-nav {
-  display: none; position: fixed; bottom: 0; left: 0; right: 0;
-  background: rgba(255,255,255,0.95); backdrop-filter: blur(8px);
-  border-top: 1px solid var(--border); justify-content: space-around;
-  align-items: center; padding: 8px 0; z-index: 40;
-}
-.bottom-nav-item {
-  display: flex; flex-direction: column; align-items: center; gap: 4px;
-  background: none; border: none; cursor: pointer; font-family: 'DM Sans', sans-serif;
-  font-size: 0.7rem; font-weight: 500; color: var(--muted); transition: color 0.2s;
-}
-.bottom-nav-item.active { color: var(--green); }
-.bottom-nav-item svg { width: 20px; height: 20px; }
-
-/* MOBILE */
-.mobile-menu-btn { display: none; background: none; border: 1px solid var(--border); border-radius: 7px; padding: 5px 9px; cursor: pointer; color: var(--navy); }
-.mobile-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 200; }
-.mobile-overlay.open { display: block; }
 
 @media (max-width: 1050px) {
   .content-grid { grid-template-columns: 1fr 1fr; }
-  .sidebar-col { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(3, 1fr); }
 }
 @media (max-width: 860px) {
-  .sidebar { position: fixed; left: -230px; top: 0; height: 100vh; z-index: 300; transition: left 0.28s ease; padding-top: 64px; }
-  .sidebar.open { left: 0; }
-  .mobile-menu-btn { display: block; }
-  .topnav { padding: 0 16px; }
-  .nav-tabs { display: none; }
   .main { padding: 20px 14px; padding-bottom: 80px; }
   .content-grid { grid-template-columns: 1fr; }
-  .sidebar-col { grid-template-columns: 1fr; }
-  .bottom-nav { display: flex; }
 }
 @media (max-width: 540px) {
   .page-title { font-size: 1.6rem; }
@@ -237,23 +156,6 @@ const Ic = ({ n, s = 17 }) => {
   return icons[n] || null;
 };
 
-/* ─────────────────────────────────────────────
-   NAV DATA
-───────────────────────────────────────────── */
-const navItems = [
-  { id: "dashboard",    label: "INVESTOR VIEW", icon: "dashboard", path: "/investor-portal" },
-  { id: "portfolio",    label: "Portfolio",      icon: "portfolio", path: "/investments" },
-  { id: "marketplace",  label: "Loan listings",  icon: "market",    path: "/loan-market" },
-  { id: "transactions", label: "Transactions",   icon: "tx",        path: "/investor-portal/transactions" },
-  { id: "settings",     label: "Settings",       icon: "settings",  path: "/investor-portal/settings" },
-];
-
-const bottomNavItems = [
-  { icon: "grid_view",       label: "Hybrid",  path: "/dashboard" },
-  { icon: "account_balance", label: "Invest",  path: "/investor-portal", active: true },
-  { icon: "payments",        label: "Borrow",  path: "/borrower-portal" },
-  { icon: "person",          label: "Profile", path: "/profile" },
-];
 
 const barHeights = [30, 42, 28, 50, 38, 55, 60, 70, 80];
 
@@ -319,53 +221,8 @@ export default function LoanListings() {
     <>
       <style>{css}</style>
 
-      {/* TOP NAV */}
-      <nav className="topnav">
-        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          <button className="mobile-menu-btn" onClick={() => setSidebarOpen(true)}>
-            <Ic n="menu" s={16} />
-          </button>
-          <div className="logo">Loan<span>@</span></div>
-        </div>
-        <div className="nav-tabs">
-          <button className="nav-tab"        onClick={() => navigate("/dashboard")}>Hybrid</button>
-          <button className="nav-tab active" onClick={() => navigate("/investor-portal")}>Investor</button>
-          <button className="nav-tab"        onClick={() => navigate("/borrower-portal")}>Borrower</button>
-        </div>
-        <div className="nav-right">
-          <button className="icon-btn"><Ic n="bell" s={16} /></button>
-          <div className="avatar">TL</div>
-        </div>
-      </nav>
-
       <div className="layout">
-        <div
-          className={`mobile-overlay${sidebarOpen ? " open" : ""}`}
-          onClick={() => setSidebarOpen(false)}
-        />
-
-        {/* SIDEBAR — marketplace highlighted */}
-        <aside className={`sidebar${sidebarOpen ? " open" : ""}`}>
-          <div className="sidebar-brand">
-            <div className="sb-sub">Loan@ INVESTOR</div>
-          </div>
-          <nav className="sb-nav">
-            {navItems.map(item => (
-              <button
-                key={item.id}
-                className={`sb-item ${activeNav === item.id ? "active" : ""}`}
-                onClick={() => handleNavigation(item.path, item.id)}
-              >
-                <Ic n={item.icon} s={16} />
-                {item.label}
-              </button>
-            ))}
-          </nav>
-          <div className="sb-footer">
-            <button className="add-funds-btn">Add Funds</button>
-          </div>
-        </aside>
-
+       
         {/* MAIN */}
         <main className="main">
           <div className="page-header">
@@ -464,19 +321,6 @@ export default function LoanListings() {
         </main>
       </div>
 
-      {/* BOTTOM NAV */}
-      <nav className="bottom-nav">
-        {bottomNavItems.map(item => (
-          <button
-            key={item.label}
-            className={`bottom-nav-item ${item.active ? "active" : ""}`}
-            onClick={() => navigate(item.path)}
-          >
-            <Ic n={item.icon} s={20} />
-            <span>{item.label}</span>
-          </button>
-        ))}
-      </nav>
     </>
   );
 }

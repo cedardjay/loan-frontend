@@ -57,11 +57,11 @@ const Ic = ({ n, s = 17 }) => {
 };
 
 const navItems = [
-  { label: "Investor View", icon: "dashboard", path: "/investor-view" },
-  { label: "My Investments",     icon: "portfolio", path: "/my-investments" },
-  { label: "Loan Listings", icon: "market",    path: "/loan-listings" },
-  { label: "Transactions",  icon: "tx",        path: "/transactions" },
-  { label: "Settings",      icon: "settings",  path: "/settings" },
+  { label: "INVESTOR VIEW", icon: "dashboard", path: "/investor/view" },
+  { label: "My Investments", icon: "portfolio", path: "/investor/my-investments" },
+  { label: "Loan Listings", icon: "market",    path: "/investor/loan-listings" },
+  { label: "Transactions",  icon: "tx",        path: "/investor/transactions" },
+  { label: "Settings",      icon: "settings",  path: "/investor/settings" },
 ];
 
 export default function InvestorLayout() {

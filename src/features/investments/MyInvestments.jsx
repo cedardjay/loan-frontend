@@ -6,52 +6,6 @@ const styles = `
   body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); }
   .app { display: flex; flex-direction: column; min-height: 100vh; }
 
-  /* NAV */
-  .topnav {
-    height: 56px; background: #fff; border-bottom: 1px solid var(--border);
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 0 28px; position: sticky; top: 0; z-index: 100;
-  }
-  .logo { font-size: 1.2rem; font-weight: 700; color: var(--navy); }
-  .logo span { color: var(--accent); }
-  .nav-tabs { display: flex; gap: 28px; }
-  .nav-tab {
-    font-size: 0.875rem; font-weight: 500; color: var(--muted);
-    cursor: pointer; padding-bottom: 2px; border-bottom: 2px solid transparent;
-    transition: all 0.18s; text-decoration: none;
-  }
-  .nav-tab.active { color: var(--navy); border-bottom-color: var(--navy); font-weight: 600; }
-  .nav-tab:hover { color: var(--navy); }
-  .nav-right { display: flex; align-items: center; gap: 14px; }
-  .icon-btn { width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--border); background: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--navy); }
-  .avatar { width: 34px; height: 34px; border-radius: 50%; background: var(--navy-2); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 700; cursor: pointer; }
-
-  
-  /* SIDEBAR - From InvestorDashboard */
-  .sidebar {
-    width: var(--sidebar-w); background: #f8fafc; border-right: 1px solid var(--border);
-    padding: 24px 0; display: flex; flex-direction: column;
-    position: sticky; top: 56px; height: calc(100vh - 56px); overflow-y: auto;
-  }
-  .sidebar-brand { padding: 0 20px 20px; border-bottom: 1px solid var(--border); }
-  .sb-name { font-weight: 700; font-size: 0.95rem; color: var(--navy); }
-  .sb-sub { font-size: 0.7rem; color: var(--muted); margin-top: 2px; }
-  .sb-nav { padding: 16px 10px; flex: 1; }
-  .sb-item {
-    display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 9px;
-    font-size: 0.845rem; font-weight: 500; color: var(--muted); cursor: pointer;
-    transition: all 0.16s; margin-bottom: 2px;
-  }
-  .sb-item:hover { background: #e2e8f0; color: var(--navy); }
-  .sb-item.active { background: var(--navy); color: #fff; font-weight: 600; }
-  .sb-footer { padding: 16px; }
-  .add-funds-btn {
-    width: 100%; padding: 11px; background: var(--navy); color: #fff; border: none;
-    border-radius: 9px; font-family: 'DM Sans', sans-serif; font-size: 0.845rem;
-    font-weight: 600; cursor: pointer; transition: background 0.2s;
-  }
-  .add-funds-btn:hover { background: var(--navy-2); }
-
   /* MAIN */
    .main { flex: 1; padding: 32px 28px; min-width: 0; overflow-x: hidden; padding-bottom: 80px; }
 
@@ -97,10 +51,7 @@ const styles = `
     background: var(--card); padding: 8px 16px;
     border-radius: 10px; border: 1px solid var(--border);
   }
-  .search-box input {
-    border: none; background: none; outline: none;
-    font-size: 0.85rem; width: 200px;
-  }
+  
 
   /* INVESTMENTS TABLE */
   .investments-card { background: var(--card); border-radius: 14px; border: 1px solid var(--border); overflow: hidden; }
@@ -147,63 +98,16 @@ const styles = `
   .empty-title { font-size: 1.1rem; font-weight: 600; color: var(--navy); margin-bottom: 8px; }
   .empty-sub { font-size: 0.85rem; color: var(--muted); }
 
-  /* BOTTOM NAV */
-  .bottom-nav {
-    display: none;
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(8px);
-    border-top: 1px solid var(--border);
-    justify-content: space-around;
-    align-items: center;
-    padding: 8px 0;
-    z-index: 40;
-  }
-  .bottom-nav-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 0.7rem;
-    font-weight: 500;
-    color: var(--muted);
-    transition: color 0.2s;
-  }
-  .bottom-nav-item.active {
-    color: var(--green);
-  }
-  .bottom-nav-item svg {
-    width: 20px;
-    height: 20px;
-  }
-
-  /* MOBILE */
-  .mobile-menu-btn { display: none; background: none; border: 1px solid var(--border); border-radius: 7px; padding: 5px 9px; cursor: pointer; color: var(--navy); }
-  .mobile-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 200; }
-  .mobile-overlay.open { display: block; }
+  
 
   @media (max-width: 1024px) {
     .stats-summary { grid-template-columns: repeat(2, 1fr); }
   }
   @media (max-width: 768px) {
     :root { --sidebar-w: 210px; }
-    .sidebar { position: fixed; left: -230px; top: 0; height: 100vh; z-index: 300; transition: left 0.28s ease; padding-top: 64px; }
-    .sidebar.open { left: 0; }
-    .mobile-menu-btn { display: block; }
-    .topnav { padding: 0 16px; }
-    .nav-tabs { display: none; }
     .main { padding: 20px 14px; padding-bottom: 70px; }
     .stats-summary { grid-template-columns: 1fr; }
     .filter-section { flex-direction: column; align-items: stretch; }
-    .search-box input { width: 100%; }
-    .bottom-nav { display: flex; }
   }
   @media (max-width: 768px) {
     .inv-table th:nth-child(4), .inv-table td:nth-child(4),

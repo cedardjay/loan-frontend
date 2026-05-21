@@ -9,8 +9,8 @@ const PublicNav = () => (
       <Link to="/" className="text-2xl font-bold tracking-tighter text-on-background">loan@</Link>
       <div className="hidden md:flex items-center gap-8">
         <Link className="text-primary font-bold border-b-2 border-primary pb-1 text-sm tracking-tight" to="/">Home</Link>
-        <Link className="text-tertiary hover:text-primary transition-colors duration-300 text-sm font-medium" to="/borrower-dashboard">Borrow</Link>
-        <Link className="text-tertiary hover:text-primary transition-colors duration-300 text-sm font-medium" to="/investor-dashboard">Invest</Link>
+        <Link className="text-tertiary hover:text-primary transition-colors duration-300 text-sm font-medium" to="/borrower/view">Borrow</Link>
+        <Link className="text-tertiary hover:text-primary transition-colors duration-300 text-sm font-medium" to="/investor/view">Invest</Link>
         <a className="text-tertiary hover:text-primary transition-colors duration-300 text-sm font-medium" href="#">How It Works</a>
         <a className="text-tertiary hover:text-primary transition-colors duration-300 text-sm font-medium" href="#">About</a>
       </div>

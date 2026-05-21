@@ -159,9 +159,7 @@ const styles = `
   .learn-btn:hover { opacity: 0.88; }
 
 
-  /* MOBILE SIDEBAR TOGGLE */
- 
-  .mobile-overlay.open { display: block; }
+  
 
   /* APPLY BUTTON */
   .apply-loan-btn {
@@ -205,7 +203,6 @@ const styles = `
     .table-head, .table-row { grid-template-columns: 1.2fr 1.2fr 0.8fr 0.8fr; padding: 12px; }
     .td, .th { font-size: 0.78rem; }
     .welcome-title { font-size: 1.5rem; }
-    .bottom-nav { display: flex; }
     .action-buttons-row {
       flex-direction: column;
     }
@@ -248,11 +245,11 @@ export default function BorrowerView() {
   const navigate = useNavigate();
 
   const handleApplyLoan = () => {
-    navigate("/loan-apply");
+    navigate("/borrower/loan-apply");
   };
 
   const handleMyLoans = () => {
-    navigate("/my-loans");
+    navigate("/borrower/my-loans");
   };
 
   return (
@@ -260,7 +257,7 @@ export default function BorrowerView() {
       <style>{styles}</style>
   
             {/* ACTION BUTTONS ROW */}
-            <div className="action-buttons-row">
+            {/*<div className="action-buttons-row">
               <button className="my-loans-btn" onClick={handleMyLoans}>
                 <Icon name="my-loans" size={18} />
                 View My Loans
@@ -269,7 +266,7 @@ export default function BorrowerView() {
                 <Icon name="plus" size={18} />
                 Apply for a Loan
               </button>
-            </div>
+            </div>*/}
 
             {/* WELCOME */}
             <div className="welcome-header">

@@ -35,25 +35,33 @@ function App() {
 
 
 
+
+
         {/* Protected routes — must be logged in */}
         <Route element={<ProtectedRoute />}>
 
           <Route element={<DashboardLayout />}>
 
+
+
             <Route element={<UserLayout />} >
               <Route path="/dashboard" element={<HybridView />} />
             </Route>
 
-
+            {/* Investor */}
             <Route element={<InvestorLayout />}>
-              <Route path="/investor-view" element={<InvestorView />} />
-              <Route path="/my-investments" element={<MyInvestments />} />
+              <Route path="/investor/view" element={<InvestorView />} />
+              <Route path="/investor/my-investments" element={<MyInvestments />} />
+              <Route path="/investor/loan-listings" element={<LoanListings />} />
+              <Route path="/investor/invest/:id" element={<InvestPage />} />
+              <Route path="/investor/loan-details/:id" element={<LoanDetails />} />
             </Route>
 
             <Route element={<BorrowerLayout />}>
-              <Route path="/borrower-view" element={<BorrowerView />} />
+              <Route path="/borrower/view" element={<BorrowerView />} />
+              <Route path="/borrower/my-loans" element={<MyLoans />} />
+              <Route path="/borrower/loan-apply" element={<LoanApplication />} />
             </Route>
-
 
 
 
@@ -62,13 +70,8 @@ function App() {
 
 
           {/* Borrower */}
-          <Route path="/my-loans" element={<MyLoans />} />
-          <Route path="/loan-apply" element={<LoanApplication />} />
 
-          {/* Investor */}
-          <Route path="/loan-listings" element={<LoanListings />} />
-          <Route path="/invest/:id" element={<InvestPage />} />
-          <Route path="/loan-details/:id" element={<LoanDetails />} />
+
         </Route>
 
         {/* Admin routes — must have ADMIN role */}
@@ -84,7 +87,7 @@ function App() {
         </Route>
 
         {/* Fallback */}
-        <Route path="*" element={<Navigate to="/login" />} />
+      {/*<Route path="*" element={<Navigate to="/login" />} />*/}
 
       </Routes>
     </BrowserRouter>
