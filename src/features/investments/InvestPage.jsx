@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import InvestService from "./InvestService";
+import ApiService from "../../service/ApiService"
 
 const css = `
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&display=swap');
@@ -331,15 +332,31 @@ export default function InvestPage() {
       setSubmitting(true);
 
       // API CALL
-      await InvestService.investInLoan(id, { amount });
+      await InvestService.investInLoan(id, amount);
 
       setMessage(
         `Successfully invested $${Number(amount).toLocaleString()} in this loan.`
       );
 
+      const invested = Number(amount);
+
+      setLoan((prev) => {
+        const newAmountFunded = (prev.amountFunded || 0) + invested;
+        const newRemaining = prev.requestedAmount - newAmountFunded;
+        const newPercentage = (newAmountFunded / prev.requestedAmount) * 100;
+
+        return {
+          ...prev,
+          amountFunded: newAmountFunded,
+          remainingAmount: newRemaining,
+          fundingPercentage: newPercentage,
+          status: newRemaining === 0 ? "FULLY_FUNDED" : "PARTIALLY_FUNDED"
+        };
+      });
+
       setAmount("");
     } catch (err) {
-      setError("Investment failed. Please try again.");
+      setError(err.response?.data?.message || "Investment failed. Please try again.");
     } finally {
       setSubmitting(false);
     }

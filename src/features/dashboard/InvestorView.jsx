@@ -258,18 +258,18 @@ export default function InvestorView() {
                   Total Invested
                   <span className="badge-green">+12% vs last month</span>
                 </div>
-                <div className="stat-val">$18,450</div>
+                <div className="stat-val">$0</div>
               </div>
               <div className="stat-card net-returns">
                 <div className="stat-label">Net Returns</div>
                 <div className="stat-icon"><Ic n="trend" s={18} /></div>
-                <div className="stat-val green">+$2,214</div>
+                <div className="stat-val green">+$0</div>
                 <div className="stat-sub">9.3% Avg. APY</div>
               </div>
               <div className="stat-card">
                 <div className="stat-label">Available Cash</div>
                 <div className="stat-icon"><Ic n="wallet" s={18} /></div>
-                <div className="stat-val">$450</div>
+                <div className="stat-val">$0</div>
                 <div className="deploy-link">Deploy via Auto-invest <Ic n="arrow" s={13} /></div>
                 <button
                   className="browse-loans-btn"

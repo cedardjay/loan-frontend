@@ -1,135 +1,276 @@
 import { useNavigate } from "react-router-dom";
 
-// ─── Styles ──────────────────────────────────────────────────────────────────
+const styles = `
+  /* ── Color tokens (matches InvestorView) ── */
+  .hybrid-root {
+    --navy: #0f1f3d;
+    --navy-2: #1a3259;
+    --green: #00a878;
+    --green-text: #007a58;
+    --green-light: #e0f5ef;
+    --red: #e05260;
+    --card: #ffffff;
+    --bg: #f4f6fb;
+    --border: #dde3ef;
+    --muted: #8892a4;
+  }
 
+  .hybrid-root {
+    background: var(--bg);
+    color: var(--navy);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    padding-bottom: 64px;
+  }
 
-// ─── Icon (SVG, no Material Symbols dependency) ──────────────────────────────
+  /* WELCOME */
+  .hv-header { margin-bottom: 28px; }
+  .hv-header h1 {
+    font-size: 1.65rem; font-weight: 700; color: var(--navy);
+    letter-spacing: -0.4px; line-height: 1.25;
+  }
+  .hv-header .dot { color: var(--green); margin: 0 8px; }
+  .hv-header .since {
+    font-size: 0.95rem; font-weight: 400; color: var(--muted);
+  }
 
-const SvgIcon = ({ name, size = 18 }) => {
+  /* SUMMARY CARDS */
+  .hv-summary-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 16px; margin-bottom: 24px;
+  }
+  .hv-sum-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 14px; padding: 22px;
+    cursor: pointer; transition: box-shadow 0.2s;
+  }
+  .hv-sum-card:hover { box-shadow: 0 4px 16px rgba(15,31,61,0.08); }
+  .hv-sum-card.accent {
+    background: var(--navy-2); border-color: var(--navy-2);
+  }
+  .hv-card-top {
+    display: flex; justify-content: space-between;
+    align-items: flex-start; margin-bottom: 14px;
+  }
+  .hv-card-label {
+    font-size: 0.68rem; font-weight: 700; letter-spacing: 1px;
+    text-transform: uppercase; color: var(--muted);
+  }
+  .hv-sum-card.accent .hv-card-label { color: rgba(255,255,255,0.55); }
+  .hv-card-icon { color: var(--muted); opacity: 0.5; }
+  .hv-sum-card.accent .hv-card-icon { color: rgba(255,255,255,0.5); }
+  .hv-card-val {
+    font-size: 1.85rem; font-weight: 700; color: var(--navy);
+    letter-spacing: -1px; line-height: 1.1;
+  }
+  .hv-sum-card.accent .hv-card-val { color: #fff; }
+  .hv-card-sub { font-size: 0.8rem; color: var(--muted); margin-top: 4px; }
+  .hv-sum-card.accent .hv-card-sub { color: rgba(255,255,255,0.6); }
+  .hv-badge-green {
+    display: inline-flex; background: var(--green); color: #fff;
+    font-size: 0.65rem; font-weight: 700;
+    padding: 4px 10px; border-radius: 20px; margin-top: 10px;
+  }
+  .hv-snap-rows { margin-top: 12px; display: flex; flex-direction: column; gap: 6px; }
+  .hv-snap-row { display: flex; justify-content: space-between; font-size: 0.78rem; }
+  .hv-snap-row .k { color: rgba(255,255,255,0.6); }
+  .hv-snap-row .v { color: #fff; font-weight: 600; }
+
+  /* TWO-COLUMN PANELS */
+  .hv-two-col {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 18px; margin-bottom: 24px;
+  }
+  .hv-panel {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 14px; padding: 22px; position: relative; overflow: hidden;
+  }
+  .hv-panel-header {
+    display: flex; justify-content: space-between;
+    align-items: center; margin-bottom: 18px;
+  }
+  .hv-panel-title { font-size: 1rem; font-weight: 700; color: var(--navy); }
+  .hv-panel-link {
+    font-size: 0.8rem; font-weight: 600; color: var(--green-text);
+    background: none; border: none; cursor: pointer;
+    font-family: 'DM Sans', sans-serif; display: flex; align-items: center; gap: 4px;
+  }
+  .hv-panel-link:hover { color: var(--navy); }
+
+  /* INVESTOR MINI GRID */
+  .hv-mini-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .hv-mini-cell { background: var(--bg); border-radius: 10px; padding: 14px; }
+  .hv-mini-cell.alert { background: #fdeaed; }
+  .hv-mini-label {
+    font-size: 0.65rem; font-weight: 700; letter-spacing: 1px;
+    text-transform: uppercase; color: var(--muted); margin-bottom: 6px;
+  }
+  .hv-mini-cell.alert .hv-mini-label { color: #b0213a; }
+  .hv-mini-val { font-size: 1.05rem; font-weight: 700; color: var(--navy); }
+  .hv-mini-val-sub { font-size: 0.72rem; font-weight: 400; color: var(--muted); }
+  .hv-mini-cell.alert .hv-mini-val { color: #b0213a; }
+
+  /* LOAN ITEMS */
+  .hv-loan-item {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 12px 14px; border-radius: 10px;
+    background: var(--bg); margin-bottom: 8px;
+  }
+  .hv-loan-item:last-of-type { margin-bottom: 0; }
+  .hv-loan-left { display: flex; align-items: center; gap: 12px; }
+  .hv-loan-ico {
+    width: 36px; height: 36px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .hv-loan-ico.primary { background: var(--green-light); color: var(--green-text); }
+  .hv-loan-ico.neutral { background: var(--border); color: var(--muted); }
+  .hv-loan-name { font-size: 0.875rem; font-weight: 600; color: var(--navy); }
+  .hv-loan-sub { font-size: 0.75rem; color: var(--muted); }
+  .hv-badge {
+    display: inline-block; padding: 3px 9px;
+    border-radius: 6px; font-size: 0.7rem; font-weight: 700;
+  }
+  .hv-badge.active { background: var(--green-light); color: var(--green-text); }
+  .hv-badge.grace { background: #fdeaed; color: #b0213a; }
+  .hv-next-pay {
+    font-size: 0.82rem; font-weight: 600; color: var(--navy);
+    display: flex; align-items: center; gap: 6px;
+    margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border);
+  }
+  .hv-dot-green { width: 7px; height: 7px; border-radius: 50%; background: var(--green); }
+
+  /* QUICK ACTIONS */
+  .hv-actions-row { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 24px; }
+  .hv-act-btn {
+    padding: 10px 22px; border-radius: 10px; border: none;
+    font-family: 'DM Sans', sans-serif; font-size: 0.875rem; font-weight: 600;
+    cursor: pointer; display: flex; align-items: center; gap: 8px;
+    transition: all 0.18s;
+  }
+  .hv-act-btn.primary { background: var(--navy); color: #fff; }
+  .hv-act-btn.primary:hover { background: var(--navy-2); }
+  .hv-act-btn.secondary { background: var(--green); color: #fff; }
+  .hv-act-btn.secondary:hover { background: var(--green-text); }
+
+  /* RECENT ACTIVITY */
+  .hv-activity-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 14px; overflow: hidden;
+  }
+  .hv-act-head {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 18px 22px 14px; border-bottom: 1px solid var(--border);
+  }
+  .hv-act-title { font-size: 1rem; font-weight: 700; color: var(--navy); }
+  .hv-act-view-all {
+    font-size: 0.8rem; font-weight: 600; color: var(--green-text);
+    background: none; border: none; cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .hv-act-item {
+    display: flex; align-items: center; gap: 14px;
+    padding: 14px 22px; border-bottom: 1px solid var(--border);
+    transition: background 0.15s;
+  }
+  .hv-act-item:last-child { border-bottom: none; }
+  .hv-act-item:hover { background: #fafbfd; }
+  .hv-act-ico {
+    width: 38px; height: 38px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .hv-act-ico.income { background: var(--green-light); color: var(--green-text); }
+  .hv-act-ico.payment { background: #e8f1fd; color: #1a5cbd; }
+  .hv-act-ico.invest { background: #f0eeff; color: #534ab7; }
+  .hv-act-ico.progress { background: var(--bg); color: var(--muted); }
+  .hv-act-name { font-size: 0.875rem; font-weight: 600; color: var(--navy); }
+  .hv-act-sub { font-size: 0.75rem; color: var(--muted); }
+  .hv-act-right { margin-left: auto; text-align: right; flex-shrink: 0; }
+  .hv-act-amt { font-size: 0.875rem; font-weight: 700; }
+  .hv-act-amt.pos { color: var(--green-text); }
+  .hv-act-amt.neu { color: var(--navy); }
+  .hv-act-amt.info { color: #1a5cbd; }
+  .hv-act-time { font-size: 0.72rem; color: var(--muted); font-family: 'DM Mono', monospace; }
+
+  /* RESPONSIVE */
+  @media (max-width: 900px) {
+    .hv-summary-grid { grid-template-columns: 1fr 1fr; }
+    .hv-sum-card:last-child { grid-column: span 2; }
+    .hv-two-col { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 540px) {
+    .hv-summary-grid { grid-template-columns: 1fr; }
+    .hv-sum-card:last-child { grid-column: span 1; }
+    .hv-header h1 { font-size: 1.25rem; }
+  }
+`;
+
+/* ── Inline SVG icons ── */
+const Ic = ({ n, s = 17 }) => {
   const icons = {
-    bell: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>,
-    grid_view: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>,
-    account_balance: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>,
-    payments: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>,
-    person: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>,
+    trend:   <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="23,6 13.5,15.5 8.5,10.5 1,18" /><polyline points="17,6 23,6 23,12" /></svg>,
+    wallet:  <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="1" y="4" width="22" height="16" rx="2" /><line x1="1" y1="10" x2="23" y2="10" /></svg>,
+    layers:  <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>,
+    receipt: <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1-2-1z" /></svg>,
+    home:    <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2h-5v-8H9v8H5a2 2 0 0 1-2-2z" /></svg>,
+    list:    <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="8" y1="6" x2="21" y2="6" /><line x1="8" y1="12" x2="21" y2="12" /><line x1="8" y1="18" x2="21" y2="18" /><line x1="3" y1="6" x2="3.01" y2="6" /><line x1="3" y1="12" x2="3.01" y2="12" /><line x1="3" y1="18" x2="3.01" y2="18" /></svg>,
+    plus:    <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg>,
+    clock:   <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>,
+    tx:      <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="5" width="20" height="14" rx="2" /><line x1="2" y1="10" x2="22" y2="10" /></svg>,
+    arrow:   <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="5" y1="12" x2="19" y2="12" /><polyline points="12,5 19,12 12,19" /></svg>,
   };
-  return icons[name] || null;
+  return icons[n] || null;
 };
 
-
-
-// ─── Data ───────────────────────────────────────────────────────────────────
-
+/* ── Activity data ── */
 const ACTIVITY = [
-  {
-    icon: "savings",
-    bg: "bg-secondary-container",
-    textColor: "text-on-secondary-container",
-    title: "Interest Received",
-    sub: "From 12 Active Loan Portfolios",
-    amount: "+$142.30",
-    amountColor: "text-secondary",
-    time: "Today, 9:41 AM",
-  },
-  {
-    icon: "payments",
-    bg: "bg-primary-container",
-    textColor: "text-on-primary-container",
-    title: "Loan Payment Made",
-    sub: "Loan #B001 (Scheduled)",
-    amount: "-$520.00",
-    amountColor: "text-on-surface",
-    time: "Yesterday",
-  },
-  {
-    icon: "add_business",
-    bg: "bg-tertiary-fixed",
-    textColor: "text-on-tertiary-fixed",
-    title: "New Investment",
-    sub: "Auto-invest: Green Energy Project",
-    amount: "-$250.00",
-    amountColor: "text-on-surface",
-    time: "Apr 21, 2024",
-  },
-  {
-    icon: "progress_activity",
-    bg: "bg-surface-container-highest",
-    textColor: "text-on-surface-variant",
-    title: "Funding Progress",
-    sub: "Tech Startup #T24 Reach 80%",
-    amount: "80% Full",
-    amountColor: "text-secondary",
-    time: "Apr 20, 2024",
-  },
+  { ico: "income",   iconName: "trend",   title: "Interest Received",  sub: "From 12 Active Loan Portfolios",   amount: "+$142.30", amtClass: "pos", time: "Today, 9:41 AM" },
+  { ico: "payment",  iconName: "tx",      title: "Loan Payment Made",  sub: "Loan #B001 (Scheduled)",           amount: "-$520.00", amtClass: "neu", time: "Yesterday" },
+  { ico: "invest",   iconName: "layers",  title: "New Investment",     sub: "Auto-invest: Green Energy Project", amount: "-$250.00", amtClass: "neu", time: "Apr 21, 2024" },
+  { ico: "progress", iconName: "clock",   title: "Funding Progress",   sub: "Tech Startup #T24 Reached 80%",    amount: "80% Full", amtClass: "info", time: "Apr 20, 2024" },
 ];
 
-// ─── Sub-components ─────────────────────────────────────────────────────────
+/* ── Components ── */
 
-function Icon({ name, filled = false, className = "" }) {
+function SummaryCards({ navigate }) {
   return (
-    <span
-      className={`material-symbols-outlined ${className}`}
-      style={filled ? { fontVariationSettings: "'FILL' 1" } : undefined}
-    >
-      {name}
-    </span>
-  );
-}
-
-
-
-
-
-function SummaryCards() {
-  const navigate = useNavigate();
-  return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-      <div
-        onClick={() => navigate("/investor-view")}
-        className="bg-surface-container-lowest p-8 rounded-xl shadow-sm ring-1 ring-outline-variant/10 cursor-pointer hover:shadow-md transition-shadow"
-      >
-        <div className="flex justify-between items-start mb-4">
-          <span className="text-xs text-tertiary uppercase tracking-wider font-bold">As Investor</span>
-          <Icon name="trending_up" className="text-secondary" />
+    <div className="hv-summary-grid">
+      <div className="hv-sum-card" onClick={() => navigate("/investor-view")}>
+        <div className="hv-card-top">
+          <div className="hv-card-label">As Investor</div>
+          <span className="hv-card-icon"><Ic n="trend" /></span>
         </div>
-        <p className="text-3xl font-extrabold text-on-surface">$18,450</p>
-        <p className="text-sm text-tertiary mb-6">Total Invested</p>
-        <div className="inline-flex items-center px-3 py-1 bg-secondary-container text-on-secondary-container rounded-full text-xs font-bold">
-          +9.3% Avg. Annual Return
+        <div className="hv-card-val">$18,450</div>
+        <div className="hv-card-sub">Total Invested</div>
+        <span className="hv-badge-green">+9.3% Avg. Annual Return</span>
+      </div>
+
+      <div className="hv-sum-card" onClick={() => navigate("/borrower-view")}>
+        <div className="hv-card-top">
+          <div className="hv-card-label">As Borrower</div>
+          <span className="hv-card-icon"><Ic n="wallet" /></span>
+        </div>
+        <div className="hv-card-val">$12,000</div>
+        <div className="hv-card-sub">Total Borrowed</div>
+        <div style={{ marginTop: 10, fontSize: "0.8rem", color: "var(--muted)" }}>
+          <span style={{ fontWeight: 700, color: "var(--navy)" }}>8.5%</span> Avg. Loan Rate
         </div>
       </div>
 
-      <div
-        onClick={() => navigate("/borrower-view")}
-        className="bg-surface-container-lowest p-8 rounded-xl shadow-sm ring-1 ring-outline-variant/10 cursor-pointer hover:shadow-md transition-shadow"
-      >
-        <div className="flex justify-between items-start mb-4">
-          <span className="text-xs text-tertiary uppercase tracking-wider font-bold">As Borrower</span>
-          <Icon name="account_balance_wallet" className="text-primary" />
+      <div className="hv-sum-card accent">
+        <div className="hv-card-top">
+          <div className="hv-card-label">Combined Snapshot</div>
+          <span className="hv-card-icon"><Ic n="layers" /></span>
         </div>
-        <p className="text-3xl font-extrabold text-on-surface">$12,000</p>
-        <p className="text-sm text-tertiary mb-6">Total Borrowed</p>
-        <div className="flex items-center gap-2">
-          <span className="text-sm font-bold text-primary">8.5%</span>
-          <span className="text-xs text-tertiary">Avg. Loan Rate</span>
-        </div>
-      </div>
-
-      <div className="bg-primary text-on-primary p-8 rounded-xl shadow-lg">
-        <div className="flex justify-between items-start mb-4">
-          <span className="text-xs text-on-primary-container uppercase tracking-wider font-bold">Combined Snapshot</span>
-          <Icon name="insights" />
-        </div>
-        <p className="text-3xl font-extrabold">+$6,450</p>
-        <p className="text-sm opacity-80 mb-6">Net Worth (P2P)</p>
-        <div className="space-y-2">
-          <div className="flex justify-between text-xs">
-            <span className="opacity-70">Investor: $450 available</span>
-            <span className="font-bold">Next Action</span>
+        <div className="hv-card-val">+$6,450</div>
+        <div className="hv-card-sub">Net Worth (P2P)</div>
+        <div className="hv-snap-rows">
+          <div className="hv-snap-row">
+            <span className="k">Investor: $450 available</span>
+            <span className="v">Next Action</span>
           </div>
-          <div className="flex justify-between text-xs">
-            <span className="opacity-70">Borrower: Due 4/25</span>
-            <span className="font-bold">Payment</span>
+          <div className="hv-snap-row">
+            <span className="k">Borrower: Due 4/25</span>
+            <span className="v">Payment</span>
           </div>
         </div>
       </div>
@@ -137,121 +278,27 @@ function SummaryCards() {
   );
 }
 
-function InvestorSummary() {
-  const navigate = useNavigate();
+function InvestorSummary({ navigate }) {
   return (
-    <div className="bg-surface-container-low rounded-xl p-8 overflow-hidden relative">
-      <div className="absolute top-0 right-0 w-32 h-32 bg-secondary/5 rounded-full -mr-16 -mt-16 pointer-events-none" />
-      <div className="relative">
-        <div className="flex justify-between items-center mb-6">
-          <h3 className="text-xl font-bold text-on-surface">Investor Summary</h3>
-          <button onClick={() => navigate("/investor-view")} className="text-sm font-bold text-secondary flex items-center gap-1 hover:underline">
-            Go to full Investor view <Icon name="arrow_forward" className="text-sm" />
-          </button>
-        </div>
-        <div className="grid grid-cols-2 gap-6">
-          {[
-            { label: "Portfolio",     value: "23 Active Loans", style: "bg-white" },
-            { label: "Principal",     value: "$12,450",          style: "bg-white" },
-            { label: "Next Payment",  value: "$410", sub: "on 04/25", style: "bg-white" },
-            { label: "Alerts",        value: "1 Late Loan",      style: "bg-error-container text-on-error-container" },
-          ].map(({ label, value, sub, style }) => (
-            <div key={label} className={`p-4 rounded-lg ${style}`}>
-              <p className="text-xs text-outline font-bold uppercase mb-1">{label}</p>
-              <p className="text-lg font-extrabold">
-                {value}{" "}
-                {sub && <span className="text-xs font-normal text-tertiary">{sub}</span>}
-              </p>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function BorrowerSummary() {
-  const navigate = useNavigate();
-  const loans = [
-    { id: "B001", title: "Loan #B001 (Business Exp.)", sub: "$520 monthly payment", iconBg: "bg-primary-fixed", iconColor: "text-primary", icon: "receipt", badgeStyle: "bg-secondary-container text-on-secondary-container", badge: "Active", opacity: "" },
-    { id: "B002", title: "Loan #B002 (Home Improv.)",  sub: "$14,500 total principal", iconBg: "bg-surface-container-highest", iconColor: "text-outline", icon: "home", badgeStyle: "bg-outline-variant/30 text-on-surface-variant", badge: "In Grace", opacity: "opacity-80" },
-  ];
-  return (
-    <div className="bg-surface-container-low rounded-xl p-8 overflow-hidden relative">
-      <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -mr-16 -mt-16 pointer-events-none" />
-      <div className="relative">
-        <div className="flex justify-between items-center mb-6">
-          <h3 className="text-xl font-bold text-on-surface">Borrower Summary</h3>
-          <button onClick={() => navigate("/borrower-view")} className="text-sm font-bold text-primary flex items-center gap-1 hover:underline">
-            Go to full Borrower view <Icon name="arrow_forward" className="text-sm" />
-          </button>
-        </div>
-        <div className="space-y-4">
-          {loans.map((loan) => (
-            <div key={loan.id} className={`flex items-center justify-between p-4 bg-white rounded-lg shadow-sm ${loan.opacity}`}>
-              <div className="flex items-center gap-4">
-                <div className={`w-10 h-10 rounded ${loan.iconBg} flex items-center justify-center ${loan.iconColor}`}>
-                  <Icon name={loan.icon} />
-                </div>
-                <div>
-                  <p className="font-bold text-sm">{loan.title}</p>
-                  <p className="text-xs text-tertiary">{loan.sub}</p>
-                </div>
-              </div>
-              <span className={`text-xs px-2 py-1 rounded font-bold ${loan.badgeStyle}`}>{loan.badge}</span>
-            </div>
-          ))}
-          <div className="pt-2">
-            <p className="text-sm font-bold text-on-surface flex items-center gap-2">
-              <Icon name="calendar_today" filled className="text-primary" />
-              Next automated payment: $520 on 04/25
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function QuickActions() {
-  const navigate = useNavigate();
-  const actions = [
-    { icon: "format_list_bulleted", label: "View Loan Listings", style: "bg-primary text-on-primary shadow-sm hover:opacity-90", path: "/dashboard/loans" },
-    { icon: "note_add",             label: "Apply for a Loan",   style: "bg-secondary text-on-secondary shadow-sm hover:opacity-90", path: "/dashboard/loans/apply" },
-  ];
-  return (
-    <div className="flex flex-wrap items-center gap-4 mb-12">
-      {actions.map(({ icon, label, style, path }) => (
-        <button key={label} onClick={() => navigate(path)} className={`px-6 py-3 rounded-xl font-bold flex items-center gap-2 transition-all ${style}`}>
-          <Icon name={icon} /> {label}
+    <div className="hv-panel">
+      <div className="hv-panel-header">
+        <div className="hv-panel-title">Investor Summary</div>
+        <button className="hv-panel-link" onClick={() => navigate("/investor-view")}>
+          Full Investor View <Ic n="arrow" s={13} />
         </button>
-      ))}
-    </div>
-  );
-}
-
-function RecentActivity() {
-  return (
-    <div>
-      <div className="flex items-center justify-between mb-6">
-        <h3 className="text-xl font-bold text-on-surface">Recent Activity</h3>
-        <button className="text-sm text-primary font-bold hover:underline">View All</button>
       </div>
-      <div className="bg-surface-container-lowest rounded-xl shadow-sm border border-slate-100 divide-y divide-slate-50 overflow-hidden">
-        {ACTIVITY.map(({ icon, bg, textColor, title, sub, amount, amountColor, time }) => (
-          <div key={title} className="p-5 hover:bg-surface-container-low transition-colors">
-            <div className="flex items-center gap-4 max-w-lg">
-              <div className={`w-10 h-10 shrink-0 rounded-full ${bg} ${textColor} flex items-center justify-center`}>
-                <Icon name={icon} />
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="font-bold text-sm">{title}</p>
-                <p className="text-xs text-tertiary">{sub}</p>
-              </div>
-              <div className="text-right shrink-0">
-                <p className={`font-extrabold ${amountColor}`}>{amount}</p>
-                <p className="text-xs text-outline">{time}</p>
-              </div>
+      <div className="hv-mini-grid">
+        {[
+          { label: "Portfolio",    value: "23 Active Loans", sub: null,      cls: "" },
+          { label: "Principal",    value: "$12,450",          sub: null,      cls: "" },
+          { label: "Next Payment", value: "$410",             sub: "on 04/25", cls: "" },
+          { label: "Alerts",       value: "1 Late Loan",      sub: null,      cls: "alert" },
+        ].map(({ label, value, sub, cls }) => (
+          <div key={label} className={`hv-mini-cell ${cls}`}>
+            <div className="hv-mini-label">{label}</div>
+            <div className="hv-mini-val">
+              {value}{" "}
+              {sub && <span className="hv-mini-val-sub">{sub}</span>}
             </div>
           </div>
         ))}
@@ -260,37 +307,109 @@ function RecentActivity() {
   );
 }
 
-// ─── Page ────────────────────────────────────────────────────────────────────
+function BorrowerSummary({ navigate }) {
+  const loans = [
+    { id: "B001", name: "Loan #B001 (Business Exp.)", sub: "$520 monthly payment",   ico: "primary", icon: "receipt", badge: "active", label: "Active",   opacity: 1 },
+    { id: "B002", name: "Loan #B002 (Home Improv.)",  sub: "$14,500 total principal", ico: "neutral", icon: "home",    badge: "grace",  label: "In Grace", opacity: 0.8 },
+  ];
+  return (
+    <div className="hv-panel">
+      <div className="hv-panel-header">
+        <div className="hv-panel-title">Borrower Summary</div>
+        <button className="hv-panel-link" onClick={() => navigate("/borrower-view")}>
+          Full Borrower View <Ic n="arrow" s={13} />
+        </button>
+      </div>
+      {loans.map((loan) => (
+        <div key={loan.id} className="hv-loan-item" style={{ opacity: loan.opacity }}>
+          <div className="hv-loan-left">
+            <div className={`hv-loan-ico ${loan.ico}`}>
+              <Ic n={loan.icon} s={16} />
+            </div>
+            <div>
+              <div className="hv-loan-name">{loan.name}</div>
+              <div className="hv-loan-sub">{loan.sub}</div>
+            </div>
+          </div>
+          <span className={`hv-badge ${loan.badge}`}>{loan.label}</span>
+        </div>
+      ))}
+      <div className="hv-next-pay">
+        <span className="hv-dot-green" />
+        Next automated payment: $520 on 04/25
+      </div>
+    </div>
+  );
+}
+
+function QuickActions({ navigate }) {
+  return (
+    <div className="hv-actions-row">
+      <button className="hv-act-btn primary" onClick={() => navigate("/dashboard/loans")}>
+        <Ic n="list" s={15} /> View Loan Listings
+      </button>
+      <button className="hv-act-btn secondary" onClick={() => navigate("/dashboard/loans/apply")}>
+        <Ic n="plus" s={15} /> Apply for a Loan
+      </button>
+    </div>
+  );
+}
+
+function RecentActivity() {
+  return (
+    <div className="hv-activity-card">
+      <div className="hv-act-head">
+        <div className="hv-act-title">Recent Activity</div>
+        <button className="hv-act-view-all">View All</button>
+      </div>
+      {ACTIVITY.map((item) => (
+        <div key={item.title} className="hv-act-item">
+          <div className={`hv-act-ico ${item.ico}`}>
+            <Ic n={item.iconName} s={16} />
+          </div>
+          <div>
+            <div className="hv-act-name">{item.title}</div>
+            <div className="hv-act-sub">{item.sub}</div>
+          </div>
+          <div className="hv-act-right">
+            <div className={`hv-act-amt ${item.amtClass}`}>{item.amount}</div>
+            <div className="hv-act-time">{item.time}</div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/* ── Page ── */
 
 export default function HybridView() {
-  return (
-    <div className="bg-surface text-on-surface min-h-screen font-body pb-16 md:pb-0">
-    
+  const navigate = useNavigate();
 
-      <main className="p-4 sm:p-8 min-h-screen">
-        <header className="mb-8 sm:mb-10">
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-on-background tracking-tight">
-            Welcome back, Taylor{" "}
-            <span className="text-primary-container mx-2">●</span>{" "}
-            <span className="font-medium text-sm sm:text-lg text-tertiary">Member since Mar 2022</span>
+  return (
+    <div className="hybrid-root">
+      <style>{styles}</style>
+
+      <main style={{ padding: "28px 24px 48px" }}>
+        <header className="hv-header">
+          <h1>
+            Welcome back, Taylor
+            <span className="dot">●</span>
+            <span className="since">Member since Mar 2022</span>
           </h1>
         </header>
 
-        <SummaryCards />
+        <SummaryCards navigate={navigate} />
 
-        <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 mb-12">
-          <InvestorSummary />
-          <BorrowerSummary />
+        <div className="hv-two-col">
+          <InvestorSummary navigate={navigate} />
+          <BorrowerSummary navigate={navigate} />
         </div>
 
-        <QuickActions />
+        <QuickActions navigate={navigate} />
 
-        <div className="mb-12">
-          <RecentActivity />
-        </div>
+        <RecentActivity />
       </main>
-
-      
     </div>
   );
 }

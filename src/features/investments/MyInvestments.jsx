@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import InvestService from "./InvestService"; 
 
 const styles = `
  
@@ -138,36 +139,52 @@ const Ic = ({ n, s = 17 }) => {
   return icons[n] || null;
 };
 
-// Portfolio data
-const portfolioStats = {
-  totalInvested: 84500,
-  currentValue: 92750,
-  totalReturns: 8250,
-  avgApy: 9.8,
-};
-
-const allInvestments = [
-  { id: 1, name: "Small Biz Expansion", grade: "A", amount: 5000, interest: 8.5, status: "active", nextPayment: "Apr 25, 2025", investedDate: "Jan 15, 2025", expectedReturn: 212.50 },
-  { id: 2, name: "Home Renovation", grade: "B", amount: 2500, interest: 10.2, status: "active", nextPayment: "May 01, 2025", investedDate: "Feb 01, 2025", expectedReturn: 127.50 },
-  { id: 3, name: "Personal Consolidation", grade: "C", amount: 1000, interest: 12.5, status: "grace", nextPayment: "Apr 19, 2025", investedDate: "Mar 10, 2025", expectedReturn: 52.08 },
-  { id: 4, name: "Green Energy Project", grade: "A", amount: 10000, interest: 7.2, status: "active", nextPayment: "Apr 30, 2025", investedDate: "Dec 01, 2024", expectedReturn: 360.00 },
-  { id: 5, name: "Tech Startup Funding", grade: "B", amount: 7500, interest: 11.5, status: "active", nextPayment: "May 15, 2025", investedDate: "Nov 15, 2024", expectedReturn: 431.25 },
-  { id: 6, name: "Real Estate Bridge", grade: "A", amount: 25000, interest: 6.8, status: "completed", nextPayment: "-", investedDate: "Aug 01, 2024", expectedReturn: 1700.00 },
-  { id: 7, name: "Equipment Financing", grade: "B", amount: 8000, interest: 9.5, status: "active", nextPayment: "May 10, 2025", investedDate: "Feb 20, 2025", expectedReturn: 380.00 },
-  { id: 8, name: "Medical Practice Loan", grade: "A", amount: 15000, interest: 7.5, status: "active", nextPayment: "Apr 28, 2025", investedDate: "Jan 05, 2025", expectedReturn: 562.50 },
-  { id: 9, name: "Restaurant Expansion", grade: "C", amount: 3500, interest: 13.2, status: "default", nextPayment: "Overdue", investedDate: "Oct 10, 2024", expectedReturn: 231.00 },
-  { id: 10, name: "E-commerce Growth", grade: "B", amount: 6000, interest: 10.8, status: "active", nextPayment: "May 05, 2025", investedDate: "Mar 01, 2025", expectedReturn: 324.00 },
-];
-
 export default function MyInvestments() {
   const [activeNav, setActiveNav] = useState("portfolio");
   const [filterStatus, setFilterStatus] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
+
+  const [portfolioStats, setPortfolioStats] = useState(null);
+  const [allInvestments, setAllInvestments] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+
   const navigate = useNavigate();
 
+  useEffect(() => {
+    let isMounted = true;
+
+    const fetchData = async () => {
+      setLoading(true);
+      setError('');
+      try {
+        const [summary, invData] = await Promise.all([
+          InvestService.getInvestorPortfolioSummary(),
+          InvestService.getMyInvestments()
+        ]);
+        if (isMounted) {
+          // FIX 1 — unwrap the backend data field
+          setPortfolioStats(summary.data);
+          setAllInvestments(invData.data.investments ?? []);
+        }
+      } catch (err) {
+        if (isMounted) {
+          setError(err.response?.data?.message || 'Failed to load your investments.');
+        }
+      } finally {
+        if (isMounted) setLoading(false);
+      }
+    };
+
+    fetchData();
+
+    return () => { isMounted = false; };
+  }, []);
+
   const filteredInvestments = allInvestments.filter(inv => {
+    // FIX 2 — capital S typo fixed, status is lowercased on backend
     const matchesStatus = filterStatus === "all" || inv.status === filterStatus;
-    const matchesSearch = inv.name.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch = inv.name?.toLowerCase().includes(searchTerm.toLowerCase());
     return matchesStatus && matchesSearch;
   });
 
@@ -177,35 +194,49 @@ export default function MyInvestments() {
 
   const getStatusDisplay = (status) => {
     switch(status) {
-      case "active": return <span className="status-on"><span className="dot-green" /> Active</span>;
+      case "active":    return <span className="status-on"><span className="dot-green" /> Active</span>;
       case "completed": return <span className="status-completed"><span className="dot-gray" /> Completed</span>;
-      case "grace": return <span className="status-on"><span className="dot-green" /> Grace Period</span>;
-      case "default": return <span className="status-default"><span className="dot-red" /> Defaulted</span>;
-      default: return status;
+      case "grace":     return <span className="status-on"><span className="dot-green" /> Grace Period</span>;
+      case "default":   return <span className="status-default"><span className="dot-red" /> Defaulted</span>;
+      // FIX 3 — any other status from backend renders in lowercase, readable
+      default: return <span className="status-completed"><span className="dot-gray" /> {status?.toLowerCase().replace(/_/g, ' ') ?? '—'}</span>;
     }
   };
 
+  if (loading) return (
+    <div className="empty-state">
+      <div className="empty-icon">⏳</div>
+      <div className="empty-title">Loading your investments...</div>
+    </div>
+  );
+
+  if (error) return (
+    <div className="empty-state">
+      <div className="empty-icon">⚠️</div>
+      <div className="empty-title">Something went wrong</div>
+      <div className="empty-sub">{error}</div>
+    </div>
+  );
 
   return (
     <>
     <style>{styles}</style>
       <div className="app">
-
-          {/* MAIN */}
           <main className="main">
             <div className="page-header">
               <h1 className="page-title">My Investments</h1>
               <p className="page-subtitle">Track and manage all your investments in one place.</p>
             </div>
 
-            {/* Stats Summary */}
             <div className="stats-summary">
               <div className="stat-card">
                 <div className="stat-card-header">
                   <span className="stat-card-title">Total Invested</span>
                   <span className="stat-icon">💰</span>
                 </div>
-                <div className="stat-card-value">${portfolioStats.totalInvested.toLocaleString()}</div>
+                <div className="stat-card-value">
+                  ${portfolioStats?.totalInvested?.toLocaleString() ?? '—'}
+                </div>
                 <div className="stat-card-sub">Across {allInvestments.length} loans</div>
               </div>
               <div className="stat-card">
@@ -213,15 +244,21 @@ export default function MyInvestments() {
                   <span className="stat-card-title">Current Value</span>
                   <span className="stat-icon">📈</span>
                 </div>
-                <div className="stat-card-value green">${portfolioStats.currentValue.toLocaleString()}</div>
-                <div className="stat-card-sub">+${portfolioStats.totalReturns.toLocaleString()} returns</div>
+                <div className="stat-card-value green">
+                  ${portfolioStats?.currentValue?.toLocaleString() ?? '—'}
+                </div>
+                <div className="stat-card-sub">
+                  +${portfolioStats?.totalReturns?.toLocaleString() ?? '—'} returns
+                </div>
               </div>
               <div className="stat-card">
                 <div className="stat-card-header">
                   <span className="stat-card-title">Avg. APY</span>
                   <span className="stat-icon">⭐</span>
                 </div>
-                <div className="stat-card-value green">{portfolioStats.avgApy}%</div>
+                <div className="stat-card-value green">
+                  {portfolioStats?.avgApy ?? '—'}%
+                </div>
                 <div className="stat-card-sub">Weighted average</div>
               </div>
               <div className="stat-card">
@@ -234,7 +271,6 @@ export default function MyInvestments() {
               </div>
             </div>
 
-            {/* Filter Section */}
             <div className="filter-section">
               <div className="filter-tabs">
                 <button
@@ -273,7 +309,6 @@ export default function MyInvestments() {
               </div>
             </div>
 
-            {/* Investments Table */}
             <div className="investments-card">
               <div className="inv-header">
                 <div className="inv-title">My Investments</div>
@@ -299,19 +334,29 @@ export default function MyInvestments() {
                       {filteredInvestments.map((inv) => (
                         <tr key={inv.id}>
                           <td><span className="borrower-name">{inv.name}</span></td>
+                          {/* FIX 4 — null guard for grade */}
                           <td>
-                            <span className={`grade-badge grade-${inv.grade.toLowerCase()}`}>
-                              Grade {inv.grade}
-                            </span>
+                            {inv.grade
+                              ? <span className={`grade-badge grade-${inv.grade.toLowerCase()}`}>Grade {inv.grade}</span>
+                              : <span className="date-val">—</span>
+                            }
                           </td>
-                          <td>${inv.amount.toLocaleString()}</td>
+                          <td>${inv.amount?.toLocaleString()}</td>
                           <td><span className="interest-val">{inv.interest}%</span></td>
                           <td>{getStatusDisplay(inv.status)}</td>
-                          <td><span className="date-val">{inv.nextPayment}</span></td>
+                          {/* FIX 5 — fallback for nextPayment */}
+                          <td><span className="date-val">{inv.nextPayment ?? '—'}</span></td>
                           <td><span className="date-val">{inv.investedDate}</span></td>
-                          <td style={{ color: "var(--green-text)", fontWeight: 600 }}>+${inv.expectedReturn.toLocaleString()}</td>
+                          <td style={{ color: "var(--green-text)", fontWeight: 600 }}>
+                            +${inv.expectedReturn?.toLocaleString()}
+                          </td>
                           <td>
-                            <button className="action-btn">Details</button>
+                            <button
+                              className="action-btn"
+                              onClick={() => navigate(`/investor/investments/${inv.id}`)}
+                            >
+                              Details
+                            </button>
                           </td>
                         </tr>
                       ))}
