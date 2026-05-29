@@ -22,6 +22,8 @@ import DashboardLayout from './layouts/DashboardLayout';
 import InvestorLayout from './layouts/InvestorLayout';
 import BorrowerLayout from './layouts/BorrowerLayout';
 import UserLayout from './layouts/UserLayout';
+import AdminLayout from './layouts/AdminLayout';
+import AdminView from './features/dashboard/AdminView';
 
 function App() {
   return (
@@ -48,19 +50,25 @@ function App() {
               <Route path="/dashboard" element={<HybridView />} />
             </Route>
 
+
+
             {/* Investor */}
-            <Route element={<InvestorLayout />}>
-              <Route path="/investor/view" element={<InvestorView />} />
-              <Route path="/investor/my-investments" element={<MyInvestments />} />
-              <Route path="/investor/loan-listings" element={<LoanListings />} />
-              <Route path="/investor/invest/:id" element={<InvestPage />} />
-              <Route path="/investor/loan-details/:id" element={<LoanDetails />} />
+            <Route path="/investor" element={<InvestorLayout />}>
+              <Route index element={<InvestorView />} />
+              <Route path="view" index element={<InvestorView />} />
+              <Route path="my-investments" element={<MyInvestments />} />
+              <Route path="loan-listings" element={<LoanListings />} />
+              <Route path="invest/:id" element={<InvestPage />} />
+              <Route path="loan-details/:id" element={<LoanDetails />} />
             </Route>
 
-            <Route element={<BorrowerLayout />}>
-              <Route path="/borrower/view" element={<BorrowerView />} />
-              <Route path="/borrower/my-loans" element={<MyLoans />} />
-              <Route path="/borrower/loan-apply" element={<LoanApplication />} />
+
+            {/* Borrower */}
+            <Route path="/borrower" element={<BorrowerLayout />}>
+              <Route index element={<BorrowerView />} />
+              <Route path="view" element={<BorrowerView />} />
+              <Route path="my-loans" element={<MyLoans />} />
+              <Route path="loan-apply" element={<LoanApplication />} />
             </Route>
 
 
@@ -69,16 +77,17 @@ function App() {
           </Route>
 
 
-          {/* Borrower */}
 
 
         </Route>
 
         {/* Admin routes — must have ADMIN role */}
         <Route element={<AdminRoute />}>
-          <Route path="/admin" element={<AdminDashboard />} />
-          <Route path="/admin/loans" element={<LoansManagement />} />
-          <Route path="/admin/users" element={<UsersManagement />} />
+          <Route path="admin" element={<AdminLayout />} >
+            <Route index element={<AdminView />} />
+            <Route path="loans" element={<LoansManagement />} />
+            <Route path="users" element={<UsersManagement />} />
+          </Route>
         </Route>
 
         {/* Super admin routes — must have SUPER_ADMIN role */}
@@ -87,7 +96,7 @@ function App() {
         </Route>
 
         {/* Fallback */}
-      {/*<Route path="*" element={<Navigate to="/login" />} />*/}
+        {/*<Route path="*" element={<Navigate to="/login" />} />*/}
 
       </Routes>
     </BrowserRouter>

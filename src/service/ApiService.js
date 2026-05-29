@@ -12,6 +12,35 @@ static BASE_URL = import.meta.env.VITE_API_BASE_URL;
         };
     }
 
+
+     /**AUTHENTICATION CHECKER */
+    static logout() {
+        localStorage.removeItem('token')
+        localStorage.removeItem('role')
+    }
+
+    static isAuthenticated() {
+        const token = localStorage.getItem('token')
+        return !!token
+    }
+
+    static isAdmin() {
+        const role = localStorage.getItem('role')
+        return role === 'ADMIN'
+    }
+
+static isSuperAdmin() {
+        const role = localStorage.getItem('role')
+        return role === 'SUPERADMIN'
+    }
+
+
+    static isUser() {
+        const role = localStorage.getItem('role')
+        return role === 'USER'
+    }
+
+
   
 
     /***USERS */
@@ -61,33 +90,7 @@ static async requestLoan(loanData) {
 }
 
 
-    /**AUTHENTICATION CHECKER */
-    static logout() {
-        localStorage.removeItem('token')
-        localStorage.removeItem('role')
-    }
-
-    static isAuthenticated() {
-        const token = localStorage.getItem('token')
-        return !!token
-    }
-
-    static isAdmin() {
-        const role = localStorage.getItem('role')
-        return role === 'ADMIN'
-    }
-
-static isSuperAdmin() {
-        const role = localStorage.getItem('role')
-        return role === 'SUPERADMIN'
-    }
-
-
-    static isUser() {
-        const role = localStorage.getItem('role')
-        return role === 'USER'
-    }
-
+   
 /** LOAN REQUESTS */
 
 /* Get all loan requests for the logged-in user */
@@ -133,6 +136,13 @@ static async approveLoanRequest(requestId) {
 /* Reject a loan request */
 static async rejectLoanRequest(requestId) {
     const response = await axios.put(`${this.BASE_URL}/loan-requests/reject/${requestId}`, {}, {
+        headers: this.getHeader()
+    });
+    return response.data;
+}
+
+static async disburseLoan(requestId) {
+    const response = await axios.put(`${this.BASE_URL}/loan-requests/disburse/${requestId}`, {}, {
         headers: this.getHeader()
     });
     return response.data;
