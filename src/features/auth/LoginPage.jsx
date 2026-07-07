@@ -12,6 +12,18 @@ const styles = `
     font-family: 'DM Sans', sans-serif;
   }
 
+  @keyframes spin {
+  to { transform: rotate(360deg); }
+}
+.spinner {
+  width: 16px; height: 16px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  display: inline-block;
+}
+
   /* HEADER */
   .login-header {
     position: fixed; top: 0; width: 100%; z-index: 50;
@@ -167,6 +179,7 @@ export default function LoginPage() {
   const [error, setError] = useState('');
   const navigate = useNavigate();
   const location = useLocation();
+  const [loading, setLoading] = useState(false);
   const from = location.state?.from?.pathname || '/verify';
 
   const handleSubmit = async (e) => {
@@ -177,22 +190,27 @@ export default function LoginPage() {
       return;
     }
     try {
+      setLoading(true);
       const response = await AuthService.loginUser({ email, password });
-      if (response.statusCode === 200) {
-        localStorage.setItem('token', response.token);
-        localStorage.setItem('role', response.role);
-        const role = response.role;
-        if (role === 'ADMIN') {
-          navigate('/admin', { replace: true });
-        } else if (role === 'SUPERADMIN') {
-          navigate('/super-admin', { replace: true });
-        } else {
-          navigate('/dashboard', { replace: true });
-        }
+      localStorage.setItem('token', response.token);
+      localStorage.setItem('role', response.role);
+      
+      // notify components that storage changed
+      window.dispatchEvent(new Event('storage-updated'));
+
+      const role = response.role;
+      if (role === 'ADMIN') {
+        navigate('/admin', { replace: true });
+      } else if (role === 'SUPERADMIN') {
+        navigate('/super-admin', { replace: true });
+      } else {
+        navigate('/dashboard', { replace: true });
       }
     } catch (error) {
       setError(error.response?.data?.message || error.message);
       setTimeout(() => setError(''), 5000);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -255,9 +273,11 @@ export default function LoginPage() {
                 />
                 <Link to="/forgot-password" className="login-forgot">Forgot password?</Link>
               </div>
-
-              <button type="submit" className="login-submit">
-                Sign In
+              <button type="submit" className="login-submit" disabled={loading}>
+                {loading
+                  ? <span className="spinner" />
+                  : 'Sign In'
+                }
               </button>
             </form>
 

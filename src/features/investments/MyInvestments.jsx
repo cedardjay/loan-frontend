@@ -164,8 +164,8 @@ export default function MyInvestments() {
         ]);
         if (isMounted) {
           // FIX 1 — unwrap the backend data field
-          setPortfolioStats(summary.data);
-          setAllInvestments(invData.data.investments ?? []);
+          setPortfolioStats(summary);
+          setAllInvestments(invData ?? []);
         }
       } catch (err) {
         if (isMounted) {

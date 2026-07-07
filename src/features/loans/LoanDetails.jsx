@@ -261,7 +261,7 @@ export default function LoanDetails() {
 
       const response = await ApiService.getMarketplaceLoans();
 
-      const foundLoan = response.loanrequestlist.find(
+      const foundLoan = response.find(
         (item) => String(item.requestId) === String(id)
       );
 

@@ -1,4 +1,6 @@
 import { useNavigate } from "react-router-dom";
+import { getLoggedInUserName, useUserName } from '../../utils/AuthUtil';
+
 
 const styles = `
   
@@ -239,6 +241,9 @@ const recommended = [
 ];
 
 export default function InvestorView() {
+
+  const userName = useUserName();
+
   const navigate = useNavigate();
 
   return (
@@ -247,7 +252,7 @@ export default function InvestorView() {
          
             {/* WELCOME */}
             <div className="welcome">
-              <h1>Welcome back, Taylor</h1>
+              <h1>Welcome back, {userName}</h1>
               <p>Your investment performance is outperforming the benchmark by 2.4%.</p>
             </div>
 

@@ -1,6 +1,7 @@
 
 import { useState, createContext, useContext } from "react";
 import { useNavigate, Outlet } from "react-router-dom";
+import { useUserName } from '../utils/AuthUtil';
 
 const styles = `
  
@@ -94,6 +95,8 @@ const bottomNavItems = [
   { icon: "person", label: "Profile", path: "/profile", matchPrefix: "/profile" },
 ];
 
+
+
 const SidebarContext = createContext();
 
 export function useSidebar() {
@@ -101,6 +104,8 @@ export function useSidebar() {
 }
 
 export default function DashboardLayout() {
+  const userName = useUserName();
+  const initials = userName.slice(0, 3).toUpperCase();
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
@@ -147,7 +152,10 @@ export default function DashboardLayout() {
 
           <div className="nav-right">
             <button className="icon-btn"><Ic n="bell" s={16} /></button>
-            <div className="avatar">TL</div>
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <span style={{ fontSize: 14, fontWeight: 500 }}>{userName}</span>
+              <div className="avatar">{initials}</div>
+            </div>
           </div>
         </nav>
 

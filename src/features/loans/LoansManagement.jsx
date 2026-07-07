@@ -98,7 +98,7 @@ export default function LoansManagement() {
       setLoading(true);
       setError(null);
       const data = await ApiService.getAllLoanRequests();
-      setLoans(data.loanrequestlist || []);
+      setLoans(data || []);
     } catch (err) {
       setError("Failed to load loans. Please try again.");
     } finally {

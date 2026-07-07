@@ -1,4 +1,6 @@
 import { useNavigate } from "react-router-dom";
+import { useUserName } from '../../utils/AuthUtil';
+
 
 const styles = `
 
@@ -241,6 +243,8 @@ const Icon = ({ name, size = 18 }) => {
 
 
 export default function BorrowerView() {
+
+  const userName = useUserName();
   
   const navigate = useNavigate();
 
@@ -270,7 +274,7 @@ export default function BorrowerView() {
 
             {/* WELCOME */}
             <div className="welcome-header">
-              <h1 className="welcome-title">Welcome back, Taylor</h1>
+              <h1 className="welcome-title">Welcome back, {userName}</h1>
               <div className="welcome-meta">
                 <span className="member-badge">Member since Mar 2022</span>
                 <span className="welcome-sub">Everything is looking good with your accounts today.</span>

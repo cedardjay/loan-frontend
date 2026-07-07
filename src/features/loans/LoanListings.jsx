@@ -177,7 +177,7 @@ export default function LoanListings() {
       setLoading(true);
       setError(null);
       const data = await ApiService.getMarketplaceLoans();
-      setLoans(data.loanrequestlist || []);
+      setLoans(data || []);
     } catch (err) {
       setError("Failed to load marketplace loans.");
     } finally {

@@ -286,8 +286,8 @@ export default function MyLoans() {
     setError(null);
     try {
       const response = await ApiService.getUserLoanRequests();
-      if (response && response.loanrequestlist) {
-        const pending = response.loanrequestlist.filter(loan => loan.status === "PENDING_APPROVAL");
+      if (response) {
+        const pending = response.filter(loan => loan.status === "PENDING_APPROVAL");
         setPendingLoans(pending);
       } else {
         setPendingLoans([]);

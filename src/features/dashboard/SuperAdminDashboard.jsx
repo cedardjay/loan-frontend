@@ -14,7 +14,7 @@ export default function SuperAdminDashboard() {
     const fetchUsers = async () => {
       try {
         const data = await ApiService.getAllUsers();
-        setUsers(data.userList);   // extract userList from the response
+        setUsers(data);   // extract userList from the response
         setLoading(false);
       } catch (error) {
         console.error('Failed to fetch users:', error);

@@ -1,4 +1,6 @@
 import { useNavigate } from "react-router-dom";
+import { useUserName } from '../../utils/AuthUtil';
+
 
 const styles = `
   /* ── Color tokens (matches InvestorView) ── */
@@ -207,27 +209,28 @@ const styles = `
 /* ── Inline SVG icons ── */
 const Ic = ({ n, s = 17 }) => {
   const icons = {
-    trend:   <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="23,6 13.5,15.5 8.5,10.5 1,18" /><polyline points="17,6 23,6 23,12" /></svg>,
-    wallet:  <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="1" y="4" width="22" height="16" rx="2" /><line x1="1" y1="10" x2="23" y2="10" /></svg>,
-    layers:  <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>,
+    trend: <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="23,6 13.5,15.5 8.5,10.5 1,18" /><polyline points="17,6 23,6 23,12" /></svg>,
+    wallet: <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="1" y="4" width="22" height="16" rx="2" /><line x1="1" y1="10" x2="23" y2="10" /></svg>,
+    layers: <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 2L2 7l10 5 10-5-10-5z" /><path d="M2 17l10 5 10-5" /><path d="M2 12l10 5 10-5" /></svg>,
     receipt: <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1-2-1z" /></svg>,
-    home:    <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2h-5v-8H9v8H5a2 2 0 0 1-2-2z" /></svg>,
-    list:    <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="8" y1="6" x2="21" y2="6" /><line x1="8" y1="12" x2="21" y2="12" /><line x1="8" y1="18" x2="21" y2="18" /><line x1="3" y1="6" x2="3.01" y2="6" /><line x1="3" y1="12" x2="3.01" y2="12" /><line x1="3" y1="18" x2="3.01" y2="18" /></svg>,
-    plus:    <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg>,
-    clock:   <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>,
-    tx:      <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="5" width="20" height="14" rx="2" /><line x1="2" y1="10" x2="22" y2="10" /></svg>,
-    arrow:   <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="5" y1="12" x2="19" y2="12" /><polyline points="12,5 19,12 12,19" /></svg>,
+    home: <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2h-5v-8H9v8H5a2 2 0 0 1-2-2z" /></svg>,
+    list: <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="8" y1="6" x2="21" y2="6" /><line x1="8" y1="12" x2="21" y2="12" /><line x1="8" y1="18" x2="21" y2="18" /><line x1="3" y1="6" x2="3.01" y2="6" /><line x1="3" y1="12" x2="3.01" y2="12" /><line x1="3" y1="18" x2="3.01" y2="18" /></svg>,
+    plus: <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg>,
+    clock: <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></svg>,
+    tx: <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="5" width="20" height="14" rx="2" /><line x1="2" y1="10" x2="22" y2="10" /></svg>,
+    arrow: <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="5" y1="12" x2="19" y2="12" /><polyline points="12,5 19,12 12,19" /></svg>,
   };
   return icons[n] || null;
 };
 
 /* ── Activity data ── */
 const ACTIVITY = [
-  { ico: "income",   iconName: "trend",   title: "Interest Received",  sub: "From 12 Active Loan Portfolios",   amount: "+$142.30", amtClass: "pos", time: "Today, 9:41 AM" },
-  { ico: "payment",  iconName: "tx",      title: "Loan Payment Made",  sub: "Loan #B001 (Scheduled)",           amount: "-$520.00", amtClass: "neu", time: "Yesterday" },
-  { ico: "invest",   iconName: "layers",  title: "New Investment",     sub: "Auto-invest: Green Energy Project", amount: "-$250.00", amtClass: "neu", time: "Apr 21, 2024" },
-  { ico: "progress", iconName: "clock",   title: "Funding Progress",   sub: "Tech Startup #T24 Reached 80%",    amount: "80% Full", amtClass: "info", time: "Apr 20, 2024" },
+  { ico: "income", iconName: "trend", title: "Interest Received", sub: "From 12 Active Loan Portfolios", amount: "+$142.30", amtClass: "pos", time: "Today, 9:41 AM" },
+  { ico: "payment", iconName: "tx", title: "Loan Payment Made", sub: "Loan #B001 (Scheduled)", amount: "-$520.00", amtClass: "neu", time: "Yesterday" },
+  { ico: "invest", iconName: "layers", title: "New Investment", sub: "Auto-invest: Green Energy Project", amount: "-$250.00", amtClass: "neu", time: "Apr 21, 2024" },
+  { ico: "progress", iconName: "clock", title: "Funding Progress", sub: "Tech Startup #T24 Reached 80%", amount: "80% Full", amtClass: "info", time: "Apr 20, 2024" },
 ];
+
 
 /* ── Components ── */
 
@@ -289,10 +292,10 @@ function InvestorSummary({ navigate }) {
       </div>
       <div className="hv-mini-grid">
         {[
-          { label: "Portfolio",    value: "23 Active Loans", sub: null,      cls: "" },
-          { label: "Principal",    value: "$12,450",          sub: null,      cls: "" },
-          { label: "Next Payment", value: "$410",             sub: "on 04/25", cls: "" },
-          { label: "Alerts",       value: "1 Late Loan",      sub: null,      cls: "alert" },
+          { label: "Portfolio", value: "23 Active Loans", sub: null, cls: "" },
+          { label: "Principal", value: "$12,450", sub: null, cls: "" },
+          { label: "Next Payment", value: "$410", sub: "on 04/25", cls: "" },
+          { label: "Alerts", value: "1 Late Loan", sub: null, cls: "alert" },
         ].map(({ label, value, sub, cls }) => (
           <div key={label} className={`hv-mini-cell ${cls}`}>
             <div className="hv-mini-label">{label}</div>
@@ -309,8 +312,8 @@ function InvestorSummary({ navigate }) {
 
 function BorrowerSummary({ navigate }) {
   const loans = [
-    { id: "B001", name: "Loan #B001 (Business Exp.)", sub: "$520 monthly payment",   ico: "primary", icon: "receipt", badge: "active", label: "Active",   opacity: 1 },
-    { id: "B002", name: "Loan #B002 (Home Improv.)",  sub: "$14,500 total principal", ico: "neutral", icon: "home",    badge: "grace",  label: "In Grace", opacity: 0.8 },
+    { id: "B001", name: "Loan #B001 (Business Exp.)", sub: "$520 monthly payment", ico: "primary", icon: "receipt", badge: "active", label: "Active", opacity: 1 },
+    { id: "B002", name: "Loan #B002 (Home Improv.)", sub: "$14,500 total principal", ico: "neutral", icon: "home", badge: "grace", label: "In Grace", opacity: 0.8 },
   ];
   return (
     <div className="hv-panel">
@@ -385,6 +388,8 @@ function RecentActivity() {
 
 export default function HybridView() {
   const navigate = useNavigate();
+  const userName = useUserName();
+
 
   return (
     <div className="hybrid-root">
@@ -393,7 +398,7 @@ export default function HybridView() {
       <main style={{ padding: "28px 24px 48px" }}>
         <header className="hv-header">
           <h1>
-            Welcome back, Taylor
+            Welcome back, {userName}
             <span className="dot">●</span>
             <span className="since">Member since Mar 2022</span>
           </h1>

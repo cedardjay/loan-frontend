@@ -2,6 +2,7 @@
 import { useEffect } from "react";
 import { useNavigate, useLocation, Outlet, NavLink } from "react-router-dom";
 import { useSidebar } from "./DashboardLayout";
+import LogoutButton from '../components/LogoutButton';
 
 const styles = `
   /* SIDEBAR */
@@ -59,9 +60,9 @@ const Ic = ({ n, s = 17 }) => {
 const navItems = [
   { label: "INVESTOR VIEW", icon: "dashboard", path: "/investor/view" },
   { label: "My Investments", icon: "portfolio", path: "/investor/my-investments" },
-  { label: "Loan Listings", icon: "market",    path: "/investor/loan-listings" },
-  { label: "Transactions",  icon: "tx",        path: "/investor/transactions" },
-  { label: "Settings",      icon: "settings",  path: "/investor/settings" },
+  { label: "Loan Listings", icon: "market", path: "/investor/loan-listings" },
+  { label: "Transactions", icon: "tx", path: "/investor/transactions" },
+  { label: "Settings", icon: "settings", path: "/investor/settings" },
 ];
 
 export default function InvestorLayout() {
@@ -107,6 +108,8 @@ export default function InvestorLayout() {
         <div className="sb-footer">
           <button className="add-funds-btn">Add Funds</button>
         </div>
+        {/* Logout */}
+        <LogoutButton />
       </aside>
 
       {/* Pages slot in here */}

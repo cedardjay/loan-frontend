@@ -2,6 +2,7 @@
 import { useEffect } from "react";
 import { useLocation, Outlet, NavLink } from "react-router-dom";
 import { useSidebar } from "./DashboardLayout";
+import LogoutButton from '../components/LogoutButton';
 
 const styles = `
   /* SIDEBAR */
@@ -105,9 +106,9 @@ export default function BorrowerLayout() {
             </NavLink>
           ))}
         </nav>
-        <div className="sidebar-footer">
-          <button className="support-btn">Get Support</button>
-        </div>
+       
+         {/* Logout */}
+                <LogoutButton />
       </aside>
 
       {/* Pages slot in here */}
