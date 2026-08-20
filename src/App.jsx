@@ -3,27 +3,24 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import HomePage from './features/home/HomePage';
 import SignupPage from './features/auth/SignupPage';
 import LoginPage from './features/auth/LoginPage';
-import VerifyPage from './features/auth/LoginPage';
-import BorrowerView from './features/dashboard/BorrowerView';
-import InvestorView from './features/dashboard/InvestorView';
-import AdminDashboard from './features/dashboard/AdminDashboard';
-import SuperAdminDashboard from './features/dashboard/SuperAdminDashboard';
+import BorrowerView from './features/borrower/BorrowerView';
+import InvestorView from './features/investor/InvestorView';
+import SuperAdminDashboard from './features/admin/SuperAdminDashboard';
 import { ProtectedRoute, AdminRoute, SuperAdminRoute } from './service/guard';
-import LoanApplication from './features/loans/LoanApplication';
-import HybridView from './features/dashboard/HybridView';
-import MyLoans from './features/loans/MyLoans';
-import LoanListings from './features/loans/LoanListings';
-import InvestPage from './features/investments/InvestPage';
-import MyInvestments from './features/investments/MyInvestments';
-import LoansManagement from './features/loans/LoansManagement';
-import UsersManagement from './features/users/UsersManagement';
-import LoanDetails from './features/loans/LoanDetails';
+import LoanApplication from './features/borrower/LoanApplication';
+import MyLoans from './features/borrower/MyLoans';
+import LoanListings from './features/borrower/LoanListings';
+import InvestPage from './features/investor/InvestPage';
+import MyInvestments from './features/investor/MyInvestments';
+import LoansManagement from './features/borrower/LoansManagement';
+import UsersManagement from './features/admin/UsersManagement';
+import LoanDetails from './features/borrower/LoanDetails';
 import DashboardLayout from './layouts/DashboardLayout';
 import InvestorLayout from './layouts/InvestorLayout';
 import BorrowerLayout from './layouts/BorrowerLayout';
 import UserLayout from './layouts/UserLayout';
 import AdminLayout from './layouts/AdminLayout';
-import AdminView from './features/dashboard/AdminView';
+import AdminView from './features/admin/AdminView';
 
 function App() {
   return (
@@ -47,7 +44,6 @@ function App() {
 
 
             <Route element={<UserLayout />} >
-              <Route path="/dashboard" element={<HybridView />} />
             </Route>
 
 

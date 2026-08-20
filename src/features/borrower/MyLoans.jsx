@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import ApiService from "../../service/ApiService"; 
+import ApiService from "../../service/ApiService";
 const style = `
 
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -237,49 +236,59 @@ const style = `
 
 const Icon = ({ name, size = 18 }) => {
   const icons = {
-    dashboard: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>,
-    loans: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>,
-    "my-loans": <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01M16 18h.01"/></svg>,
-    payments: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>,
-    documents: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/></svg>,
-    bell: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>,
-    menu: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>,
-    grid_view: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>,
-    account_balance: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>,
-    person: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>,
+    dashboard: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="7" height="7" rx="1" /><rect x="14" y="3" width="7" height="7" rx="1" /><rect x="3" y="14" width="7" height="7" rx="1" /><rect x="14" y="14" width="7" height="7" rx="1" /></svg>,
+    loans: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 3" /></svg>,
+    "my-loans": <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="4" width="18" height="18" rx="2" /><line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" /><line x1="3" y1="10" x2="21" y2="10" /><path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01M16 18h.01" /></svg>,
+    payments: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="5" width="20" height="14" rx="2" /><path d="M2 10h20" /></svg>,
+    documents: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><polyline points="14,2 14,8 20,8" /></svg>,
+    bell: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" /><path d="M13.73 21a2 2 0 0 1-3.46 0" /></svg>,
+    menu: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="3" y1="12" x2="21" y2="12" /><line x1="3" y1="6" x2="21" y2="6" /><line x1="3" y1="18" x2="21" y2="18" /></svg>,
+    grid_view: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="7" height="7" rx="1" /><rect x="14" y="3" width="7" height="7" rx="1" /><rect x="3" y="14" width="7" height="7" rx="1" /><rect x="14" y="14" width="7" height="7" rx="1" /></svg>,
+    account_balance: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="7" width="20" height="14" rx="2" /><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" /></svg>,
+    person: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /></svg>,
   };
   return icons[name] || null;
 };
 
 
-const loans = [
-  {
-    id: "#LN-8821", name: "Personal Credit Line", apr: "8.5%",
-    total: "25,000,000", remaining: "12,450,000", progress: 50.2,
-    cardClass: "card-blue", fillClass: "fill-blue", remainColor: "accent",
-  },
-  {
-    id: "#LN-9042", name: "Home Improvement", apr: "6.2%",
-    total: "15,000,000", remaining: "8,200,000", progress: 45.3,
-    cardClass: "card-green", fillClass: "fill-teal", remainColor: "teal",
-  },
-];
-
-const repayments = [
-  { date: "Oct 15, 2023", loanId: "#LN-8821", amount: "450,000 FCFA", status: "upcoming" },
-  { date: "Nov 02, 2023", loanId: "#LN-9042", amount: "285,000 FCFA", status: "upcoming" },
-];
-
-const history = [
-  { date: "Aug 22, 2022", purpose: "Emergency Medical Fund",   amount: "5,000,000 FCFA",  status: "paid" },
-  { date: "Jan 15, 2021", purpose: "Small Business Expansion", amount: "12,000,000 FCFA", status: "paid" },
-];
-
 export default function MyLoans() {
   const [pendingLoans, setPendingLoans] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const navigate = useNavigate();
+  const [loans, setLoans] = useState([]);
+  const [loansLoading, setLoansLoading] = useState(true);
+  const [marketplaceLoans, setMarketplaceLoans] = useState([]);
+  const [marketplaceLoading, setMarketplaceLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchMyMarketplaceLoans = async () => {
+      try {
+        const data = await ApiService.getMyMarketplaceLoans();
+        setMarketplaceLoans(data ?? []);
+      } catch (err) {
+        console.error('Failed to load marketplace loans:', err);
+      } finally {
+        setMarketplaceLoading(false);
+      }
+    };
+    fetchMyMarketplaceLoans();
+  }, []);
+
+
+  useEffect(() => {
+    const fetchActiveLoans = async () => {
+      try {
+        const data = await ApiService.getMyActiveLoans();
+        setLoans(data ?? []);
+      } catch (err) {
+        console.error('Failed to load active loans:', err);
+      } finally {
+        setLoansLoading(false);
+      }
+    };
+    fetchActiveLoans();
+  }, []);
+
 
   const fetchPendingLoans = async () => {
     setLoading(true);
@@ -315,9 +324,9 @@ export default function MyLoans() {
   const getStage = (status) => {
     switch (status) {
       case "PENDING_APPROVAL": return "Under Review";
-      case "APPROVED":         return "Approved";
-      case "REJECTED":         return "Rejected";
-      default:                 return "Processing";
+      case "APPROVED": return "Approved";
+      case "REJECTED": return "Rejected";
+      default: return "Processing";
     }
   };
 
@@ -330,10 +339,7 @@ export default function MyLoans() {
     return "Your application is being processed.";
   };
 
-  const handleNavigation = (path) => {
-    navigate(path);
-    setSidebarOpen(false);
-  };
+
 
   useEffect(() => { fetchPendingLoans(); }, []);
 
@@ -357,43 +363,115 @@ export default function MyLoans() {
             <section className="section">
               <div className="section-header">
                 <span className="section-title">Active Loans</span>
-                <span className="badge-active">2 Active</span>
+                <span className="badge-active">{loans.length} Active</span>
               </div>
-              <div className="loans-grid">
-                {loans.map(loan => (
-                  <div key={loan.id} className={`loan-card ${loan.cardClass}`}>
-                    <div className="loan-card-header">
-                      <div>
-                        <div className="loan-id">{loan.id}</div>
-                        <div className="loan-name">{loan.name}</div>
+
+              {loansLoading ? (
+                <p>Loading active loans...</p>
+              ) : loans.length === 0 ? (
+                <p>No active loans.</p>
+              ) : (
+                <div className="loans-grid">
+                  {loans.map(loan => {
+                    const progress = 100 - loan.fundingPercentage; // repayment progress fallback
+                    return (
+                      <div key={loan.requestId} className="loan-card">
+                        <div className="loan-card-header">
+                          <div>
+                            <div className="loan-id">#{loan.requestId}</div>
+                            <div className="loan-name">{loan.description}</div>
+                          </div>
+                          <div className="loan-apr">
+                            <div className="loan-apr-label">Interest Rate</div>
+                            <div className="loan-apr-value">{loan.interestRate}% APR</div>
+                          </div>
+                        </div>
+                        <div className="loan-meta">
+                          <div>
+                            <div className="loan-meta-label">Total Amount</div>
+                            <div className="loan-meta-value">{loan.requestedAmount.toLocaleString()} FCFA</div>
+                          </div>
+                          <div>
+                            <div className="loan-meta-label">Remaining</div>
+                            <div className="loan-meta-value">{loan.remainingAmount.toLocaleString()} FCFA</div>
+                          </div>
+                        </div>
+                        <div className="progress-label">
+                          <span>Repayment Progress</span>
+                          <span>{progress}%</span>
+                        </div>
+                        <div className="progress-bar">
+                          <div className="progress-fill" style={{ width: `${progress}%` }} />
+                        </div>
+                        <button className="pay-btn">💳 Make Payment</button>
                       </div>
-                      <div className="loan-apr">
-                        <div className="loan-apr-label">Interest Rate</div>
-                        <div className="loan-apr-value">{loan.apr} APR</div>
-                      </div>
-                    </div>
-                    <div className="loan-meta">
-                      <div>
-                        <div className="loan-meta-label">Total Amount</div>
-                        <div className="loan-meta-value">{loan.total} FCFA</div>
-                      </div>
-                      <div>
-                        <div className="loan-meta-label">Remaining</div>
-                        <div className={`loan-meta-value ${loan.remainColor}`}>{loan.remaining} FCFA</div>
-                      </div>
-                    </div>
-                    <div className="progress-label">
-                      <span>Repayment Progress</span>
-                      <span>{loan.progress}%</span>
-                    </div>
-                    <div className="progress-bar">
-                      <div className={`progress-fill ${loan.fillClass}`} style={{ width: `${loan.progress}%` }} />
-                    </div>
-                    <button className="pay-btn">💳 Make Payment</button>
-                  </div>
-                ))}
-              </div>
+                    );
+                  })}
+                </div>
+              )}
             </section>
+
+            {/* My Marketplace Loans */}
+            <section className="section">
+              <div className="section-header">
+                <span className="section-title">My Marketplace Loans</span>
+                <span className="badge-active">{marketplaceLoans.length} Listed</span>
+              </div>
+
+              {marketplaceLoading ? (
+                <p>Loading marketplace loans...</p>
+              ) : marketplaceLoans.length === 0 ? (
+                <p>You have no loans currently listed on the marketplace.</p>
+              ) : (
+                <div className="loans-grid">
+                  {marketplaceLoans.map(loan => (
+                    <div key={loan.requestId} className="loan-card">
+                      <div className="loan-card-header">
+                        <div>
+                          <div className="loan-id">#{loan.requestId}</div>
+                          <div className="loan-name">{loan.description}</div>
+                        </div>
+                        <div className="loan-apr">
+                          <div className="loan-apr-label">Interest Rate</div>
+                          <div className="loan-apr-value">{loan.interestRate}% APR</div>
+                        </div>
+                      </div>
+
+                      <div className="loan-meta">
+                        <div>
+                          <div className="loan-meta-label">Requested</div>
+                          <div className="loan-meta-value">{loan.requestedAmount.toLocaleString()} FCFA</div>
+                        </div>
+                        <div>
+                          <div className="loan-meta-label">Funded</div>
+                          <div className="loan-meta-value">{loan.amountFunded.toLocaleString()} FCFA</div>
+                        </div>
+                      </div>
+
+                      <div className="loan-meta">
+                        <div>
+                          <div className="loan-meta-label">Term</div>
+                          <div className="loan-meta-value">{loan.termMonths} months</div>
+                        </div>
+                        <div>
+                          <div className="loan-meta-label">Status</div>
+                          <div className="loan-meta-value">{loan.status.replace(/_/g, ' ')}</div>
+                        </div>
+                      </div>
+
+                      <div className="progress-label">
+                        <span>Funding Progress</span>
+                        <span>{loan.fundingPercentage}%</span>
+                      </div>
+                      <div className="progress-bar">
+                        <div className="progress-fill" style={{ width: `${loan.fundingPercentage}%` }} />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </section>
+
 
             {/* Pending Applications */}
             <section className="section">
@@ -441,7 +519,7 @@ export default function MyLoans() {
                       <div className="pending-meta">
                         <div>
                           <div className="pending-meta-label">Requested</div>
-                          <div className="pending-meta-value">${loan.requestedAmount?.toLocaleString() || "0"}</div>
+                          <div className="pending-meta-value">{loan.requestedAmount?.toLocaleString() || "0"} FCFA</div>
                         </div>
                         <div>
                           <div className="pending-meta-label">Est. APR</div>
@@ -464,9 +542,7 @@ export default function MyLoans() {
                         </div>
                       </div>
                       <div className="pending-actions">
-                        <button className="pending-btn-primary" onClick={() => alert(`Upload documents for Loan Request #${loan.requestId}`)}>
-                          📎 Upload Docs
-                        </button>
+
                         <button className="pending-btn-secondary" onClick={() => alert(`Loan Details:\nID: ${loan.requestId}\nAmount: $${loan.requestedAmount}\nPurpose: ${loan.purpose}\nStatus: ${loan.status}`)}>
                           View Details
                         </button>
@@ -477,72 +553,6 @@ export default function MyLoans() {
               </div>
             </section>
 
-            {/* Upcoming Repayments */}
-            <section className="section">
-              <div className="section-header">
-                <span className="section-title">Upcoming Repayments</span>
-              </div>
-              <div className="table-card">
-                <table>
-                  <thead>
-                    <tr>
-                      <th>Date</th><th>Loan ID</th><th>Amount</th><th>Status</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {repayments.map((r, i) => (
-                      <tr key={i}>
-                        <td>{r.date}</td>
-                        <td className="td-mono">{r.loanId}</td>
-                        <td className="td-amount">{r.amount}</td>
-                        <td><span className="badge badge-upcoming">{r.status}</span></td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </section>
-
-            {/* Loan History */}
-            <section className="section">
-              <div className="section-header">
-                <span className="section-title">Loan History</span>
-              </div>
-              <div className="table-card">
-                <table>
-                  <thead>
-                    <tr>
-                      <th>Completed Date</th><th>Purpose</th><th>Total Amount</th><th>Status</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {history.map((h, i) => (
-                      <tr key={i}>
-                        <td>{h.date}</td>
-                        <td>{h.purpose}</td>
-                        <td className="td-amount">{h.amount}</td>
-                        <td><span className="badge badge-paid">✅ Paid in Full</span></td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </section>
-
-            {/* Bottom Panels */}
-            <div className="bottom-grid">
-              <div className="panel-consolidate">
-                <h3>Consolidate your debts.</h3>
-                <p>Streamline your financial life by combining multiple high-interest loans into one sanctuary with a lower APR.</p>
-                <button className="learn-btn">Learn More</button>
-              </div>
-              <div className="panel-help">
-                <div className="help-icon">🎧</div>
-                <h3>Need help?</h3>
-                <p>Our loan advisors are available 24/7 to discuss repayment options or adjustments.</p>
-                <button className="contact-btn">Contact Support →</button>
-              </div>
-            </div>
 
           </main>
         </div>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { Link, useNavigate} from 'react-router-dom';
 import { useState } from 'react';
 import AuthService from './AuthService';
 
@@ -178,9 +178,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
-  const location = useLocation();
   const [loading, setLoading] = useState(false);
-  const from = location.state?.from?.pathname || '/verify';
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -204,7 +202,7 @@ export default function LoginPage() {
       } else if (role === 'SUPERADMIN') {
         navigate('/super-admin', { replace: true });
       } else {
-        navigate('/dashboard', { replace: true });
+        navigate('/borrower', { replace: true });
       }
     } catch (error) {
       setError(error.response?.data?.message || error.message);

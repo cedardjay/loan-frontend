@@ -30,30 +30,6 @@ const styles = `
   .stat-card-sub { font-size: 0.7rem; color: var(--muted); margin-top: 6px; }
   .stat-icon { font-size: 1.25rem; color: var(--muted); opacity: 0.5; }
 
-  /* FILTER SECTION */
-  .filter-section {
-    display: flex; justify-content: space-between; align-items: center;
-    flex-wrap: wrap; gap: 16px; margin-bottom: 24px;
-  }
-  .filter-tabs {
-    display: flex; gap: 8px; background: var(--card); padding: 4px;
-    border-radius: 12px; border: 1px solid var(--border);
-  }
-  .filter-tab {
-    padding: 8px 20px; font-size: 0.8rem; font-weight: 600;
-    background: none; border: none; border-radius: 8px;
-    cursor: pointer; transition: all 0.2s; color: var(--muted);
-  }
-  .filter-tab.active {
-    background: var(--navy); color: #fff;
-  }
-  .search-box {
-    display: flex; align-items: center; gap: 8px;
-    background: var(--card); padding: 8px 16px;
-    border-radius: 10px; border: 1px solid var(--border);
-  }
-  
-
   /* INVESTMENTS TABLE */
   .investments-card { background: var(--card); border-radius: 14px; border: 1px solid var(--border); overflow: hidden; }
   .inv-header { padding: 20px 22px 14px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
@@ -99,8 +75,6 @@ const styles = `
   .empty-title { font-size: 1.1rem; font-weight: 600; color: var(--navy); margin-bottom: 8px; }
   .empty-sub { font-size: 0.85rem; color: var(--muted); }
 
-  
-
   @media (max-width: 1024px) {
     .stats-summary { grid-template-columns: repeat(2, 1fr); }
   }
@@ -108,7 +82,6 @@ const styles = `
     :root { --sidebar-w: 210px; }
     .main { padding: 20px 14px; padding-bottom: 70px; }
     .stats-summary { grid-template-columns: 1fr; }
-    .filter-section { flex-direction: column; align-items: stretch; }
   }
   @media (max-width: 768px) {
     .inv-table th:nth-child(4), .inv-table td:nth-child(4),
@@ -116,34 +89,7 @@ const styles = `
   }
 `;
 
-/* ── Inline SVG icons ── */
-const Ic = ({ n, s = 17 }) => {
-  const icons = {
-    dashboard: <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="7" height="7" rx="1" /><rect x="14" y="3" width="7" height="7" rx="1" /><rect x="3" y="14" width="7" height="7" rx="1" /><rect x="14" y="14" width="7" height="7" rx="1" /></svg>,
-    portfolio: <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="9" /><path d="M12 3v9l5 3" /></svg>,
-    market: <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" /><line x1="3" y1="6" x2="21" y2="6" /><path d="M16 10a4 4 0 0 1-8 0" /></svg>,
-    tx: <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="5" width="20" height="14" rx="2" /><line x1="2" y1="10" x2="22" y2="10" /></svg>,
-    settings: <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="3" /><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" /></svg>,
-    bell: <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" /><path d="M13.73 21a2 2 0 0 1-3.46 0" /></svg>,
-    trend: <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="23,6 13.5,15.5 8.5,10.5 1,18" /><polyline points="17,6 23,6 23,12" /></svg>,
-    wallet: <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="1" y="4" width="22" height="16" rx="2" /><line x1="1" y1="10" x2="23" y2="10" /></svg>,
-    arrow: <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="5" y1="12" x2="19" y2="12" /><polyline points="12,5 19,12 12,19" /></svg>,
-    menu: <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="3" y1="12" x2="21" y2="12" /><line x1="3" y1="6" x2="21" y2="6" /><line x1="3" y1="18" x2="21" y2="18" /></svg>,
-    search: <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /></svg>,
-    grid_view: <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="7" height="7" rx="1" /><rect x="14" y="3" width="7" height="7" rx="1" /><rect x="3" y="14" width="7" height="7" rx="1" /><rect x="14" y="14" width="7" height="7" rx="1" /></svg>,
-    account_balance: <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="7" width="20" height="14" rx="2" /><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" /></svg>,
-    payments: <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="5" width="20" height="14" rx="2" /><line x1="2" y1="10" x2="22" y2="10" /></svg>,
-    person: <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /></svg>,
-    list: <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="8" y1="6" x2="21" y2="6" /><line x1="8" y1="12" x2="21" y2="12" /><line x1="8" y1="18" x2="21" y2="18" /><line x1="3" y1="6" x2="3.01" y2="6" /><line x1="3" y1="12" x2="3.01" y2="12" /><line x1="3" y1="18" x2="3.01" y2="18" /></svg>,
-  };
-  return icons[n] || null;
-};
-
 export default function MyInvestments() {
-  const [activeNav, setActiveNav] = useState("portfolio");
-  const [filterStatus, setFilterStatus] = useState("all");
-  const [searchTerm, setSearchTerm] = useState("");
-
   const [portfolioStats, setPortfolioStats] = useState(null);
   const [allInvestments, setAllInvestments] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -163,7 +109,6 @@ export default function MyInvestments() {
           InvestService.getMyInvestments()
         ]);
         if (isMounted) {
-          // FIX 1 — unwrap the backend data field
           setPortfolioStats(summary);
           setAllInvestments(invData ?? []);
         }
@@ -181,24 +126,12 @@ export default function MyInvestments() {
     return () => { isMounted = false; };
   }, []);
 
-  const filteredInvestments = allInvestments.filter(inv => {
-    // FIX 2 — capital S typo fixed, status is lowercased on backend
-    const matchesStatus = filterStatus === "all" || inv.status === filterStatus;
-    const matchesSearch = inv.name?.toLowerCase().includes(searchTerm.toLowerCase());
-    return matchesStatus && matchesSearch;
-  });
-
-  const activeCount = allInvestments.filter(i => i.status === "active").length;
-  const completedCount = allInvestments.filter(i => i.status === "completed").length;
-  const graceCount = allInvestments.filter(i => i.status === "grace").length;
-
   const getStatusDisplay = (status) => {
     switch(status) {
       case "active":    return <span className="status-on"><span className="dot-green" /> Active</span>;
       case "completed": return <span className="status-completed"><span className="dot-gray" /> Completed</span>;
       case "grace":     return <span className="status-on"><span className="dot-green" /> Grace Period</span>;
       case "default":   return <span className="status-default"><span className="dot-red" /> Defaulted</span>;
-      // FIX 3 — any other status from backend renders in lowercase, readable
       default: return <span className="status-completed"><span className="dot-gray" /> {status?.toLowerCase().replace(/_/g, ' ') ?? '—'}</span>;
     }
   };
@@ -232,89 +165,30 @@ export default function MyInvestments() {
               <div className="stat-card">
                 <div className="stat-card-header">
                   <span className="stat-card-title">Total Invested</span>
-                  <span className="stat-icon">💰</span>
                 </div>
                 <div className="stat-card-value">
-                  ${portfolioStats?.totalInvested?.toLocaleString() ?? '—'}
+                  FCFA{portfolioStats?.totalInvested?.toLocaleString() ?? '—'}
                 </div>
                 <div className="stat-card-sub">Across {allInvestments.length} loans</div>
               </div>
-              <div className="stat-card">
-                <div className="stat-card-header">
-                  <span className="stat-card-title">Current Value</span>
-                  <span className="stat-icon">📈</span>
-                </div>
-                <div className="stat-card-value green">
-                  ${portfolioStats?.currentValue?.toLocaleString() ?? '—'}
-                </div>
-                <div className="stat-card-sub">
-                  +${portfolioStats?.totalReturns?.toLocaleString() ?? '—'} returns
-                </div>
-              </div>
+
               <div className="stat-card">
                 <div className="stat-card-header">
                   <span className="stat-card-title">Avg. APY</span>
-                  <span className="stat-icon">⭐</span>
                 </div>
                 <div className="stat-card-value green">
                   {portfolioStats?.avgApy ?? '—'}%
                 </div>
                 <div className="stat-card-sub">Weighted average</div>
               </div>
-              <div className="stat-card">
-                <div className="stat-card-header">
-                  <span className="stat-card-title">Active Loans</span>
-                  <span className="stat-icon">📋</span>
-                </div>
-                <div className="stat-card-value">{activeCount}</div>
-                <div className="stat-card-sub">{completedCount} completed, {graceCount} grace</div>
-              </div>
-            </div>
-
-            <div className="filter-section">
-              <div className="filter-tabs">
-                <button
-                  className={`filter-tab ${filterStatus === "all" ? "active" : ""}`}
-                  onClick={() => setFilterStatus("all")}
-                >
-                  All ({allInvestments.length})
-                </button>
-                <button
-                  className={`filter-tab ${filterStatus === "active" ? "active" : ""}`}
-                  onClick={() => setFilterStatus("active")}
-                >
-                  Active ({activeCount})
-                </button>
-                <button
-                  className={`filter-tab ${filterStatus === "completed" ? "active" : ""}`}
-                  onClick={() => setFilterStatus("completed")}
-                >
-                  Completed ({completedCount})
-                </button>
-                <button
-                  className={`filter-tab ${filterStatus === "grace" ? "active" : ""}`}
-                  onClick={() => setFilterStatus("grace")}
-                >
-                  Grace ({graceCount})
-                </button>
-              </div>
-              <div className="search-box">
-                <Ic n="search" s={16} />
-                <input
-                  type="text"
-                  placeholder="Search investments..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                />
-              </div>
             </div>
 
             <div className="investments-card">
               <div className="inv-header">
                 <div className="inv-title">My Investments</div>
-                <div className="inv-count">{filteredInvestments.length} investments</div>
+                <div className="inv-count">{allInvestments.length} investments</div>
               </div>
-              {filteredInvestments.length > 0 ? (
+              {allInvestments.length > 0 ? (
                 <div style={{ overflowX: "auto" }}>
                   <table className="inv-table">
                     <thead>
@@ -331,24 +205,22 @@ export default function MyInvestments() {
                       </tr>
                     </thead>
                     <tbody>
-                      {filteredInvestments.map((inv) => (
+                      {allInvestments.map((inv) => (
                         <tr key={inv.id}>
                           <td><span className="borrower-name">{inv.name}</span></td>
-                          {/* FIX 4 — null guard for grade */}
                           <td>
                             {inv.grade
                               ? <span className={`grade-badge grade-${inv.grade.toLowerCase()}`}>Grade {inv.grade}</span>
                               : <span className="date-val">—</span>
                             }
                           </td>
-                          <td>${inv.amount?.toLocaleString()}</td>
+                          <td>{inv.amount?.toLocaleString()} fcfa</td>
                           <td><span className="interest-val">{inv.interest}%</span></td>
                           <td>{getStatusDisplay(inv.status)}</td>
-                          {/* FIX 5 — fallback for nextPayment */}
                           <td><span className="date-val">{inv.nextPayment ?? '—'}</span></td>
                           <td><span className="date-val">{inv.investedDate}</span></td>
                           <td style={{ color: "var(--green-text)", fontWeight: 600 }}>
-                            +${inv.expectedReturn?.toLocaleString()}
+                            {inv.expectedReturn?.toLocaleString()} FCFA
                           </td>
                           <td>
                             <button
@@ -367,7 +239,7 @@ export default function MyInvestments() {
                 <div className="empty-state">
                   <div className="empty-icon">📭</div>
                   <div className="empty-title">No investments found</div>
-                  <div className="empty-sub">Try adjusting your filters or search term.</div>
+                  <div className="empty-sub">You haven't made any investments yet.</div>
                 </div>
               )}
             </div>

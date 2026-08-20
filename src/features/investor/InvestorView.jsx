@@ -1,5 +1,7 @@
 import { useNavigate } from "react-router-dom";
-import { getLoggedInUserName, useUserName } from '../../utils/AuthUtil';
+import { useUserName } from '../../utils/AuthUtil';
+import InvestService from "./InvestService";
+import { useState, useEffect } from "react";
 
 
 const styles = `
@@ -182,63 +184,7 @@ const Ic = ({ n, s = 17 }) => {
   return icons[n] || null;
 };
 
-/* ── Sparkline Chart ── */
-function PortfolioChart() {
-  const data = [14200, 14800, 14600, 15100, 15400, 15200, 15900, 16300, 16100, 16800, 17500, 18450];
-  const W = 700, H = 180, pad = 10;
-  const min = Math.min(...data) - 500;
-  const max = Math.max(...data) + 200;
-  const pts = data.map((v, i) => {
-    const x = pad + (i / (data.length - 1)) * (W - pad * 2);
-    const y = H - pad - ((v - min) / (max - min)) * (H - pad * 2);
-    return [x, y];
-  });
-  const linePath = pts.map((p, i) => `${i === 0 ? "M" : "L"}${p[0]},${p[1]}`).join(" ");
-  const areaPath = `${linePath} L${pts[pts.length - 1][0]},${H} L${pts[0][0]},${H} Z`;
-  const labels = ["APR", "JUL", "OCT", "JAN", "APR"];
 
-  return (
-    <div>
-      <div className="chart-area">
-        <svg className="chart" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none">
-          <defs>
-            <linearGradient id="chartGrad" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#00a878" stopOpacity="0.18" />
-              <stop offset="100%" stopColor="#00a878" stopOpacity="0.01" />
-            </linearGradient>
-          </defs>
-          {[0.25, 0.5, 0.75, 1].map(t => (
-            <line key={t} x1={pad} y1={H - pad - t * (H - pad * 2)} x2={W - pad} y2={H - pad - t * (H - pad * 2)}
-              stroke="#dde3ef" strokeWidth="1" strokeDasharray="4,4" />
-          ))}
-          <path d={areaPath} fill="url(#chartGrad)" />
-          <path d={linePath} fill="none" stroke="#00a878" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-          <circle cx={pts[pts.length - 1][0]} cy={pts[pts.length - 1][1]} r="5" fill="#00a878" />
-          <circle cx={pts[pts.length - 1][0]} cy={pts[pts.length - 1][1]} r="9" fill="#00a878" opacity="0.2" />
-        </svg>
-      </div>
-      <div className="x-labels">
-        {labels.map(l => <span key={l} className="x-label">{l}</span>)}
-      </div>
-    </div>
-  );
-}
-
-
-
-
-
-const investments = [
-  { name: "Small Biz Expansion", grade: "A", amount: "$5,000", interest: "8.5%", status: "on", nextPayment: "Apr 25" },
-  { name: "Home Renovation", grade: "B", amount: "$2,500", interest: "10.2%", status: "on", nextPayment: "May 01" },
-  { name: "Personal Consolidation", grade: "C", amount: "$1,000", interest: "12.5%", status: "grace", nextPayment: "Apr 19" },
-];
-
-const recommended = [
-  { name: "Logistics Growth", grade: "A", yield: "9.1% Yield", left: "$2,400 left" },
-  { name: "Retail Stocking", grade: "B", yield: "11.4% Yield", left: "$800 left" },
-  { name: "Medical Office Eq.", grade: "A", yield: "8.8% Yield", left: "$12,000 left" },
-];
 
 export default function InvestorView() {
 
@@ -246,146 +192,68 @@ export default function InvestorView() {
 
   const navigate = useNavigate();
 
+
+  const [portfolioStats, setPortfolioStats] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchSummary = async () => {
+      try {
+        const data = await InvestService.getInvestorPortfolioSummary();
+        setPortfolioStats(data);
+      } catch (err) {
+        console.error('Failed to load portfolio summary:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchSummary();
+  }, []);
+
   return (
     <>
       <style>{styles}</style>
-         
-            {/* WELCOME */}
-            <div className="welcome">
-              <h1>Welcome back, {userName}</h1>
-              <p>Your investment performance is outperforming the benchmark by 2.4%.</p>
-            </div>
 
-            {/* STATS */}
-            <div className="stats-row">
-              <div className="stat-card">
-                <div className="stat-label">
-                  Total Invested
-                  <span className="badge-green">+12% vs last month</span>
-                </div>
-                <div className="stat-val">$0</div>
-              </div>
-              <div className="stat-card net-returns">
-                <div className="stat-label">Net Returns</div>
-                <div className="stat-icon"><Ic n="trend" s={18} /></div>
-                <div className="stat-val green">+$0</div>
-                <div className="stat-sub">9.3% Avg. APY</div>
-              </div>
-              <div className="stat-card">
-                <div className="stat-label">Available Cash</div>
-                <div className="stat-icon"><Ic n="wallet" s={18} /></div>
-                <div className="stat-val">$0</div>
-                <div className="deploy-link">Deploy via Auto-invest <Ic n="arrow" s={13} /></div>
-                <button
-                  className="browse-loans-btn"
-                  onClick={() => navigate('/investor/loan-listings')}
-                >
-                  <Ic n="list" s={16} /> Browse Loan Listings
-                </button>
-              </div>
-            </div>
+      {/* WELCOME */}
+      <div className="welcome">
+        <h1>Welcome back, {userName}</h1>
+      </div>
 
-            {/* CONTENT GRID */}
-            <div className="content-grid">
-              {/* LEFT */}
-              <div>
-                {/* CHART */}
-                <div className="chart-card">
-                  <div className="chart-header">
-                    <div>
-                      <div className="chart-title">Portfolio Growth</div>
-                      <div className="chart-sub">Performance trend over the last 12 months</div>
-                    </div>
-                    <button className="period-btn">Last 12 Months ↓</button>
-                  </div>
-                  <PortfolioChart />
-                </div>
+      {/* STATS */}
+      <div className="stats-row">
+        <div className="stat-card">
+          <div className="stat-label">
+            Total Invested
+          </div>
+          <div className="stat-val">{loading ? '...' : `${portfolioStats?.totalInvested?.toLocaleString() ?? 0} FCFA`}</div>
+        </div>
 
-                {/* INVESTMENTS TABLE */}
-                <div className="investments-card">
-                  <div className="inv-header">
-                    <div className="inv-title">Active Investments</div>
-                  </div>
-                  <div style={{ overflowX: "auto" }}>
-                    <table className="inv-table">
-                      <thead>
-                        <tr>
-                          <th>Borrower</th>
-                          <th>Grade</th>
-                          <th>Amount</th>
-                          <th>Interest</th>
-                          <th>Status</th>
-                          <th>Next Payment</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {investments.map((inv, i) => (
-                          <tr key={i}>
-                            <td><span className="borrower-name">{inv.name}</span></td>
-                            <td>
-                              <span className={`grade-badge grade-${inv.grade.toLowerCase()}`}>
-                                Grade {inv.grade}
-                              </span>
-                            </td>
-                            <td>{inv.amount}</td>
-                            <td><span className="interest-val">{inv.interest}</span></td>
-                            <td>
-                              {inv.status === "on"
-                                ? <span className="status-on"><span className="dot-green" /> On Time</span>
-                                : <span className="status-grace"><span className="dot-red" /> Grace Period</span>
-                              }
-                            </td>
-                            <td><span className="date-val">{inv.nextPayment}</span></td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              </div>
+        <div className="stat-card">
+          <div className="stat-icon"><Ic n="wallet" s={18} /></div>
+          <button
+            className="browse-loans-btn"
+            onClick={() => navigate('/investor/loan-listings')}
+          >
+            <Ic n="list" s={16} /> Browse Loan Listings
+          </button>
+        </div>
+      </div>
 
-              {/* RIGHT PANEL */}
-              <div className="right-panel">
-                <div className="insights-card">
-                  <div className="insights-bg" />
-                  <div className="insights-bg2" />
-                  <div className="insights-title">
-                    <span className="sparkle">✦</span> Sanctuary Insights
-                  </div>
-                  <div className="insights-text">
-                    You have $450 idle cash. Enabling Auto-Invest could increase your yield by 1.2% per year.
-                  </div>
-                  <button className="configure-btn">Configure Auto-Invest</button>
-                </div>
+      {/* CONTENT GRID */}
+      <div className="content-grid">
+        {/* LEFT */}
+        <div>
 
-                <div className="recommended-card">
-                  <div className="rec-header">
-                    <div className="rec-label">Recommended for you</div>
-                  </div>
-                  {recommended.map((r, i) => (
-                    <div className="rec-item" key={i}>
-                      <div className="rec-top">
-                        <span className="rec-name">{r.name}</span>
-                        <span className={`grade-badge grade-${r.grade.toLowerCase()}`}>Grade {r.grade}</span>
-                      </div>
-                      <div className="rec-bottom">
-                        <span className="rec-yield">{r.yield}</span>
-                        <span className="rec-left">{r.left}</span>
-                      </div>
-                    </div>
-                  ))}
-                  <button className="view-mkt">View Marketplace</button>
-                </div>
+        </div>
+      </div>
 
-                <div className="promo-card">
-                  <div className="promo-img-overlay" />
-                  <div className="promo-grid" />
-                  <div className="promo-text">Invest in the future of small businesses.</div>
-                  <div className="promo-sub">Secured and vetted opportunities, curated for you.</div>
-                </div>
-              </div>
-            </div>
-           
+      {/* RIGHT PANEL */}
+      <div className="right-panel">
+
+
+      </div>
+
+
     </>
   );
 }

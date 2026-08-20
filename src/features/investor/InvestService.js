@@ -15,7 +15,7 @@ export default class InvestService {
 
     static async investInLoan(loanRequestId, amount) {
         const response = await axios.post(
-            `${this.BASE_URL}/match-request/invest/${loanRequestId}`, {
+            `${this.BASE_URL}/loan-requests/${loanRequestId}/invest`, {
                 amount
             }, {
                 headers: this.getHeader()
@@ -26,7 +26,7 @@ export default class InvestService {
 
     static async getInvestorPortfolioSummary() {
         const response = await axios.get(
-            `${this.BASE_URL}/match-request/portfolio-summary`, {
+            `${this.BASE_URL}/match-requests/portfolio-summary`, {
                 headers: this.getHeader()
             }
         );
@@ -39,7 +39,7 @@ export default class InvestService {
         if (search) params.append('search', search);
 
         const response = await axios.get(
-            `${this.BASE_URL}/match-request/my-investments?${params}`, {
+            `${this.BASE_URL}/match-requests/my-investments?${params}`, {
                 headers: this.getHeader()
             }
         );

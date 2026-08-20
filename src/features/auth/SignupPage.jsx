@@ -306,7 +306,7 @@ export default function SignupPage() {
       // notify components that storage changed
       window.dispatchEvent(new Event('storage-updated'));
       
-      navigate('/verify', { replace: true });
+      navigate('/borrower', { replace: true });
 
     } catch (error) {
       setErrorMessage(error.response?.data?.message || error.message);
