@@ -189,7 +189,7 @@ export default function HomePage() {
         <section className="hp-hero">
           <div className="hp-eyebrow">
             <span className="hp-eyebrow-dot" />
-            Now live in Cameroon &amp; beyond
+            Now live in Cameroon
           </div>
           <h1 className="hp-h1">
             Your all-in-one platform to<br />

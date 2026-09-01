@@ -111,7 +111,7 @@ export default class ApiService {
 
     /* Cancel a loan request */
     static async cancelLoanRequest(requestId) {
-        const response = await axios.delete(`${this.BASE_URL}/loan-requests/${requestId}cancel`, {
+        const response = await axios.delete(`${this.BASE_URL}/loan-requests/${requestId}/cancel`, {
             headers: this.getHeader()
         });
         return response.data;
@@ -142,7 +142,7 @@ export default class ApiService {
     }
 
     static async disburseLoan(id) {
-        const response = await axios.put(`${this.BASE_URL}/loan-requests/${id}disburse/`, {}, {
+        const response = await axios.post(`${this.BASE_URL}/disbursal/${id}/approve`, {}, {
             headers: this.getHeader()
         });
         return response.data;
@@ -171,7 +171,61 @@ export default class ApiService {
     }
 
 
+
+    /** PAYMENT ACCOUNTS (DISBURSEMENT ACCOUNTS) */
+
+    /* Get all disbursement accounts for the logged-in user */
+    static async getPaymentAccounts() {
+        const response = await axios.get(`${this.BASE_URL}/payment-accounts`, {
+            headers: this.getHeader()
+        });
+        return response.data;
+    }
+
+    /* Create a new disbursement account */
+    static async createPaymentAccount(accountData) {
+        const response = await axios.post(`${this.BASE_URL}/payment-accounts`, accountData, {
+            headers: this.getHeader()
+        });
+        return response.data;
+    }
+
+    /* Request disbursal for a fully funded loan */
+    static async requestDisbursal(loanRequestId, payoutAccountId) {
+        const response = await axios.post(`${this.BASE_URL}/disbursal/request`,
+            { loanRequestId, payoutAccountId },
+            { headers: this.getHeader() }
+        );
+        return response.data;
+    }
+
+    /* Get repayment schedule for a loan */
+    static async getRepaymentSchedule(loanRequestId) {
+        const response = await axios.get(`${this.BASE_URL}/loan-requests/my-requests/${loanRequestId}/repayment-schedule`, {
+            headers: this.getHeader()
+        });
+        return response.data;
+    }
+
+    /* Submit a loan repayment */
+    static async makeLoanPayment(loanId, payerDetails) {
+        const response = await axios.post(`${this.BASE_URL}/payments/${loanId}`, payerDetails, {
+            headers: this.getHeader()
+        });
+        return response.data;
+    }
+
+    /* Poll transaction status */
+    static async getTransactionStatus(paymentReference) {
+        const response = await axios.get(`${this.BASE_URL}/transactions/${paymentReference}/status`, {
+            headers: this.getHeader()
+        });
+        return response.data;
+    }
+
 }
+
+
 
 
 

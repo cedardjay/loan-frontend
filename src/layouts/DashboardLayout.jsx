@@ -144,7 +144,7 @@ export default function DashboardLayout() {
             </button>
             <button
               className={`nav-tab ${currentPath.startsWith("/borrower") ? "active" : ""}`}
-              onClick={() => navigate("/borrower-view")}
+              onClick={() => navigate("/borrower/view")}
             >
               Borrower
             </button>

@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import ApiService from "../../service/ApiService";
+import { useNavigate } from 'react-router-dom';
+
 const style = `
 
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -259,6 +261,9 @@ export default function MyLoans() {
   const [loansLoading, setLoansLoading] = useState(true);
   const [marketplaceLoans, setMarketplaceLoans] = useState([]);
   const [marketplaceLoading, setMarketplaceLoading] = useState(true);
+  const [disbursalRequestedLoans, setDisbursalRequestedLoans] = useState([]);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchMyMarketplaceLoans = async () => {
@@ -290,6 +295,7 @@ export default function MyLoans() {
   }, []);
 
 
+
   const fetchPendingLoans = async () => {
     setLoading(true);
     setError(null);
@@ -297,17 +303,22 @@ export default function MyLoans() {
       const response = await ApiService.getUserLoanRequests();
       if (response) {
         const pending = response.filter(loan => loan.status === "PENDING_APPROVAL");
+        const disbursalRequested = response.filter(loan => loan.status === "DISBURSAL_REQUESTED");
         setPendingLoans(pending);
+        setDisbursalRequestedLoans(disbursalRequested);
       } else {
         setPendingLoans([]);
+        setDisbursalRequestedLoans([]);
       }
     } catch (err) {
       setError(err.response?.data?.message || "Failed to load pending applications");
       setPendingLoans([]);
+      setDisbursalRequestedLoans([]);
     } finally {
       setLoading(false);
     }
   };
+
 
   const formatDate = (dateString) => {
     if (!dateString) return "N/A";
@@ -403,10 +414,61 @@ export default function MyLoans() {
                         <div className="progress-bar">
                           <div className="progress-fill" style={{ width: `${progress}%` }} />
                         </div>
-                        <button className="pay-btn">💳 Make Payment</button>
+                        <div className="flex gap-2">
+                          <button className="pay-btn" onClick={() => navigate(`/borrower/make-payment/${loan.requestId}`)}>
+                            💳 Make Payment
+                          </button>                          <button
+                            className="pay-btn"
+                            onClick={() => navigate(`/borrower/repayment-schedule/${loan.requestId}`)}
+                          >
+                            📅 View Repayment Schedule
+                          </button>
+                        </div>
                       </div>
                     );
                   })}
+                </div>
+              )}
+            </section>
+
+            {/* Disbursal Requested Loans */}
+            <section className="section">
+              <div className="section-header">
+                <span className="section-title">Disbursal Requested</span>
+                <span className="badge-pending-count">{disbursalRequestedLoans.length} Awaiting Disbursal</span>
+              </div>
+
+              {loading ? (
+                <p>Loading...</p>
+              ) : disbursalRequestedLoans.length === 0 ? (
+                <p>No loans awaiting disbursal.</p>
+              ) : (
+                <div className="loans-grid">
+                  {disbursalRequestedLoans.map(loan => (
+                    <div key={loan.requestId} className="loan-card">
+                      <div className="loan-card-header">
+                        <div>
+                          <div className="loan-id">#{loan.requestId}</div>
+                          <div className="loan-name">{loan.description}</div>
+                        </div>
+                        <div className="loan-apr">
+                          <div className="loan-apr-label">Interest Rate</div>
+                          <div className="loan-apr-value">{loan.interestRate}% APR</div>
+                        </div>
+                      </div>
+
+                      <div className="loan-meta">
+                        <div>
+                          <div className="loan-meta-label">Requested</div>
+                          <div className="loan-meta-value">{loan.requestedAmount.toLocaleString()} FCFA</div>
+                        </div>
+                        <div>
+                          <div className="loan-meta-label">Status</div>
+                          <div className="loan-meta-value">Awaiting Admin Disbursal</div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               )}
             </section>
@@ -466,12 +528,21 @@ export default function MyLoans() {
                       <div className="progress-bar">
                         <div className="progress-fill" style={{ width: `${loan.fundingPercentage}%` }} />
                       </div>
+
+                      {/* Disbursal request button — only show once fully funded */}
+                      {loan.fundingPercentage >= 100 && (
+                        <button
+                          className="bg-green-400 p-2 rounded-xl hover:bg-green-600"
+                          onClick={() => navigate(`/borrower/disbursal-details?loanRequestId=${loan.requestId}`)}
+                        >
+                          Request Disbursal
+                        </button>
+                      )}
                     </div>
                   ))}
                 </div>
               )}
             </section>
-
 
             {/* Pending Applications */}
             <section className="section">

@@ -90,7 +90,6 @@ const styles = `
 `;
 
 export default function MyInvestments() {
-  const [portfolioStats, setPortfolioStats] = useState(null);
   const [allInvestments, setAllInvestments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -104,12 +103,10 @@ export default function MyInvestments() {
       setLoading(true);
       setError('');
       try {
-        const [summary, invData] = await Promise.all([
-          InvestService.getInvestorPortfolioSummary(),
+        const [invData] = await Promise.all([
           InvestService.getMyInvestments()
         ]);
         if (isMounted) {
-          setPortfolioStats(summary);
           setAllInvestments(invData ?? []);
         }
       } catch (err) {
@@ -161,27 +158,6 @@ export default function MyInvestments() {
               <p className="page-subtitle">Track and manage all your investments in one place.</p>
             </div>
 
-            <div className="stats-summary">
-              <div className="stat-card">
-                <div className="stat-card-header">
-                  <span className="stat-card-title">Total Invested</span>
-                </div>
-                <div className="stat-card-value">
-                  FCFA{portfolioStats?.totalInvested?.toLocaleString() ?? '—'}
-                </div>
-                <div className="stat-card-sub">Across {allInvestments.length} loans</div>
-              </div>
-
-              <div className="stat-card">
-                <div className="stat-card-header">
-                  <span className="stat-card-title">Avg. APY</span>
-                </div>
-                <div className="stat-card-value green">
-                  {portfolioStats?.avgApy ?? '—'}%
-                </div>
-                <div className="stat-card-sub">Weighted average</div>
-              </div>
-            </div>
 
             <div className="investments-card">
               <div className="inv-header">

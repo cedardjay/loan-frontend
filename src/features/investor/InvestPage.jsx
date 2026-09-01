@@ -311,6 +311,7 @@ export default function InvestPage() {
 
       setLoan(foundLoan);
     } catch (err) {
+      console.log(err);
       setError("Failed to load loan.");
     } finally {
       setLoading(false);
@@ -434,10 +435,10 @@ export default function InvestPage() {
                 </div>
 
                 <div className="metric-value">
-                  $
+                  
                   {Number(
                     loan.requestedAmount
-                  ).toLocaleString()}
+                  ).toLocaleString()} fcfa
                 </div>
               </div>
 
@@ -457,10 +458,10 @@ export default function InvestPage() {
                 </div>
 
                 <div className="metric-value">
-                  $
+                  
                   {Number(
                     loan.remainingAmount
-                  ).toLocaleString()}
+                  ).toLocaleString()} fcfa
                 </div>
               </div>
 
@@ -489,10 +490,10 @@ export default function InvestPage() {
                 </span>
 
                 <span>
-                  $
+                  
                   {Number(
                     loan.amountFunded || 0
-                  ).toLocaleString()}{" "}
+                  ).toLocaleString()}{" "} fcfa
                   funded
                 </span>
               </div>
@@ -517,7 +518,7 @@ export default function InvestPage() {
             <form onSubmit={handleInvest}>
               <div className="form-group">
                 <label className="form-label">
-                  Investment Amount ($)
+                  Investment Amount (fcfa)
                 </label>
 
                 <input
@@ -557,10 +558,10 @@ export default function InvestPage() {
                 </span>
 
                 <span className="summary-value">
-                  $
+                  
                   {Number(
                     loan.remainingAmount
-                  ).toLocaleString()}
+                  ).toLocaleString()} fcfa
                 </span>
               </div>
 

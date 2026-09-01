@@ -272,6 +272,7 @@ export default function LoanDetails() {
       }
     } catch (err) {
       setError("Failed to load loan details.");
+      console.log(err);
     } finally {
       setLoading(false);
     }
@@ -346,10 +347,10 @@ export default function LoanDetails() {
                 </div>
 
                 <div className="metric-value">
-                  $
+                  
                   {Number(
                     loan.requestedAmount
-                  ).toLocaleString()}
+                  ).toLocaleString()} FCFA
                 </div>
               </div>
 
@@ -379,10 +380,10 @@ export default function LoanDetails() {
                 </div>
 
                 <div className="metric-value">
-                  $
+                  
                   {Number(
                     loan.remainingAmount
-                  ).toLocaleString()}
+                  ).toLocaleString()} FCFA
                 </div>
               </div>
             </div>
@@ -400,10 +401,10 @@ export default function LoanDetails() {
                 </span>
 
                 <span>
-                  $
+                  
                   {Number(
                     loan.amountFunded || 0
-                  ).toLocaleString()}{" "}
+                  ).toLocaleString()} FCFA{" "}
                   funded
                 </span>
               </div>
