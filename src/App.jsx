@@ -21,6 +21,7 @@ import Payments from './features/borrower/Payments';
 import DisbursalDetails from './features/borrower/DisbursalDetails';
 import RepaymentSchedule from './features/borrower/RepaymentShedule';
 import MakePayment from './features/borrower/MakePayment';
+import TransactionsPage from './features/admin/TransactionsPage';
 
 function App() {
   return (
@@ -87,6 +88,7 @@ function App() {
           <Route path="/super-admin" element={<UsersPage />} />
           <Route path="/super-admin/users" element={<UsersPage />} />
           <Route path="/super-admin/loans" element={<LoanRequestsPage />} />
+          <Route path="/super-admin/transactions" element={<TransactionsPage />} />
         </Route>
 
         {/* Fallback */}

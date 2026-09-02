@@ -4,6 +4,7 @@ import { NavLink, Link } from 'react-router-dom';
 const navItems = [
   { to: '/super-admin/users', icon: 'group', label: 'Users' },
   { to: '/super-admin/loans', icon: 'request_quote', label: 'Loan Requests' },
+  { to: '/super-admin/transactions', icon: 'receipt_long', label: 'Transactions' },
   { to: '/super-admin/admins', icon: 'shield_person', label: 'Admins' },
 ];
 

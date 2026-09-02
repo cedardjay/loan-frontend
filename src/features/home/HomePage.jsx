@@ -166,13 +166,25 @@ const styles = `
 const STATS = [
   ['50,000', 'People joined'],
   ['10,000', 'Active investors'],
-  ['100',    'Partner companies'],
+  ['100', 'Partner companies'],
 ];
 
 const FEATURES = [
-  { num: '01', title: 'Sync across devices',       text: 'Manage your portfolio or loans from any device with real-time updates and cloud syncing.' },
-  { num: '02', title: 'Clear terms, no hidden fees', text: "Transparency is our core value. What you see is exactly what you get, with zero hidden surprises." },
-  { num: '03', title: 'Security by default',        text: 'Bank-grade encryption and multi-factor authentication protect your assets and data.' },
+  {
+    num: '01',
+    title: 'Every loan backed by a licensed institution',
+    text: 'We never hold or lend money ourselves. Every loan is issued and secured by a partner microfinance institution.'
+  },
+  {
+    num: '02',
+    title: 'Your funds stay with the institution,',
+    text: 'Investor money and repayments move directly through your partner institution\'s accounts. Our platform shows you the data .'
+  },
+  {
+    num: '03',
+    title: 'You choose, the institution funds',
+    text: 'Pick the loan you want to support. The microfinance institution handles disbursement, collection, and compliance on your behalf.'
+  },
 ];
 
 const PARTNERS = ['Express Union', 'Visa', 'Mastercard', 'Stripe'];
@@ -196,7 +208,7 @@ export default function HomePage() {
             <em>borrow, lend,</em> and grow your wealth
           </h1>
           <p className="hp-lead">
-            Open a free account in minutes right from your phone and make your money work harder.
+            Borrow and invest through licensed microfinance institutions — right from your phone, with your funds always held by a regulated partner.
           </p>
           <div className="hp-cta-row">
             <button className="hp-btn-primary" onClick={() => navigate('/signup')}>
@@ -231,7 +243,7 @@ export default function HomePage() {
         {/* ── FEATURES ── */}
         <section className="hp-features">
           <div className="hp-section-label">Why Loan@</div>
-          <h2 className="hp-section-title">The Most Trusted Peer-to-Peer Lending Platform</h2>
+          <h2 className="hp-section-title">Trusted Way to Lend and Borrow</h2>
           <div className="hp-features-grid">
             {FEATURES.map((f) => (
               <div key={f.num} className="hp-feature-card">

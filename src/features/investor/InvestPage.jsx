@@ -336,7 +336,7 @@ export default function InvestPage() {
       await InvestService.investInLoan(id, amount);
 
       setMessage(
-        `Successfully invested $${Number(amount).toLocaleString()} in this loan.`
+        `Successfully invested FCFA ${Number(amount).toLocaleString()} in this loan.`
       );
 
       const invested = Number(amount);

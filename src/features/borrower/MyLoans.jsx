@@ -384,7 +384,12 @@ export default function MyLoans() {
               ) : (
                 <div className="loans-grid">
                   {loans.map(loan => {
-                    const progress = 100 - loan.fundingPercentage; // repayment progress fallback
+
+                    const paid = loan.totalRepayableAmount - loan.remainingAmount;
+                    const progress = loan.totalRepayableAmount > 0
+                      ? Math.round((paid / loan.totalRepayableAmount) * 100)
+                      : 0;
+
                     return (
                       <div key={loan.requestId} className="loan-card">
                         <div className="loan-card-header">
@@ -400,19 +405,22 @@ export default function MyLoans() {
                         <div className="loan-meta">
                           <div>
                             <div className="loan-meta-label">Total Amount</div>
-                            <div className="loan-meta-value">{loan.requestedAmount.toLocaleString()} FCFA</div>
+                            <div className="loan-meta-value">{loan.totalRepayableAmount.toLocaleString()} FCFA</div>
                           </div>
                           <div>
                             <div className="loan-meta-label">Remaining</div>
                             <div className="loan-meta-value">{loan.remainingAmount.toLocaleString()} FCFA</div>
                           </div>
                         </div>
-                        <div className="progress-label">
+                        <div className="progress-label flex justify-between text-sm mb-1">
                           <span>Repayment Progress</span>
                           <span>{progress}%</span>
                         </div>
-                        <div className="progress-bar">
-                          <div className="progress-fill" style={{ width: `${progress}%` }} />
+                        <div className="progress-bar relative overflow-hidden h-2 bg-gray-200 rounded-full">
+                          <div
+                            className="progress-fill h-full bg-green-500 rounded-full transition-all duration-300"
+                            style={{ width: `${progress}%` }}
+                          />
                         </div>
                         <div className="flex gap-2">
                           <button className="pay-btn" onClick={() => navigate(`/borrower/make-payment/${loan.requestId}`)}>

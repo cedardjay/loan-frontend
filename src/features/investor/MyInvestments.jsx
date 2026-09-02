@@ -170,7 +170,6 @@ export default function MyInvestments() {
                     <thead>
                       <tr>
                         <th>Borrower</th>
-                        <th>Grade</th>
                         <th>Amount</th>
                         <th>Interest</th>
                         <th>Status</th>
@@ -184,12 +183,7 @@ export default function MyInvestments() {
                       {allInvestments.map((inv) => (
                         <tr key={inv.id}>
                           <td><span className="borrower-name">{inv.name}</span></td>
-                          <td>
-                            {inv.grade
-                              ? <span className={`grade-badge grade-${inv.grade.toLowerCase()}`}>Grade {inv.grade}</span>
-                              : <span className="date-val">—</span>
-                            }
-                          </td>
+                        
                           <td>{inv.amount?.toLocaleString()} fcfa</td>
                           <td><span className="interest-val">{inv.interest}%</span></td>
                           <td>{getStatusDisplay(inv.status)}</td>
