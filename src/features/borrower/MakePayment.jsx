@@ -15,6 +15,11 @@ export default function MakePayment() {
     const [stage, setStage] = useState("form"); // form | pending | success | failed
     const [result, setResult] = useState(null);
     const [error, setError] = useState("");
+    const [submitting, setSubmitting] = useState(false);
+
+    const [nextInstallment, setNextInstallment] = useState(null);
+    const [scheduleLoading, setScheduleLoading] = useState(true);
+    const [scheduleError, setScheduleError] = useState(null);
 
     const pollTimer = useRef(null);
     const pollDeadline = useRef(null);
@@ -23,9 +28,25 @@ export default function MakePayment() {
         return () => clearInterval(pollTimer.current);
     }, []);
 
+    useEffect(() => {
+        const fetchSchedule = async () => {
+            try {
+                const data = await ApiService.getRepaymentSchedule(loanId);
+                const next = (data ?? []).find(s => s.status !== "PAID");
+                setNextInstallment(next ?? null);
+            } catch (err) {
+                setScheduleError(err.response?.data?.message || "Failed to load repayment schedule");
+            } finally {
+                setScheduleLoading(false);
+            }
+        };
+        fetchSchedule();
+    }, [loanId]);
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError("");
+        setSubmitting(true);
         try {
             const res = await ApiService.makeLoanPayment(loanId, { paymentMethod, accountNumber });
             setResult(res);
@@ -45,6 +66,8 @@ export default function MakePayment() {
             startPolling(res.paymentReference);
         } catch (err) {
             setError(err.response?.data?.message || "Failed to submit payment");
+        } finally {
+            setSubmitting(false);
         }
     };
 
@@ -83,41 +106,65 @@ export default function MakePayment() {
             <p className="text-sm text-gray-500">Loan #{loanId}</p>
 
             {stage === "form" && (
-                <form onSubmit={handleSubmit} className="space-y-4">
-                    <div>
-                        <label className="block text-sm font-medium mb-1">Payment Method</label>
-                        <select
-                            value={paymentMethod}
-                            onChange={(e) => setPaymentMethod(e.target.value)}
-                            className="w-full border rounded-md p-2"
+                <>
+                    {scheduleLoading ? (
+                        <p className="text-sm text-gray-500">Loading payment details...</p>
+                    ) : scheduleError ? (
+                        <p className="text-sm text-red-600">{scheduleError}</p>
+                    ) : nextInstallment ? (
+                        <div className="rounded-md border p-3 bg-gray-50">
+                            <p className="text-sm text-gray-500">Installment #{nextInstallment.installmentNumber}</p>
+                            <p className="text-lg font-semibold">
+                                {nextInstallment.amountDue.toLocaleString()} FCFA
+                            </p>
+                            <p className="text-xs text-gray-400">Due {nextInstallment.dueDate}</p>
+                        </div>
+                    ) : (
+                        <p className="text-sm text-gray-500">No outstanding installments.</p>
+                    )}
+
+                    <form onSubmit={handleSubmit} className="space-y-4">
+                        <div>
+                            <label className="block text-sm font-medium mb-1">Payment Method</label>
+                            <select
+                                value={paymentMethod}
+                                onChange={(e) => setPaymentMethod(e.target.value)}
+                                className="w-full border rounded-md p-2"
+                                disabled={submitting}
+                            >
+                                {PAYMENT_METHODS.map((m) => (
+                                    <option key={m} value={m}>{m}</option>
+                                ))}
+                            </select>
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium mb-1">Account Number</label>
+                            <input
+                                type="text"
+                                value={accountNumber}
+                                onChange={(e) => setAccountNumber(e.target.value)}
+                                placeholder="237677777777"
+                                className="w-full border rounded-md p-2"
+                                required
+                                disabled={submitting}
+                            />
+                        </div>
+
+                        {error && <p className="text-red-600 text-sm">{error}</p>}
+
+                        <button
+                            type="submit"
+                            disabled={submitting}
+                            className="w-full px-4 py-2 bg-green-500 text-white rounded-md text-sm flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
                         >
-                            {PAYMENT_METHODS.map((m) => (
-                                <option key={m} value={m}>{m}</option>
-                            ))}
-                        </select>
-                    </div>
-
-                    <div>
-                        <label className="block text-sm font-medium mb-1">Account Number</label>
-                        <input
-                            type="text"
-                            value={accountNumber}
-                            onChange={(e) => setAccountNumber(e.target.value)}
-                            placeholder="237677777777"
-                            className="w-full border rounded-md p-2"
-                            required
-                        />
-                    </div>
-
-                    {error && <p className="text-red-600 text-sm">{error}</p>}
-
-                    <button
-                        type="submit"
-                        className="w-full px-4 py-2 bg-green-500 text-white rounded-md text-sm"
-                    >
-                        Pay Now
-                    </button>
-                </form>
+                            {submitting && (
+                                <span className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                            )}
+                            {submitting ? "Processing..." : "Pay Now"}
+                        </button>
+                    </form>
+                </>
             )}
 
             {stage === "pending" && (
@@ -127,7 +174,6 @@ export default function MakePayment() {
                     <p className="text-sm text-gray-500">
                         Check your phone and enter your {paymentMethod} PIN to approve this payment.
                     </p>
-                    <p className="text-xs text-gray-400">This may take up to 2 minutes.</p>
                 </div>
             )}
 

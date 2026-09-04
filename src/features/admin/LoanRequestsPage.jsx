@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import ApiService from '../../service/ApiService';
 import AdminLayout from './AdminLayout';
 
@@ -6,6 +7,7 @@ export default function LoanRequestsPage() {
     const [loans, setLoans] = useState([]);
     const [loansLoading, setLoansLoading] = useState(true);
     const [actionId, setActionId] = useState(null);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchLoans = async () => {
@@ -40,18 +42,6 @@ export default function LoanRequestsPage() {
             setLoans((prev) => prev.map((l) => (l.requestId === requestId ? { ...l, status: 'REJECTED' } : l)));
         } catch (error) {
             console.error('Failed to reject loan:', error);
-        } finally {
-            setActionId(null);
-        }
-    };
-
-    const handleDisburse = async (requestId) => {
-        setActionId(requestId);
-        try {
-            await ApiService.disburseLoan(requestId);
-            setLoans((prev) => prev.map((l) => (l.requestId === requestId ? { ...l, status: 'ACTIVE' } : l)));
-        } catch (error) {
-            console.error('Failed to disburse loan:', error);
         } finally {
             setActionId(null);
         }
@@ -116,7 +106,7 @@ export default function LoanRequestsPage() {
                                                     <button disabled={actionId === l.requestId} onClick={() => handleReject(l.requestId)} className="px-3 py-1.5 text-xs font-bold rounded-lg bg-red-600 text-white disabled:opacity-50">Reject</button>
                                                 </div>
                                             ) : l.status === 'DISBURSAL_REQUESTED' ? (
-                                                <button disabled={actionId === l.requestId} onClick={() => handleDisburse(l.requestId)} className="px-3 py-1.5 text-xs font-bold rounded-lg bg-blue-600 text-white disabled:opacity-50">Disburse</button>
+                                                <button onClick={() => navigate(`/admin/loan-disbursal/${l.requestId}`)} className="px-3 py-1.5 text-xs font-bold rounded-lg bg-blue-600 text-white">Disburse</button>
                                             ) : (
                                                 <span className="text-xs text-outline">—</span>
                                             )}

@@ -259,9 +259,12 @@ export default function MyLoans() {
   const [error, setError] = useState(null);
   const [loans, setLoans] = useState([]);
   const [loansLoading, setLoansLoading] = useState(true);
+  const [loansError, setLoansError] = useState(null);
   const [marketplaceLoans, setMarketplaceLoans] = useState([]);
   const [marketplaceLoading, setMarketplaceLoading] = useState(true);
+  const [marketplaceError, setMarketplaceError] = useState(null);
   const [disbursalRequestedLoans, setDisbursalRequestedLoans] = useState([]);
+  const [disbursalError, setDisbursalError] = useState(null);
 
   const navigate = useNavigate();
 
@@ -271,7 +274,7 @@ export default function MyLoans() {
         const data = await ApiService.getMyMarketplaceLoans();
         setMarketplaceLoans(data ?? []);
       } catch (err) {
-        console.error('Failed to load marketplace loans:', err);
+        setMarketplaceError(err.response?.data?.message || "Failed to load marketplace loans");
       } finally {
         setMarketplaceLoading(false);
       }
@@ -279,14 +282,13 @@ export default function MyLoans() {
     fetchMyMarketplaceLoans();
   }, []);
 
-
   useEffect(() => {
     const fetchActiveLoans = async () => {
       try {
         const data = await ApiService.getMyActiveLoans();
         setLoans(data ?? []);
       } catch (err) {
-        console.error('Failed to load active loans:', err);
+        setLoansError(err.response?.data?.message || "Failed to load active loans");
       } finally {
         setLoansLoading(false);
       }
@@ -294,11 +296,10 @@ export default function MyLoans() {
     fetchActiveLoans();
   }, []);
 
-
-
   const fetchPendingLoans = async () => {
     setLoading(true);
     setError(null);
+    setDisbursalError(null);
     try {
       const response = await ApiService.getUserLoanRequests();
       if (response) {
@@ -311,14 +312,15 @@ export default function MyLoans() {
         setDisbursalRequestedLoans([]);
       }
     } catch (err) {
-      setError(err.response?.data?.message || "Failed to load pending applications");
+      const message = err.response?.data?.message || "Failed to load pending applications";
+      setError(message);
+      setDisbursalError(message);
       setPendingLoans([]);
       setDisbursalRequestedLoans([]);
     } finally {
       setLoading(false);
     }
   };
-
 
   const formatDate = (dateString) => {
     if (!dateString) return "N/A";
@@ -350,19 +352,13 @@ export default function MyLoans() {
     return "Your application is being processed.";
   };
 
-
-
   useEffect(() => { fetchPendingLoans(); }, []);
 
   return (
     <>
       <style>{style}</style>
       <div className="app-wrap">
-
-
         <div className="layout">
-
-          {/* ── MAIN ── */}
           <main className="main">
 
             <div className="page-header">
@@ -379,12 +375,17 @@ export default function MyLoans() {
 
               {loansLoading ? (
                 <p>Loading active loans...</p>
+              ) : loansError ? (
+                <div className="pending-error">
+                  <div className="pending-empty-icon">⚠️</div>
+                  <div className="pending-empty-text">Error loading active loans</div>
+                  <div className="pending-empty-sub">{loansError}</div>
+                </div>
               ) : loans.length === 0 ? (
                 <p>No active loans.</p>
               ) : (
                 <div className="loans-grid">
                   {loans.map(loan => {
-
                     const paid = loan.totalRepayableAmount - loan.remainingAmount;
                     const progress = loan.totalRepayableAmount > 0
                       ? Math.round((paid / loan.totalRepayableAmount) * 100)
@@ -424,12 +425,13 @@ export default function MyLoans() {
                         </div>
                         <div className="flex gap-2">
                           <button className="pay-btn" onClick={() => navigate(`/borrower/make-payment/${loan.requestId}`)}>
-                            💳 Make Payment
-                          </button>                          <button
+                            💳 Next Payment
+                          </button>
+                          <button
                             className="pay-btn"
                             onClick={() => navigate(`/borrower/repayment-schedule/${loan.requestId}`)}
                           >
-                            📅 View Repayment Schedule
+                            📅 Repayment Schedule
                           </button>
                         </div>
                       </div>
@@ -448,6 +450,12 @@ export default function MyLoans() {
 
               {loading ? (
                 <p>Loading...</p>
+              ) : disbursalError ? (
+                <div className="pending-error">
+                  <div className="pending-empty-icon">⚠️</div>
+                  <div className="pending-empty-text">Error loading disbursal requests</div>
+                  <div className="pending-empty-sub">{disbursalError}</div>
+                </div>
               ) : disbursalRequestedLoans.length === 0 ? (
                 <p>No loans awaiting disbursal.</p>
               ) : (
@@ -490,6 +498,12 @@ export default function MyLoans() {
 
               {marketplaceLoading ? (
                 <p>Loading marketplace loans...</p>
+              ) : marketplaceError ? (
+                <div className="pending-error">
+                  <div className="pending-empty-icon">⚠️</div>
+                  <div className="pending-empty-text">Error loading marketplace loans</div>
+                  <div className="pending-empty-sub">{marketplaceError}</div>
+                </div>
               ) : marketplaceLoans.length === 0 ? (
                 <p>You have no loans currently listed on the marketplace.</p>
               ) : (
@@ -537,7 +551,6 @@ export default function MyLoans() {
                         <div className="progress-fill" style={{ width: `${loan.fundingPercentage}%` }} />
                       </div>
 
-                      {/* Disbursal request button — only show once fully funded */}
                       {loan.fundingPercentage >= 100 && (
                         <button
                           className="bg-green-400 p-2 rounded-xl hover:bg-green-600"
@@ -621,7 +634,6 @@ export default function MyLoans() {
                         </div>
                       </div>
                       <div className="pending-actions">
-
                         <button className="pending-btn-secondary" onClick={() => alert(`Loan Details:\nID: ${loan.requestId}\nAmount: $${loan.requestedAmount}\nPurpose: ${loan.purpose}\nStatus: ${loan.status}`)}>
                           View Details
                         </button>
@@ -632,10 +644,8 @@ export default function MyLoans() {
               </div>
             </section>
 
-
           </main>
         </div>
-
       </div>
     </>
   );
